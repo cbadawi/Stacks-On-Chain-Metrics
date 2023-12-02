@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
+    "@visx/visx": "^3.5.1",
     "daisyui": "^4.4.9",
     "next": "14.0.3",
     "react": "^18",
