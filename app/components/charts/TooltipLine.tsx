@@ -28,7 +28,7 @@ const TooltipLine = ({
       />
       <circle
         cx={tooltipLeft}
-        cy={tooltipTop}
+        cy={tooltipTop + marginTop}
         r={4}
         fill={circleFill}
         stroke='white'

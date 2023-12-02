@@ -125,7 +125,8 @@ export default withTooltip<BrushProps, TooltipData>(
           | React.MouseEvent<SVGRectElement>
       ) => {
         const { x } = localPoint(event) || { x: 0 };
-        const x0 = xScale!.invert(x);
+        // margin.left is subtracted to account for the chart margins
+        const x0 = xScale!.invert(x - margin.left);
         const index = bisectDate(data, new Date(x0), 1);
         const d0 = data[index - 1];
         const d1 = data[index];
@@ -137,7 +138,20 @@ export default withTooltip<BrushProps, TooltipData>(
               ? d1
               : d0;
         }
-
+        console.log(
+          'x',
+          x,
+          'x0',
+          x0,
+          'index',
+          index,
+          'd0',
+          d0,
+          'd1',
+          d1,
+          'd',
+          d
+        );
         showTooltip({
           tooltipData: d,
           tooltipLeft: x,

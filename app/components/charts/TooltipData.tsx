@@ -25,6 +25,7 @@ type TooltipDataProps = {
   xName: string;
   firstYName: string;
   marginTop: number;
+  innerHeight: number;
 };
 
 const TooltipData = ({
@@ -34,6 +35,7 @@ const TooltipData = ({
   xName,
   firstYName,
   marginTop,
+  innerHeight,
 }: TooltipDataProps) => {
   return (
     <div>
