@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   // TODO add headers, footers, navbars and sidebars here
   return (
-    <html lang='en' className='bg-slate-900'>
+    <html lang='en'>
       <head>
         <link rel='icon' href='/favicon.ico' />
       </head>
