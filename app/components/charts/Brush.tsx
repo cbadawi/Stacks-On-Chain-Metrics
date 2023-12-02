@@ -335,7 +335,6 @@ export default withTooltip<BrushProps, TooltipData>(
               renderBrushHandle={(props) => <BrushHandle {...props} />}
             />
           </BaseChart>
-          {/* <Tooltip /> */}
           {tooltipData && (
             <TooltipLine
               tooltipLeft={tooltipLeft}
@@ -354,6 +353,7 @@ export default withTooltip<BrushProps, TooltipData>(
             xName={xName}
             firstYName={firstYName}
             marginTop={margin.top}
+            innerHeight={innerHeight}
           />
         )}
         <button onClick={handleResetClick}>Reset Scale</button>
