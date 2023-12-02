@@ -1,4 +1,5 @@
 import { LinePath } from '@visx/shape';
+import { GridRows, GridColumns } from '@visx/grid';
 import React from 'react';
 import { Group } from '@visx/group';
 import { AreaClosed } from '@visx/shape';
@@ -11,6 +12,7 @@ import { ChartType } from '../query/QueryVisualization';
 import { isNum } from './helpers';
 
 // Initialize some variables
+const accentColor = '#edffea';
 const axisColor = '#fff';
 const axisBottomTickLabelProps = {
   textAnchor: 'middle' as const,
@@ -48,6 +50,8 @@ export default function BaseChart({
   yScale,
   top,
   left,
+  handleTooltip,
+  hideTooltip,
   children, // used for the brush chart
 }: {
   chartType?: ChartType;
@@ -63,6 +67,8 @@ export default function BaseChart({
   margin: { top: number; right: number; bottom: number; left: number };
   top?: number;
   left?: number;
+  handleTooltip?: any;
+  hideTooltip?: any;
   children?: React.ReactNode;
 }) {
   if (width < 10) return null;
@@ -76,11 +82,24 @@ export default function BaseChart({
         to={gradientColor}
         toOpacity={0.2}
       />
+      <GridColumns
+        top={margin.top}
+        scale={xScale}
+        height={innerHeight}
+        strokeDasharray='1,3'
+        stroke={accentColor}
+        strokeOpacity={0.2}
+        pointerEvents='none'
+      />
       {yNames &&
         yNames.map((colName, i) => (
           <LinePath
             key={i}
             data={data}
+            onTouchStart={handleTooltip}
+            onTouchMove={handleTooltip}
+            onMouseMove={handleTooltip}
+            onMouseLeave={() => hideTooltip()}
             x={(d) =>
               xScale(isNum(d[xName]) ? d[xName] : new Date(d[xName])) || 0
             }
