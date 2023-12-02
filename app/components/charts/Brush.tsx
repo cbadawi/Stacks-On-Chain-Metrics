@@ -138,20 +138,6 @@ export default withTooltip<BrushProps, TooltipData>(
               ? d1
               : d0;
         }
-        console.log(
-          'x',
-          x,
-          'x0',
-          x0,
-          'index',
-          index,
-          'd0',
-          d0,
-          'd1',
-          d1,
-          'd',
-          d
-        );
         showTooltip({
           tooltipData: d,
           tooltipLeft: x,
