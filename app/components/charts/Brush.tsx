@@ -14,6 +14,7 @@ import { max, extent } from '@visx/vendor/d3-array';
 import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
 import BaseChart from './BaseChart';
 import { ChartType } from '../query/QueryVisualization';
+import { Scales, isDate, isNum, parseValue } from './helpers';
 
 const brushMargin = { top: 50, bottom: 0, left: 50, right: 20 };
 const chartSeparation = 30;
@@ -27,17 +28,6 @@ const selectedBrushStyle = {
   fill: `url(#${PATTERN_ID})`,
   stroke: 'white',
 };
-
-export type Scales = typeof scaleLinear | typeof scaleTime;
-
-/**
- * Checks if the value should be plotted as an int
- */
-const isNum = (value: any) => !isNaN(value) && !(value instanceof Date);
-/**
- * Checks if the value should be plotted as date
- */
-const isDate = (value: any) => new Date(value) instanceof Date;
 
 export type BrushProps = {
   data: any[];
@@ -60,7 +50,6 @@ function BrushChart({
     right: 50,
   },
 }: BrushProps) {
-  console.log('rending brushss');
   const brushRef = useRef<BaseBrush | null>(null);
   const [filteredData, setFilteredData] = useState(data);
 
@@ -184,12 +173,6 @@ function BrushChart({
     yBrushMax,
     yScaleCallback
   )!;
-
-  // TODO these should be converted to date if its a date
-  const parseValue = (value: any) => {
-    if (isNum(value)) return value;
-    else if (isDate(value)) return new Date(value);
-  };
 
   const initialBrushPosition = useMemo(
     () => ({

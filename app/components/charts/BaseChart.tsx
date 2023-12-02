@@ -8,6 +8,7 @@ import { curveMonotoneX } from '@visx/curve';
 import { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import Watermark from '../Watermark';
 import { ChartType } from '../query/QueryVisualization';
+import { isNum } from './helpers';
 
 // Initialize some variables
 const axisColor = '#fff';
@@ -32,9 +33,6 @@ const axisLabelProps = {
   textAnchor: 'middle', // Set label text anchor to the middle
   dy: '0', // Adjust vertical positioning if needed
 };
-
-// accessors
-const getDate = (d: any) => new Date(d.date);
 
 export default function BaseChart({
   chartType = ChartType.line,
@@ -83,7 +81,9 @@ export default function BaseChart({
           <LinePath
             key={i}
             data={data}
-            x={(d) => xScale(new Date(d[xName])) || 0}
+            x={(d) =>
+              xScale(isNum(d[xName]) ? d[xName] : new Date(d[xName])) || 0
+            }
             y={(d) => yScale(d[colName]) || 0}
             stroke='#fff'
           />
