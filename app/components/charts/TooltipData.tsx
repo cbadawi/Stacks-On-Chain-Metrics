@@ -6,6 +6,7 @@ import {
   defaultStyles,
   Tooltip,
 } from '@visx/tooltip';
+import { parseValue } from './helpers';
 
 const background = '#3b6978';
 
@@ -16,7 +17,7 @@ const tooltipStyles = {
   color: 'white',
 };
 
-const formatXTooltipData = (value: any) => JSON.stringify(new Date(value));
+const formatTooltipData = (value: any) => JSON.stringify(parseValue(value));
 
 type TooltipDataProps = {
   tooltipTop: number;
@@ -45,7 +46,7 @@ const TooltipData = ({
         left={tooltipLeft}
         style={tooltipStyles}
       >
-        {tooltipData[firstYName as string]}
+        {formatTooltipData(tooltipData[firstYName])}
       </TooltipWithBounds>
       <Tooltip
         top={innerHeight + marginTop - 14}
@@ -57,7 +58,7 @@ const TooltipData = ({
           transform: 'translateX(-50%)',
         }}
       >
-        {formatXTooltipData(tooltipData[xName])}
+        {formatTooltipData(tooltipData[xName])}
       </Tooltip>
     </div>
   );

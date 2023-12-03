@@ -7,6 +7,7 @@ type TooltipLineProps = {
   circleFill: string;
   lineStroke: string;
   marginTop: number;
+  marginLeft: number;
 };
 
 const TooltipLine = ({
@@ -15,6 +16,7 @@ const TooltipLine = ({
   circleFill,
   lineStroke,
   marginTop,
+  marginLeft,
 }: TooltipLineProps) => {
   return (
     <g>

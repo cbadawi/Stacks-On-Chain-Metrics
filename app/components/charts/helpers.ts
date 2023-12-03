@@ -14,4 +14,5 @@ export const isDate = (value: any) => new Date(value) instanceof Date;
 export const parseValue = (value: any) => {
   if (isNum(value)) return value;
   else if (isDate(value)) return new Date(value);
+  else return value;
 };

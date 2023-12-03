@@ -1,15 +1,12 @@
 import { LinePath } from '@visx/shape';
-import { GridRows, GridColumns } from '@visx/grid';
+import { GridColumns } from '@visx/grid';
 import React from 'react';
 import { Group } from '@visx/group';
-import { AreaClosed } from '@visx/shape';
 import { AxisLeft, AxisBottom, AxisScale } from '@visx/axis';
 import { LinearGradient } from '@visx/gradient';
-import { curveMonotoneX } from '@visx/curve';
-import { AppleStock } from '@visx/mock-data/lib/mocks/appleStock';
 import Watermark from '../Watermark';
 import { ChartType } from '../query/QueryVisualization';
-import { isNum } from './helpers';
+import { parseValue } from './helpers';
 
 // Initialize some variables
 const accentColor = '#edffea';
@@ -49,9 +46,9 @@ export default function BaseChart({
   xScale,
   yScale,
   top,
-  left,
   handleTooltip,
   hideTooltip,
+  hideBottomAxis,
   children, // used for the brush chart
 }: {
   chartType?: ChartType;
@@ -66,15 +63,15 @@ export default function BaseChart({
   yMax: number;
   margin: { top: number; right: number; bottom: number; left: number };
   top?: number;
-  left?: number;
   handleTooltip?: any;
   hideTooltip?: any;
+  hideBottomAxis?: boolean;
   children?: React.ReactNode;
 }) {
   if (width < 10) return null;
   const hideLeftAxis = Boolean(!yNames?.length); // hide y axis if more than 1 y column or none
   return (
-    <Group left={left || margin.left} top={top || margin.top}>
+    <Group left={margin.left} top={top || margin.top}>
       <LinearGradient
         id='gradient'
         from={gradientColor}
@@ -100,24 +97,24 @@ export default function BaseChart({
             onTouchMove={handleTooltip}
             onMouseMove={handleTooltip}
             onMouseLeave={() => hideTooltip()}
-            x={(d) =>
-              xScale(isNum(d[xName]) ? d[xName] : new Date(d[xName])) || 0
-            }
+            x={(d) => xScale(parseValue(d[xName])) || 0}
             y={(d) => yScale(d[colName]) || 0}
             stroke='#fff'
           />
         ))}
       <Watermark height={height} width={width} />
-      <AxisBottom
-        top={yMax}
-        scale={xScale}
-        numTicks={width > 520 ? 10 : 5}
-        stroke={axisColor}
-        tickStroke={axisColor}
-        tickLabelProps={axisBottomTickLabelProps}
-        label={xName}
-        labelProps={axisLabelProps as any}
-      />
+      {!hideBottomAxis && (
+        <AxisBottom
+          top={yMax}
+          scale={xScale}
+          numTicks={width > 520 ? 10 : 5}
+          stroke={axisColor}
+          tickStroke={axisColor}
+          tickLabelProps={axisBottomTickLabelProps}
+          label={xName}
+          labelProps={axisLabelProps as any}
+        />
+      )}
       {!hideLeftAxis && (
         <AxisLeft
           scale={yScale}
