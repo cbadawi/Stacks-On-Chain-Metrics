@@ -10,15 +10,7 @@ import {
 import ChartContainer from '../charts/ChartContainer';
 import { FiSave, FiDownload } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
-
-export enum ChartType {
-  'table',
-  'line',
-  'pie',
-  'bar',
-  'treemap',
-  'number',
-}
+import { ChartType } from '../charts/helpers';
 
 interface QueryVisualizationProps {
   data: any;
@@ -60,7 +52,7 @@ const QueryVisualization = ({ data }: QueryVisualizationProps) => {
           );
         })}
       </div>
-      <ChartContainer data={data} chartType={chart} />
+      {data?.length && <ChartContainer data={data} chartType={chart} />}
       <text>{JSON.stringify(data, null, 2)}</text>
     </div>
   );

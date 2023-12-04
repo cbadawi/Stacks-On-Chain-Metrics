@@ -3,8 +3,9 @@ import React from 'react';
 interface TableProps {
   data: any;
 }
-
+// TODO add pagination button
 const Table = ({ data }: TableProps) => {
+  if (!data?.length) return null;
   const colNames = Object.keys(data[0]);
   // TODO if styling fails, build a table with divs similar to gamma's
   return (

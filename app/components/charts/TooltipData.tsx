@@ -1,21 +1,6 @@
 import React from 'react';
-
-import {
-  withTooltip,
-  TooltipWithBounds,
-  defaultStyles,
-  Tooltip,
-} from '@visx/tooltip';
-import { parseValue } from './helpers';
-
-const background = '#3b6978';
-
-const tooltipStyles = {
-  ...defaultStyles,
-  background,
-  border: '1px solid white',
-  color: 'white',
-};
+import { colors, parseValue } from './helpers';
+import { TooltipInPortalProps } from '@visx/tooltip/lib/hooks/useTooltipInPortal';
 
 const formatTooltipData = (value: any) => JSON.stringify(parseValue(value));
 
@@ -24,43 +9,31 @@ type TooltipDataProps = {
   tooltipLeft: number;
   tooltipData: Record<string, any>;
   xName: string;
-  firstYName: string;
-  marginTop: number;
-  innerHeight: number;
+  yNames: string[];
+  TooltipInPortal: React.FC<TooltipInPortalProps>;
 };
 
 const TooltipData = ({
+  TooltipInPortal,
   tooltipTop,
   tooltipLeft,
   tooltipData,
   xName,
-  firstYName,
-  marginTop,
-  innerHeight,
+  yNames,
 }: TooltipDataProps) => {
   return (
-    <div>
-      <TooltipWithBounds
-        key={Math.random()}
-        top={tooltipTop}
-        left={tooltipLeft}
-        style={tooltipStyles}
-      >
-        {formatTooltipData(tooltipData[firstYName])}
-      </TooltipWithBounds>
-      <Tooltip
-        top={innerHeight + marginTop - 14}
-        left={tooltipLeft}
-        style={{
-          ...defaultStyles,
-          minWidth: 72,
-          textAlign: 'center',
-          transform: 'translateX(-50%)',
-        }}
-      >
-        {formatTooltipData(tooltipData[xName])}
-      </Tooltip>
-    </div>
+    <TooltipInPortal top={tooltipTop + 200} left={tooltipLeft}>
+      <div style={{ color: 'black' }}>
+        <strong>{xName + ' : ' + formatTooltipData(tooltipData[xName])}</strong>
+      </div>
+      {yNames.map((y, index) => {
+        return (
+          <div style={{ color: colors[index] }}>
+            {y + ' : ' + formatTooltipData(tooltipData[y])}
+          </div>
+        );
+      })}
+    </TooltipInPortal>
   );
 };
 

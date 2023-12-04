@@ -1,34 +1,118 @@
 'use client';
 
-import React from 'react';
-import BrushChart from './Brush';
-import { ChartType } from '../query/QueryVisualization';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { localPoint } from '@visx/event';
+import { LinearGradient } from '@visx/gradient';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import {
+  ChartType,
+  accentColorDark,
+  colors,
+  getScaleCallback,
+  getXScale,
+  getYScale,
+  parseValue,
+} from './helpers';
 import Table from './Table';
+import Pie from './Pie';
+import { AxisScale } from '@visx/axis';
+import { ScaleBand } from '@visx/vendor/d3-scale';
+import BaseChart from './BaseChart';
+import getBrush from './getBrush';
+import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
+import { bisector } from '@visx/vendor/d3-array';
+import TooltipLine from './TooltipLine';
+import TooltipData from './TooltipData';
+
+import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
+import LineChart from './LineChart';
 
 interface ChartContainerProps {
   chartType: ChartType;
-  data: any;
+  data: any[];
 }
 
-const renderChart = (
+const getChartComponent = (
   chartType: ChartType,
-  data: any,
+  filteredData: any[],
+  xName: string,
+  yNames: string[],
   title: string,
   height: number | string,
-  width: number | string
+  width: number | string,
+  topChartHeight: number,
+  topChartBottomMargin: number,
+  margin: { top: number; right: number; bottom: number; left: number },
+  background2: string,
+  // localPoint?: any,
+  showTooltip?: any,
+  hideTooltip?: () => void
 ) => {
-  console.log('charttype checking', chartType);
+  const firstYName = yNames[0];
+  const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
+  const yMax = Math.max(topChartHeight, 0);
 
   switch (Number(chartType)) {
-    // case ChartType.table:
-    //   return <Table data={data} />;
     case ChartType.line:
-      console.log('charttype is lineeeeee');
       return (
-        <BrushChart
-          data={data}
+        <LineChart
+          data={filteredData}
+          xName={xName}
+          yNames={yNames}
           chartType={chartType}
+          xMax={xMax}
+          yMax={yMax}
           height={Number(height)}
+          width={Number(width)}
+          showTooltip={showTooltip}
+          hideTooltip={hideTooltip!}
+        />
+      );
+    case ChartType.bar:
+      const xScaleCallback = getScaleCallback(
+        filteredData,
+        xName,
+        'x',
+        chartType
+      )!;
+      const yScaleCallback = getScaleCallback(filteredData, firstYName, 'y') as
+        | typeof scaleLinear
+        | typeof scaleTime;
+      const xScale = getXScale(
+        filteredData,
+        xName,
+        xMax,
+        xScaleCallback,
+        'x',
+        chartType
+      )!;
+      const yScale = getYScale(filteredData, firstYName, yMax, yScaleCallback)!;
+
+      return (
+        <BaseChart
+          xName={xName}
+          yNames={yNames}
+          chartType={chartType}
+          data={filteredData}
+          height={Number(height)}
+          width={Number(width)}
+          margin={{ ...margin, bottom: topChartBottomMargin }}
+          yMax={yMax}
+          xScale={xScale!}
+          yScale={yScale!}
+          localPoint={localPoint}
+          showTooltip={showTooltip}
+          gradientColor={background2}
+          hideTooltip={hideTooltip}
+          showGrid={true}
+        />
+      );
+    case ChartType.pie:
+      return (
+        <Pie
+          data={filteredData}
+          xName={xName}
+          yName={yNames[0]}
           width={Number(width)}
         />
       );
@@ -36,17 +120,150 @@ const renderChart = (
 };
 
 const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
-  // TODO using widow causes Unhandled Runtime Error
+  // TODO fix using widow causes Unhandled Runtime Error
   // Error: Hydration failed because the initial UI does not match what was rendered on the server.
   // Warning: Expected server HTML to contain a matching <div> in <div>.
   // See more info here: https://nextjs.org/docs/messages/react-hydration-error
   // if (typeof window == 'undefined') return null;
   // const height = window.innerHeight * 0.75;
   // const width = window.innerWidth * 0.75;
+  const [filteredData, setFilteredData] = useState(data);
+
+  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+    // TooltipInPortal is rendered in a separate child of <body /> and positioned
+    // with page coordinates which should be updated on scroll. consider using
+    // Tooltip or TooltipWithBounds if you don't need to render inside a Portal
+    scroll: true,
+  });
+
+  type TooltipData = any;
+  const {
+    showTooltip,
+    hideTooltip,
+    tooltipOpen,
+    tooltipData,
+    tooltipLeft = 0,
+    tooltipTop = 0,
+  } = useTooltip<TooltipData>({
+    // initial tooltip state
+    tooltipOpen: true,
+    tooltipLeft: 0,
+    tooltipTop: 50,
+    // tooltipData: '',
+  });
+
+  // Styles
+  const GRADIENT_ID = 'brush_gradient';
+  const background = '#584153';
+  const background2 = '#af8baf';
+
+  const height = 700;
+  const width = 900;
+
+  const margin = {
+    top: 50,
+    left: 80,
+    bottom: 0,
+    right: 50,
+  };
+
+  const chartSeparation = 30;
+
+  const innerHeight = height - margin.top - margin.bottom;
+  const topChartBottomMargin = chartSeparation + 20; // need seperation to make room for the x-axis title
+  const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
+  const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
+
+  const columns = Object.keys(data[0]);
+  const xName = columns[0];
+  const yNames = columns.slice(1);
+
+  const showTooltipData =
+    chartType == ChartType.line || chartType == ChartType.bar;
+  const showTooltipLine = chartType == ChartType.line;
+  const showBrush = chartType == ChartType.line;
+  // data
+
+  const { handleResetClick, brush } = getBrush({
+    showBrush,
+    data,
+    xName,
+    yName: yNames[0],
+    height,
+    width,
+    topChartHeight,
+    topChartBottomMargin,
+    margin,
+    setFilteredData,
+    bottomChartHeight,
+    background2,
+  });
+
+  console.log('tooltipData && showTooltipData', tooltipData, showTooltipData);
   return (
     <div className='chart-container flex  justify-center '>
       <div className='max-h-screen max-w-[96%] overflow-auto'>
-        {data?.length && renderChart(chartType, data, '', '700', '900')}
+        <div className='h-full w-full'>
+          {chartType != ChartType.table && (
+            <>
+              <svg width={width} height={height}>
+                <LinearGradient
+                  id={GRADIENT_ID}
+                  from={background}
+                  to={background2}
+                  rotate={45}
+                />
+                <rect
+                  x={0}
+                  y={0}
+                  width={width}
+                  height={height}
+                  fill={`url(#${GRADIENT_ID})`}
+                  rx={14}
+                />
+                {filteredData?.length &&
+                  getChartComponent(
+                    chartType,
+                    filteredData,
+                    xName,
+                    yNames,
+                    '',
+                    '700',
+                    '900',
+                    topChartHeight,
+                    topChartBottomMargin,
+                    margin,
+                    background2,
+                    showTooltip,
+                    hideTooltip
+                  )}
+                {showBrush && brush}
+                {tooltipData && showTooltipLine && (
+                  <TooltipLine
+                    tooltipLeft={tooltipLeft}
+                    tooltipTop={tooltipTop}
+                    circleFill={accentColorDark}
+                    lineStroke={accentColorDark}
+                    marginTop={margin.top}
+                    marginLeft={margin.left}
+                  />
+                )}
+              </svg>
+              {tooltipData && showTooltipData && (
+                <TooltipData
+                  TooltipInPortal={TooltipInPortal}
+                  tooltipTop={tooltipTop}
+                  tooltipLeft={tooltipLeft}
+                  tooltipData={tooltipData}
+                  xName={xName}
+                  yNames={yNames}
+                />
+              )}
+              <button onClick={handleResetClick}>Reset Scale</button>
+            </>
+          )}
+          <Table data={filteredData} />
+        </div>
       </div>
     </div>
   );
