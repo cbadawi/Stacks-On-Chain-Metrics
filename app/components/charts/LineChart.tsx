@@ -54,8 +54,6 @@ const LineChart = ({
   const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
 
   // Styles
-  const GRADIENT_ID = 'brush_gradient';
-  const background = '#584153';
   const background2 = '#af8baf';
 
   const firstYName = yNames[0];

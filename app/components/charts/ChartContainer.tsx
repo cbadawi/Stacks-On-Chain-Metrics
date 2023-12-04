@@ -20,12 +20,11 @@ import { ScaleBand } from '@visx/vendor/d3-scale';
 import BaseChart from './BaseChart';
 import getBrush from './getBrush';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
-import { bisector } from '@visx/vendor/d3-array';
 import TooltipLine from './TooltipLine';
 import TooltipData from './TooltipData';
 
-import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
 import LineChart from './LineChart';
+import BarChart from './BarChart';
 
 interface ChartContainerProps {
   chartType: ChartType;
@@ -69,42 +68,20 @@ const getChartComponent = (
         />
       );
     case ChartType.bar:
-      const xScaleCallback = getScaleCallback(
-        filteredData,
-        xName,
-        'x',
-        chartType
-      )!;
-      const yScaleCallback = getScaleCallback(filteredData, firstYName, 'y') as
-        | typeof scaleLinear
-        | typeof scaleTime;
-      const xScale = getXScale(
-        filteredData,
-        xName,
-        xMax,
-        xScaleCallback,
-        'x',
-        chartType
-      )!;
-      const yScale = getYScale(filteredData, firstYName, yMax, yScaleCallback)!;
-
       return (
-        <BaseChart
+        <BarChart
+          filteredData={filteredData}
           xName={xName}
-          yNames={yNames}
+          yName={yNames[0]}
           chartType={chartType}
-          data={filteredData}
+          xMax={xMax}
+          yMax={yMax}
           height={Number(height)}
           width={Number(width)}
-          margin={{ ...margin, bottom: topChartBottomMargin }}
-          yMax={yMax}
-          xScale={xScale!}
-          yScale={yScale!}
-          localPoint={localPoint}
+          margin={margin}
+          topChartBottomMargin={topChartBottomMargin}
           showTooltip={showTooltip}
-          gradientColor={background2}
           hideTooltip={hideTooltip}
-          showGrid={true}
         />
       );
     case ChartType.pie:
