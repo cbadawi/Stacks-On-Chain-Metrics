@@ -33,9 +33,9 @@ const axisLabelProps = {
   verticalAnchor: 'start',
   fill: 'black',
   fontSize: 20,
-  length: 50,
+  // length: 50,
   textAnchor: 'middle', // Set label text anchor to the middle
-  dy: 500, // Adjust vertical positioning if needed
+  // dy: 500, // Adjust vertical positioning if needed
 };
 
 const renderData = (

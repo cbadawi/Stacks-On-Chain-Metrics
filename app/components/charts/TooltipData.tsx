@@ -22,7 +22,7 @@ const TooltipData = ({
   yNames,
 }: TooltipDataProps) => {
   return (
-    <TooltipInPortal top={tooltipTop + 200} left={tooltipLeft}>
+    <TooltipInPortal top={tooltipTop} left={tooltipLeft}>
       <div style={{ color: 'black' }}>
         <strong>{xName + ' : ' + formatTooltipData(tooltipData[xName])}</strong>
       </div>

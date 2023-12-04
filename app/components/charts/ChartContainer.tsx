@@ -178,70 +178,66 @@ const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
 
   console.log('tooltipData && showTooltipData', tooltipData, showTooltipData);
   return (
-    <div className='chart-container flex  justify-center '>
-      <div className='max-h-screen max-w-[96%] overflow-auto'>
-        <div className='h-full w-full'>
-          {chartType != ChartType.table && (
-            <>
-              <svg width={width} height={height}>
-                <LinearGradient
-                  id={GRADIENT_ID}
-                  from={background}
-                  to={background2}
-                  rotate={45}
-                />
-                <rect
-                  x={0}
-                  y={0}
-                  width={width}
-                  height={height}
-                  fill={`url(#${GRADIENT_ID})`}
-                  rx={14}
-                />
-                {filteredData?.length &&
-                  getChartComponent(
-                    chartType,
-                    filteredData,
-                    xName,
-                    yNames,
-                    '',
-                    '700',
-                    '900',
-                    topChartHeight,
-                    topChartBottomMargin,
-                    margin,
-                    background2,
-                    showTooltip,
-                    hideTooltip
-                  )}
-                {showBrush && brush}
-                {tooltipData && showTooltipLine && (
-                  <TooltipLine
-                    tooltipLeft={tooltipLeft}
-                    tooltipTop={tooltipTop}
-                    circleFill={accentColorDark}
-                    lineStroke={accentColorDark}
-                    marginTop={margin.top}
-                    marginLeft={margin.left}
-                  />
-                )}
-              </svg>
-              {tooltipData && showTooltipData && (
-                <TooltipData
-                  TooltipInPortal={TooltipInPortal}
-                  tooltipTop={tooltipTop}
-                  tooltipLeft={tooltipLeft}
-                  tooltipData={tooltipData}
-                  xName={xName}
-                  yNames={yNames}
-                />
+    <div className='chart-container relative flex max-w-full items-center justify-center'>
+      {chartType != ChartType.table && (
+        <div className='relative'>
+          <svg width={width} height={height}>
+            <LinearGradient
+              id={GRADIENT_ID}
+              from={background}
+              to={background2}
+              rotate={45}
+            />
+            <rect
+              x={0}
+              y={0}
+              width={width}
+              height={height}
+              fill={`url(#${GRADIENT_ID})`}
+              rx={14}
+            />
+            {filteredData?.length &&
+              getChartComponent(
+                chartType,
+                filteredData,
+                xName,
+                yNames,
+                '',
+                '700',
+                '900',
+                topChartHeight,
+                topChartBottomMargin,
+                margin,
+                background2,
+                showTooltip,
+                hideTooltip
               )}
-              <button onClick={handleResetClick}>Reset Scale</button>
-            </>
+            {showBrush && brush}
+            {tooltipData && showTooltipLine && (
+              <TooltipLine
+                tooltipLeft={tooltipLeft}
+                tooltipTop={tooltipTop}
+                circleFill={accentColorDark}
+                lineStroke={accentColorDark}
+                marginTop={margin.top}
+                marginLeft={margin.left}
+              />
+            )}
+          </svg>
+          {tooltipData && showTooltipData && (
+            <TooltipData
+              TooltipInPortal={TooltipInPortal}
+              tooltipTop={tooltipTop}
+              tooltipLeft={tooltipLeft + margin.left}
+              tooltipData={tooltipData}
+              xName={xName}
+              yNames={yNames}
+            />
           )}
-          <Table data={filteredData} />
+          {showBrush && <button onClick={handleResetClick}>Reset Scale</button>}
         </div>
-      </div>
+      )}
+      {/* <Table data={filteredData} /> */}
     </div>
   );
 };
