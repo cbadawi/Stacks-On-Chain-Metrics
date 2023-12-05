@@ -19,9 +19,11 @@ const PricingCard = ({ plan }: PricingCardProps) => {
         {plan.perks.map((perk) => (
           <PricingPerk key={perk} perk={perk} />
         ))}
-        <div className='flex-grow'></div>
-        <div className='card-actions flex justify-center'>
-          <button className='btn btn-primary w-3/4'>Buy Now</button>
+        <div className='empty-filler flex-grow'></div>
+        <div className='buy-button-container card-actions flex justify-center'>
+          <button className='rounded bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 font-bold text-white'>
+            Buy Now
+          </button>
         </div>
       </div>
     </div>
