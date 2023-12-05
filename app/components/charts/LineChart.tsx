@@ -13,6 +13,7 @@ import { localPoint } from '@visx/event';
 import BaseChart from './BaseChart';
 import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
 import getBrush from './getBrush';
+import handleFailedScale from '@/app/lib/handleFailedScale';
 
 interface LineChartProps {
   data: any[];
@@ -62,8 +63,11 @@ const LineChart = ({
   const yScaleCallback = getScaleCallback(data, firstYName, 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
+  if (!xScaleCallback || !yScaleCallback)
+    return handleFailedScale(xScaleCallback, data);
+
   const xScale = getXScale(data, xName, xMax, xScaleCallback, 'x', chartType)!;
-  const yScale = getYScale(data, firstYName, yMax, yScaleCallback)!;
+  const yScale = getYScale(data, yNames, yMax, yScaleCallback, chartType)!;
 
   const handleTooltip = useCallback(
     (
@@ -85,7 +89,6 @@ const LineChart = ({
             ? d1
             : d0;
       }
-      console.log('showTooltipshowTooltip', d, x);
       showTooltip({
         tooltipData: d,
         tooltipLeft: x,

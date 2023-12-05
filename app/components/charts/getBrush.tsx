@@ -19,6 +19,9 @@ import BaseBrush, {
   BaseBrushState,
   UpdateBrush,
 } from '@visx/brush/lib/BaseBrush';
+import handleFailedScale from '@/app/lib/handleFailedScale';
+
+const EMPTY_RESPONSE = { handleResetClick: undefined, brush: undefined };
 
 type BrushProps = {
   showBrush: boolean;
@@ -51,7 +54,7 @@ const getBrush = ({
 }: BrushProps) => {
   const brushRef = useRef<BaseBrush | null>(null);
 
-  if (!showBrush) return { handleResetClick: undefined, brush: undefined };
+  if (!showBrush) return EMPTY_RESPONSE;
 
   const brushMargin = { top: 50, bottom: 0, left: 50, right: 20 };
   // brush bounds
@@ -72,6 +75,8 @@ const getBrush = ({
   const yScaleCallback = getScaleCallback(data, yName, 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
+  if (!xScaleCallback || !yScaleCallback)
+    return handleFailedScale(xScaleCallback, data, EMPTY_RESPONSE);
 
   const brushXScale = getXScale(
     data,
@@ -82,7 +87,13 @@ const getBrush = ({
     ChartType.line
   )!;
 
-  const brushYScale = getYScale(data, yName, yBrushMax, yScaleCallback)!;
+  const brushYScale = getYScale(
+    data,
+    [yName],
+    yBrushMax,
+    yScaleCallback,
+    ChartType.line
+  )!;
 
   // In case of multi-line chart, for simplicity, the brush parameters should be depending on the first line
   // TODO the returned value would probably fail if the values are discrete or not a number, such as a category, in which case we should turn off the brush
