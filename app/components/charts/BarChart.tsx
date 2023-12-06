@@ -14,7 +14,7 @@ interface BarChartProps {
   filteredData: any[];
   xName: string;
   yNames: string[];
-  customizableColumnTypes: CustomizableChartOptions[];
+  customizableColumnsTypes: CustomizableChartOptions[];
   chartType: ChartType;
   xMax: number;
   yMax: number;
@@ -29,7 +29,7 @@ const BarChart = ({
   filteredData,
   xName,
   yNames,
-  customizableColumnTypes,
+  customizableColumnsTypes,
   chartType,
   xMax,
   yMax,
@@ -66,7 +66,7 @@ const BarChart = ({
     <BaseChart
       xName={xName}
       yNames={yNames}
-      customizableColumnTypes={customizableColumnTypes}
+      customizableColumnsTypes={customizableColumnsTypes}
       chartType={chartType}
       data={filteredData}
       height={Number(height)}

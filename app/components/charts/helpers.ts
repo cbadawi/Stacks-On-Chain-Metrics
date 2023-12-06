@@ -13,14 +13,17 @@ export type MarginObject = {
 };
 
 export const customizableChartOptions = ['bar', 'line'];
-const names = [...customizableChartOptions] as const;
-export type CustomizableChartOptions = (typeof names)[number];
+
+export type CustomizableChartOptions = Exclude<
+  ChartType,
+  [ChartType.table, ChartType.pie, ChartType.treemap, ChartType.number]
+>;
 
 export enum ChartType {
   'table',
   'line',
-  'pie',
   'bar',
+  'pie',
   'treemap',
   'number',
 }
@@ -34,8 +37,8 @@ export const getBarAndLineColNames = (
   let barYNames: string[] = [];
   let lineYNames: string[] = [];
   customizableColumnTypes?.map((type, index) => {
-    if (type == 'bar') barYNames.push(yNames[index]);
-    if (type == 'line') lineYNames.push(yNames[index]);
+    if (type == ChartType.bar) barYNames.push(yNames[index]);
+    if (type == ChartType.line) lineYNames.push(yNames[index]);
   });
 
   return {

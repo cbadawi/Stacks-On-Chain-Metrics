@@ -9,6 +9,7 @@ import QueryVisualization from '../components/query/QueryVisualization';
 import { stacksData2Array } from '../helpers/delet';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import {
+  ChartType,
   CustomizableChartOptions,
   getYAxesNamesFromData,
 } from '../components/charts/helpers';
@@ -23,7 +24,7 @@ const Query = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // array containing the type of column. ex ['bar', 'bar', 'line']
-  const [customizableColumns, setCustomizableColumnTypes] = useState<
+  const [customizableColumnsTypes, setCustomizableColumnsTypes] = useState<
     CustomizableChartOptions[]
   >([]);
   const [data, setData] = useState([]);
@@ -46,8 +47,8 @@ const Query = () => {
     setData(json);
     // default for customizable charts is bar columns
     if (json?.length)
-      setCustomizableColumnTypes(
-        getYAxesNamesFromData(json).map((col) => 'bar')
+      setCustomizableColumnsTypes(
+        getYAxesNamesFromData(json).map((col) => ChartType.bar)
       );
   };
 
@@ -69,8 +70,8 @@ const Query = () => {
         {error && <QueryErrorContainer error={error} setError={setError} />}
         <QueryVisualization
           data={data}
-          customizableColumnTypes={customizableColumns}
-          setCustomizableColumnTypes={setCustomizableColumnTypes}
+          customizableColumnsTypes={customizableColumnsTypes}
+          setCustomizableColumnsTypes={setCustomizableColumnsTypes}
         />
       </div>
     </div>

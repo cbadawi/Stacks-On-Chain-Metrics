@@ -21,7 +21,7 @@ interface ChartContainerProps {
   data: any[];
   height: number;
   width: number;
-  customizableColumnTypes: CustomizableChartOptions[];
+  customizableColumnsTypes: CustomizableChartOptions[];
 }
 
 const getChartComponent = (
@@ -29,7 +29,7 @@ const getChartComponent = (
   filteredData: any[],
   xName: string,
   yNames: string[],
-  customizableColumnTypes: string[],
+  customizableColumnsTypes: CustomizableChartOptions[],
   title: string,
   height: number | string,
   width: number | string,
@@ -66,7 +66,7 @@ const getChartComponent = (
           filteredData={filteredData}
           xName={xName}
           yNames={yNames}
-          customizableColumnTypes={customizableColumnTypes}
+          customizableColumnsTypes={customizableColumnsTypes}
           chartType={chartType}
           xMax={xMax}
           yMax={yMax}
@@ -95,7 +95,7 @@ const ChartContainer = ({
   data,
   height,
   width,
-  customizableColumnTypes,
+  customizableColumnsTypes,
 }: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
   // Error: Hydration failed because the initial UI does not match what was rendered on the server.
@@ -198,7 +198,7 @@ const ChartContainer = ({
                 filteredData,
                 xName,
                 yNames,
-                customizableColumnTypes,
+                customizableColumnsTypes,
                 '',
                 '700',
                 '900',

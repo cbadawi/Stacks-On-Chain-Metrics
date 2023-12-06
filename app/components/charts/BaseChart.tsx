@@ -65,7 +65,7 @@ const renderData = (
   ) => void,
   hideTooltip?: () => void,
   yNames?: string[],
-  customizableColumnTypes?: CustomizableChartOptions[]
+  customizableColumnsTypes?: CustomizableChartOptions[]
 ) => {
   switch (Number(chartType)) {
     case ChartType.line:
@@ -93,9 +93,9 @@ const renderData = (
       });
       let barYNames: string[] = [];
       let lineYNames: string[] = [];
-      if (customizableColumnTypes)
+      if (customizableColumnsTypes)
         ({ barYNames, lineYNames } = getBarAndLineColNames(
-          customizableColumnTypes,
+          customizableColumnsTypes,
           yNames
         ));
       const bars = barYNames?.length ? barYNames : yNames;
@@ -159,7 +159,7 @@ interface BaseChartProps {
   chartType?: ChartType;
   xName: string;
   yNames?: string[];
-  customizableColumnTypes?: CustomizableChartOptions[];
+  customizableColumnsTypes?: CustomizableChartOptions[];
   data: any[];
   gradientColor: string;
   xScale: AxisScale<number> | ScaleBand<number>;
@@ -184,7 +184,7 @@ export default function BaseChart({
   chartType = ChartType.line,
   xName, // name on the x-axis
   yNames, // column names that contain the y-values
-  customizableColumnTypes,
+  customizableColumnsTypes,
   data,
   gradientColor,
   height,
@@ -239,7 +239,7 @@ export default function BaseChart({
         handleTooltip,
         hideTooltip,
         yNames,
-        customizableColumnTypes
+        customizableColumnsTypes
       )}
       <Watermark height={height} width={width} />
       {!hideBottomAxis && (

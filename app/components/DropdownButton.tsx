@@ -4,7 +4,7 @@ import { CustomizableChartOptions } from './charts/helpers';
 interface DropdownButtonProps {
   buttonText: string;
   options: string[];
-  setter: (newType: CustomizableChartOptions, columnIndex: number) => void;
+  setter: (newType: any, columnIndex: number) => void;
   dropdownButtonIndex: number;
 }
 

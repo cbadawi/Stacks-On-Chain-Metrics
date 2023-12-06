@@ -18,14 +18,16 @@ import StarterPlaceholderMessage from './StarterPlaceholderMessage';
 
 interface QueryVisualizationProps {
   data: any[];
-  customizableColumnTypes: CustomizableChartOptions[];
-  setCustomizableColumnTypes: React.Dispatch<React.SetStateAction<string[]>>;
+  customizableColumnsTypes: CustomizableChartOptions[];
+  setCustomizableColumnsTypes: React.Dispatch<
+    React.SetStateAction<CustomizableChartOptions[]>
+  >;
 }
 
 const QueryVisualization = ({
   data,
-  customizableColumnTypes,
-  setCustomizableColumnTypes,
+  customizableColumnsTypes,
+  setCustomizableColumnsTypes,
 }: QueryVisualizationProps) => {
   // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
   // whereas the barchart will have a combination of lines and chart but no brush
@@ -80,8 +82,8 @@ const QueryVisualization = ({
       {!!data?.length && chart == ChartType.bar && (
         <CustomizeBarChart
           columnNames={Object.keys(data[0]).slice(1)}
-          customizableColumnTypes={customizableColumnTypes}
-          setCustomizableColumnTypes={setCustomizableColumnTypes}
+          customizableColumnTypes={customizableColumnsTypes}
+          setCustomizableColumnsTypes={setCustomizableColumnsTypes}
         />
       )}
       {!!data?.length && (
@@ -90,7 +92,7 @@ const QueryVisualization = ({
           chartType={chart}
           height={700}
           width={900}
-          customizableColumnTypes={customizableColumnTypes}
+          customizableColumnsTypes={customizableColumnsTypes}
         />
       )}
       {!data?.length && <StarterPlaceholderMessage />}
