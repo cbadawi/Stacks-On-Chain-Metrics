@@ -7,16 +7,28 @@ import {
   FcPieChart,
   FcFrame,
 } from 'react-icons/fc';
+import { BiSolidBellRing } from 'react-icons/bi';
+
 import ChartContainer from '../charts/ChartContainer';
 import { FiSave, FiDownload } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
-import { ChartType } from '../charts/helpers';
+import { ChartType, CustomizableChartOptions } from '../charts/helpers';
+import CustomizeBarChart from './CustomizeBarChart';
+import StarterPlaceholderMessage from './StarterPlaceholderMessage';
 
 interface QueryVisualizationProps {
-  data: any;
+  data: any[];
+  customizableColumnTypes: CustomizableChartOptions[];
+  setCustomizableColumnTypes: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const QueryVisualization = ({ data }: QueryVisualizationProps) => {
+const QueryVisualization = ({
+  data,
+  customizableColumnTypes,
+  setCustomizableColumnTypes,
+}: QueryVisualizationProps) => {
+  // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
+  // whereas the barchart will have a combination of lines and chart but no brush
   const [chart, setChart] = useState<ChartType>(ChartType.table);
 
   const chartIcons = [
@@ -30,11 +42,22 @@ const QueryVisualization = ({ data }: QueryVisualizationProps) => {
 
   return (
     <div className='visualization-container relative my-12 flex w-full flex-col justify-center rounded-t-3xl bg-[#111111] px-5 py-4 md:px-0'>
-      <text>{chart}</text>
-      {data?.length && (
+      {!!data?.length && (
         <div className='icons-flex-container relative m-0 flex min-h-[4rem] flex-row items-center justify-between gap-2 pl-12 pr-12'>
-          <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
-            <FiSave />
+          <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
+            <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+              <FiSave />
+            </div>
+          </div>
+          <div className='tooltip tooltip-primary' data-tip='Download to CSV'>
+            <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+              <FiDownload />
+            </div>
+          </div>
+          <div className='tooltip tooltip-primary' data-tip='Create Alerts'>
+            <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+              <BiSolidBellRing />
+            </div>
           </div>
           {chartIcons.map((icon, index) => {
             return (
@@ -54,24 +77,24 @@ const QueryVisualization = ({ data }: QueryVisualizationProps) => {
           })}
         </div>
       )}
-      {data?.length && <ChartContainer data={data} chartType={chart} />}
-      {!data?.length && (
-        <div className='flex flex-col items-center justify-center'>
-          <p className='pb-2'>
-            Write your SQL query, or start from a template.
-          </p>
-          <p className='pb-2'>No prior experience needed.</p>
-          <div className='flex'>
-            <button className='btn btn-outline btn-primary'>
-              Read the docs
-            </button>
-            <button className='btn btn-primary ml-2'>
-              Start from a template
-            </button>
-          </div>
-        </div>
+      {!!data?.length && chart == ChartType.bar && (
+        <CustomizeBarChart
+          columnNames={Object.keys(data[0]).slice(1)}
+          customizableColumnTypes={customizableColumnTypes}
+          setCustomizableColumnTypes={setCustomizableColumnTypes}
+        />
       )}
-      <text>{JSON.stringify(data, null, 2)}</text>
+      {!!data?.length && (
+        <ChartContainer
+          data={data}
+          chartType={chart}
+          height={700}
+          width={900}
+          customizableColumnTypes={customizableColumnTypes}
+        />
+      )}
+      {!data?.length && <StarterPlaceholderMessage />}
+      <span>{JSON.stringify(data, null, 2)}</span>
     </div>
   );
 };

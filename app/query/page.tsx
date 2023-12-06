@@ -1,10 +1,17 @@
 'use client';
+// TODO keep page.tsx as a server component and move the form(query + viz) to its own client component
+// TODO add page title SSR'ed for SEO
+// TODO similarly SSR for the StarterPlaceholderMessage container
 
 import React, { useState } from 'react';
 import SqlEditor from '../components/SqlEditor';
 import QueryVisualization from '../components/query/QueryVisualization';
 import { stacksData2Array } from '../helpers/delet';
 import QueryErrorContainer from '../components/QueryErrorContainer';
+import {
+  CustomizableChartOptions,
+  getYAxesNamesFromData,
+} from '../components/charts/helpers';
 
 const DEFAULT_QUERY = `-- PostgreSQL
 select * from accounts limit 2`;
@@ -15,12 +22,15 @@ const Query = () => {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // TODO useState([]) once you get rid of stacksdata's shit
-  const [data, setData] = useState({});
+  // array containing the type of column. ex ['bar', 'bar', 'line']
+  const [customizableColumns, setCustomizableColumnTypes] = useState<
+    CustomizableChartOptions[]
+  >([]);
+  const [data, setData] = useState([]);
 
   const runQuery = async () => {
     setIsLoading(true);
-    setData({});
+    setData([]);
     setError('');
     const response = await fetch('https://api.stacksdata.info/v1/sql', {
       method: 'POST',
@@ -31,13 +41,22 @@ const Query = () => {
       body: query,
     });
     const json = stacksData2Array(await response.json());
-    response.status == 500 ? setError(json.message) : setData(json);
     setIsLoading(false);
+    if (response.status == 500) return setError(json.message);
+    setData(json);
+    // default for customizable charts is bar columns
+    if (json?.length)
+      setCustomizableColumnTypes(
+        getYAxesNamesFromData(json).map((col) => 'bar')
+      );
   };
 
   // TODO Error message container
   return (
     <div>
+      <h1 className='text-xl font-light text-white'>
+        stacks blockchain data analytics
+      </h1>
       <div className='relative mx-auto my-10 min-h-[350px] w-[95%]'>
         <SqlEditor
           query={query}
@@ -48,7 +67,11 @@ const Query = () => {
       </div>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <QueryVisualization data={data} />
+        <QueryVisualization
+          data={data}
+          customizableColumnTypes={customizableColumns}
+          setCustomizableColumnTypes={setCustomizableColumnTypes}
+        />
       </div>
     </div>
   );

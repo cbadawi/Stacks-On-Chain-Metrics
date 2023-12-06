@@ -5,6 +5,17 @@ import { useMemo } from 'react';
 // Types
 export type Scales = typeof scaleLinear | typeof scaleTime | typeof scaleBand;
 
+export type MarginObject = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
+export const customizableChartOptions = ['bar', 'line'];
+const names = [...customizableChartOptions] as const;
+export type CustomizableChartOptions = (typeof names)[number];
+
 export enum ChartType {
   'table',
   'line',
@@ -13,6 +24,25 @@ export enum ChartType {
   'treemap',
   'number',
 }
+
+// Functions
+
+export const getBarAndLineColNames = (
+  customizableColumnTypes: CustomizableChartOptions[],
+  yNames: string[]
+) => {
+  let barYNames: string[] = [];
+  let lineYNames: string[] = [];
+  customizableColumnTypes?.map((type, index) => {
+    if (type == 'bar') barYNames.push(yNames[index]);
+    if (type == 'line') lineYNames.push(yNames[index]);
+  });
+
+  return {
+    barYNames,
+    lineYNames,
+  };
+};
 
 //  Type Checking
 /**
@@ -39,23 +69,6 @@ export function formatAxisValue(value: any) {
 }
 
 // Scales
-export function getYScale(
-  data: any[],
-  yName: string,
-  yMax: number,
-  scale: typeof scaleLinear | typeof scaleTime
-) {
-  // TODO wrap scale in useMemo [yMax, data])
-  // https://react.dev/reference/react/useMemo#caveats
-  if (scale.name == 'createLinearScale')
-    return scale<number>({
-      range: [yMax, 0],
-      domain: [0, max(data, (d: any) => d[yName]) || 0],
-      nice: true,
-    });
-  // throw new Error(`Y scale not defined for ${yName}`);
-}
-
 export function getScaleCallback(
   data: any[],
   colName: string,
@@ -85,7 +98,7 @@ export function getXScale(
       range: [0, xMax],
       round: true,
       domain: data.map((d) => d[xName]),
-      padding: 0.4,
+      padding: 0.2,
     });
   if (scale.name == 'createLinearScale')
     return scaleLinear<number>({
@@ -105,6 +118,42 @@ export function getXScale(
   // throw new Error(`X scale not defined for ${xName}`);
 }
 
+export function getYScale(
+  data: any[],
+  yNames: string[],
+  yMax: number,
+  scale: typeof scaleLinear | typeof scaleTime,
+  chartType?: ChartType
+) {
+  // TODO wrap scale in useMemo [yMax, data]), these are probably high cost since its looping through all points several times
+  // https://react.dev/reference/react/useMemo#caveats
+  if (scale.name == 'createLinearScale') {
+    // in case of bar chart, the bars will stack on top of each other
+    // hence, we add(stack) all the y values before finding their max.
+    const maxY =
+      chartType == ChartType.bar
+        ? Math.max(
+            ...data.map((d) =>
+              [...yNames.map((key) => Number(d[key]))].reduce(
+                (acc, curr) => acc + curr
+              )
+            )
+          )
+        : Math.max(
+            ...data.map((d) => Math.max(...yNames.map((key) => Number(d[key]))))
+          );
+    return scale<number>({
+      range: [yMax, 0],
+      domain: [0, maxY || 0],
+      nice: true,
+    });
+  }
+  // throw new Error(`Y scale not defined for ${yName}`);
+}
+
+export function getYAxesNamesFromData(data: any[]) {
+  return data?.length ? Object.keys(data[0]).slice(1) : [];
+}
 // Colors
 export const background = '#3b6978';
 export const background2 = '#204051';

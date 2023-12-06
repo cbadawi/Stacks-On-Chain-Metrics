@@ -1,12 +1,22 @@
 import { Bar } from '@visx/shape';
-import { LinePath } from '@visx/shape';
+import { LinePath, BarStack } from '@visx/shape';
 import { GridColumns } from '@visx/grid';
 import React from 'react';
 import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom, AxisScale } from '@visx/axis';
 import { LinearGradient } from '@visx/gradient';
+import { scaleOrdinal } from '@visx/scale';
+
 import Watermark from '../Watermark';
-import { parseValue, ChartType } from './helpers';
+import {
+  parseValue,
+  ChartType,
+  colors,
+  MarginObject,
+  customizableChartOptions,
+  CustomizableChartOptions,
+  getBarAndLineColNames,
+} from './helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
 
 // Initialize some variables
@@ -44,6 +54,7 @@ const renderData = (
   data: any[],
   xScale: AxisScale<number> | ScaleBand<string>,
   yScale: AxisScale<number>,
+  xMax?: number,
   yMax?: number,
   localPoint?: any,
   showTooltip?: any,
@@ -53,7 +64,8 @@ const renderData = (
       | React.MouseEvent<SVGRectElement | SVGPathElement>
   ) => void,
   hideTooltip?: () => void,
-  yNames?: string[]
+  yNames?: string[],
+  customizableColumnTypes?: CustomizableChartOptions[]
 ) => {
   switch (Number(chartType)) {
     case ChartType.line:
@@ -72,37 +84,74 @@ const renderData = (
           />
         ));
     case ChartType.bar:
-      if (yNames && yNames.length && yMax)
-        return data.map((d, index) => {
-          const barWidth = (xScale as ScaleBand<string>).bandwidth();
-          const barHeight = yMax - (yScale(d[yNames[0]]) ?? 0);
-          const barX = xScale(d[xName]);
-          const barY = yMax - barHeight;
-          return (
-            <Bar
-              key={`bar-${index}`}
-              x={barX}
-              y={barY}
-              width={barWidth}
-              height={barHeight}
-              fill='#5844C2'
-              onMouseMove={(
-                event:
-                  | React.TouchEvent<SVGRectElement | SVGPathElement>
-                  | React.MouseEvent<SVGRectElement | SVGPathElement>
-              ) => {
-                const eventSvgCoords = localPoint(event);
-                const left = barX;
-                showTooltip({
-                  tooltipData: d,
-                  tooltipTop: eventSvgCoords?.y,
-                  tooltipLeft: left,
-                });
+      if (!yNames) return;
+      const names = [...yNames] as const;
+      type YNamesUnion = (typeof names)[number];
+      const colorScale = scaleOrdinal<YNamesUnion, string>({
+        domain: yNames,
+        range: colors.slice(0, yNames!.length),
+      });
+      let barYNames: string[] = [];
+      let lineYNames: string[] = [];
+      if (customizableColumnTypes)
+        ({ barYNames, lineYNames } = getBarAndLineColNames(
+          customizableColumnTypes,
+          yNames
+        ));
+      const bars = barYNames?.length ? barYNames : yNames;
+      return (
+        <>
+          {bars?.length && (
+            <BarStack
+              data={data}
+              keys={bars}
+              x={(d: any) => d[xName]}
+              xScale={xScale}
+              yScale={yScale}
+              color={colorScale}
+            >
+              {(barStacks) => {
+                return barStacks.map((barStack, index) =>
+                  barStack.bars.map((bar, barIndex) => (
+                    <rect
+                      key={`bar-${index}-${barIndex}`}
+                      x={bar.x}
+                      y={bar.y}
+                      height={bar.height}
+                      width={bar.width}
+                      fill={bar.color}
+                      onMouseMove={(
+                        event:
+                          | React.TouchEvent<SVGRectElement | SVGPathElement>
+                          | React.MouseEvent<SVGRectElement | SVGPathElement>
+                      ) => {
+                        const eventSvgCoords = localPoint(event);
+                        const left = bar.x;
+                        showTooltip({
+                          tooltipData: bar.bar.data,
+                          tooltipTop: eventSvgCoords?.y,
+                          tooltipLeft: left + bar.width,
+                        });
+                      }}
+                      onMouseLeave={() => hideTooltip && hideTooltip()}
+                    />
+                  ))
+                );
               }}
-              onMouseLeave={() => hideTooltip && hideTooltip()}
-            />
-          );
-        });
+            </BarStack>
+          )}
+          {lineYNames?.length &&
+            lineYNames.map((colName, i) => (
+              <LinePath
+                key={i}
+                data={data}
+                x={(d) => xScale(parseValue(d[xName])) || 0}
+                y={(d) => yScale(d[colName]) || 0}
+                stroke='#fff'
+              />
+            ))}
+        </>
+      );
   }
 };
 
@@ -110,14 +159,16 @@ interface BaseChartProps {
   chartType?: ChartType;
   xName: string;
   yNames?: string[];
+  customizableColumnTypes?: CustomizableChartOptions[];
   data: any[];
   gradientColor: string;
   xScale: AxisScale<number> | ScaleBand<number>;
   yScale: AxisScale<number>;
   height: number;
   width: number;
+  xMax?: number;
   yMax: number;
-  margin: { top: number; right: number; bottom: number; left: number };
+  margin: MarginObject;
   top?: number;
   handleTooltip?: any;
   hideTooltip?: () => void;
@@ -131,12 +182,14 @@ interface BaseChartProps {
 
 export default function BaseChart({
   chartType = ChartType.line,
-  yNames, // column names that contain the y-values
   xName, // name on the x-axis
+  yNames, // column names that contain the y-values
+  customizableColumnTypes,
   data,
   gradientColor,
   height,
   width,
+  xMax,
   yMax,
   margin,
   xScale,
@@ -179,12 +232,14 @@ export default function BaseChart({
         data,
         xScale,
         yScale,
+        xMax,
         yMax,
         localPoint,
         showTooltip,
         handleTooltip,
         hideTooltip,
-        yNames
+        yNames,
+        customizableColumnTypes
       )}
       <Watermark height={height} width={width} />
       {!hideBottomAxis && (

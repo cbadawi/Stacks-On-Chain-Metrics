@@ -1,5 +1,11 @@
 import React from 'react';
-import { ChartType, getScaleCallback, getXScale, getYScale } from './helpers';
+import {
+  ChartType,
+  CustomizableChartOptions,
+  getScaleCallback,
+  getXScale,
+  getYScale,
+} from './helpers';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import BaseChart from './BaseChart';
 import { localPoint } from '@visx/event';
@@ -7,7 +13,8 @@ import { localPoint } from '@visx/event';
 interface BarChartProps {
   filteredData: any[];
   xName: string;
-  yName: string;
+  yNames: string[];
+  customizableColumnTypes: CustomizableChartOptions[];
   chartType: ChartType;
   xMax: number;
   yMax: number;
@@ -21,7 +28,8 @@ interface BarChartProps {
 const BarChart = ({
   filteredData,
   xName,
-  yName,
+  yNames,
+  customizableColumnTypes,
   chartType,
   xMax,
   yMax,
@@ -35,7 +43,8 @@ const BarChart = ({
   const background2 = '#af8baf';
 
   const xScaleCallback = getScaleCallback(filteredData, xName, 'x', chartType)!;
-  const yScaleCallback = getScaleCallback(filteredData, yName, 'y') as
+  // Getting the scale for just the first Y col, for simplicity
+  const yScaleCallback = getScaleCallback(filteredData, yNames[0], 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
   const xScale = getXScale(
@@ -46,16 +55,24 @@ const BarChart = ({
     'x',
     chartType
   )!;
-  const yScale = getYScale(filteredData, yName, yMax, yScaleCallback)!;
+  const yScale = getYScale(
+    filteredData,
+    yNames,
+    yMax,
+    yScaleCallback,
+    chartType
+  )!;
   return (
     <BaseChart
       xName={xName}
-      yNames={[yName]}
+      yNames={yNames}
+      customizableColumnTypes={customizableColumnTypes}
       chartType={chartType}
       data={filteredData}
       height={Number(height)}
       width={Number(width)}
       margin={{ ...margin, bottom: topChartBottomMargin }}
+      xMax={xMax}
       yMax={yMax}
       xScale={xScale!}
       yScale={yScale!}

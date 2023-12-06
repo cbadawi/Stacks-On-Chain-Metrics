@@ -1,34 +1,27 @@
 'use client';
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { localPoint } from '@visx/event';
+import React, { useState } from 'react';
 import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import {
   ChartType,
+  CustomizableChartOptions,
   accentColorDark,
-  colors,
-  getScaleCallback,
-  getXScale,
-  getYScale,
-  parseValue,
 } from './helpers';
 import Table from './Table';
 import Pie from './Pie';
-import { AxisScale } from '@visx/axis';
-import { ScaleBand } from '@visx/vendor/d3-scale';
-import BaseChart from './BaseChart';
 import getBrush from './getBrush';
-import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import TooltipLine from './TooltipLine';
 import TooltipData from './TooltipData';
-
 import LineChart from './LineChart';
 import BarChart from './BarChart';
 
 interface ChartContainerProps {
   chartType: ChartType;
   data: any[];
+  height: number;
+  width: number;
+  customizableColumnTypes: CustomizableChartOptions[];
 }
 
 const getChartComponent = (
@@ -36,6 +29,7 @@ const getChartComponent = (
   filteredData: any[],
   xName: string,
   yNames: string[],
+  customizableColumnTypes: string[],
   title: string,
   height: number | string,
   width: number | string,
@@ -47,7 +41,6 @@ const getChartComponent = (
   showTooltip?: any,
   hideTooltip?: () => void
 ) => {
-  const firstYName = yNames[0];
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
   const yMax = Math.max(topChartHeight, 0);
 
@@ -72,7 +65,8 @@ const getChartComponent = (
         <BarChart
           filteredData={filteredData}
           xName={xName}
-          yName={yNames[0]}
+          yNames={yNames}
+          customizableColumnTypes={customizableColumnTypes}
           chartType={chartType}
           xMax={xMax}
           yMax={yMax}
@@ -96,7 +90,13 @@ const getChartComponent = (
   }
 };
 
-const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
+const ChartContainer = ({
+  chartType,
+  data,
+  height,
+  width,
+  customizableColumnTypes,
+}: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
   // Error: Hydration failed because the initial UI does not match what was rendered on the server.
   // Warning: Expected server HTML to contain a matching <div> in <div>.
@@ -133,9 +133,6 @@ const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
   const GRADIENT_ID = 'brush_gradient';
   const background = '#584153';
   const background2 = '#af8baf';
-
-  const height = 700;
-  const width = 900;
 
   const margin = {
     top: 50,
@@ -176,7 +173,6 @@ const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
     background2,
   });
 
-  console.log('tooltipData && showTooltipData', tooltipData, showTooltipData);
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
       {chartType != ChartType.table && (
@@ -202,6 +198,7 @@ const ChartContainer = ({ chartType, data }: ChartContainerProps) => {
                 filteredData,
                 xName,
                 yNames,
+                customizableColumnTypes,
                 '',
                 '700',
                 '900',
