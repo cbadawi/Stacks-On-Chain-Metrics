@@ -8,6 +8,7 @@ import {
   CustomizableChartOptions,
   LeftRight,
   accentColorDark,
+  createChartConfigs,
 } from './helpers';
 import Table from './Table';
 import Pie from './Pie';
@@ -64,13 +65,18 @@ const getChartComponent = (
         />
       );
     case ChartType.bar:
+      // Bar chart is the customizable chart
+      const chartConfigs = createChartConfigs(
+        yNames,
+        customizableColumnsTypes,
+        customizableAxesTypes
+      );
       return (
         <BarChart
           filteredData={filteredData}
           xName={xName}
           yNames={yNames}
-          customizableColumnsTypes={customizableColumnsTypes}
-          customizableAxesTypes={customizableAxesTypes}
+          chartConfigs={chartConfigs}
           chartType={chartType}
           xMax={xMax}
           yMax={yMax}
@@ -156,6 +162,7 @@ const ChartContainer = ({
   const columns = Object.keys(data[0]);
   const xName = columns[0];
   const yNames = columns.slice(1);
+  console.log('chartcontaineryNames', yNames);
 
   const showTooltipData =
     chartType == ChartType.line || chartType == ChartType.bar;

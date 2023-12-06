@@ -12,7 +12,7 @@ import {
   ChartType,
   CustomizableChartOptions,
   LeftRight,
-  getYAxesNamesFromData,
+  getYColNamesFromData,
 } from '../components/charts/helpers';
 
 const DEFAULT_QUERY = `-- PostgreSQL
@@ -52,10 +52,10 @@ const Query = () => {
     // default for customizable charts is bar columns, and left axes
     if (json?.length) {
       setCustomizableColumnsTypes(
-        getYAxesNamesFromData(json).map((col) => ChartType.bar)
+        getYColNamesFromData(json).map((col) => ChartType.bar)
       );
       setCustomizableAxesTypes(
-        getYAxesNamesFromData(json).map((col) => LeftRight.left)
+        getYColNamesFromData(json).map((col) => LeftRight.left)
       );
     }
   };

@@ -12,6 +12,13 @@ export type MarginObject = {
   left: number;
 };
 
+export type ChartConfigs = {
+  lineColumnNames: string[];
+  barColumnNames: string[];
+  leftAxisColumnNames: string[];
+  rightAxisColumnNames: string[];
+};
+
 export const customizableChartOptions = ['bar', 'line'];
 
 export type CustomizableChartOptions = Exclude<
@@ -51,6 +58,32 @@ export const getBarAndLineColNames = (
   return {
     barYNames,
     lineYNames,
+  };
+};
+
+export const createChartConfigs = (
+  yNames: string[],
+  customizableColumnsTypes: CustomizableChartOptions[],
+  customizableAxesTypes: LeftRight[]
+): ChartConfigs => {
+  const leftAxisColumnNames = yNames.filter(
+    (_, index) => customizableAxesTypes[index] == LeftRight.left
+  );
+  const rightAxisColumnNames = yNames.filter(
+    (_, index) => customizableAxesTypes[index] == LeftRight.right
+  );
+
+  const lineColumnNames = yNames.filter(
+    (_, index) => customizableColumnsTypes[index] == ChartType.line
+  );
+  const barColumnNames = yNames.filter(
+    (_, index) => customizableColumnsTypes[index] == ChartType.bar
+  );
+  return {
+    lineColumnNames,
+    barColumnNames,
+    leftAxisColumnNames,
+    rightAxisColumnNames,
   };
 };
 
@@ -162,9 +195,10 @@ export function getYScale(
   // throw new Error(`Y scale not defined for ${yName}`);
 }
 
-export function getYAxesNamesFromData(data: any[]) {
+export function getYColNamesFromData(data: any[]) {
   return data?.length ? Object.keys(data[0]).slice(1) : [];
 }
+
 // Colors
 export const background = '#3b6978';
 export const background2 = '#204051';

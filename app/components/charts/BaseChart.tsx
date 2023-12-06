@@ -1,4 +1,3 @@
-import { Bar } from '@visx/shape';
 import { LinePath, BarStack } from '@visx/shape';
 import { GridColumns } from '@visx/grid';
 import React from 'react';
@@ -16,6 +15,7 @@ import {
   CustomizableChartOptions,
   getBarAndLineColNames,
   LeftRight,
+  ChartConfigs,
 } from './helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
 
@@ -77,11 +77,15 @@ const renderData = (
   ) => void,
   hideTooltip?: () => void,
   yNames?: string[],
-  customizableColumnsTypes?: CustomizableChartOptions[]
+  chartConfigs?: ChartConfigs
 ) => {
   switch (Number(chartType)) {
     case ChartType.line:
-      if (yNames && yNames.length && yScaleLeft)
+      console.log(
+        'yNames && yNames.length && yScale',
+        yNames && yNames?.length && yScale
+      );
+      if (yNames && yNames?.length && yScale)
         return yNames.map((colName, i) => (
           <LinePath
             key={i}
@@ -91,7 +95,7 @@ const renderData = (
             onMouseMove={handleTooltip}
             onMouseLeave={() => hideTooltip && hideTooltip()}
             x={(d) => xScale(parseValue(d[xName])) || 0}
-            y={(d) => yScaleLeft(d[colName]) || 0}
+            y={(d) => yScale(d[colName]) || 0}
             stroke='#fff'
           />
         ));
@@ -104,23 +108,28 @@ const renderData = (
         domain: yNames,
         range: colors.slice(0, yNames!.length),
       });
-      let barYNames: string[] = [];
-      let lineYNames: string[] = [];
-      if (customizableColumnsTypes)
-        ({ barYNames, lineYNames } = getBarAndLineColNames(
-          customizableColumnsTypes,
-          yNames
-        ));
-      const bars = barYNames?.length ? barYNames : [];
+
+      const barNames = chartConfigs?.barColumnNames?.length
+        ? chartConfigs.barColumnNames
+        : [];
+      const lineNames = chartConfigs?.lineColumnNames?.length
+        ? chartConfigs.lineColumnNames
+        : [];
+      const rightAxesNames = chartConfigs?.rightAxisColumnNames?.length
+        ? chartConfigs.rightAxisColumnNames
+        : [];
+      const leftAxesNames = chartConfigs?.leftAxisColumnNames?.length
+        ? chartConfigs.leftAxisColumnNames
+        : [];
       return (
         <>
-          {bars?.length && (
+          {barNames?.length && (
             <BarStack
               data={data}
-              keys={bars}
+              keys={barNames}
               x={(d: any) => d[xName]}
               xScale={xScale}
-              yScale={yScale}
+              yScale={yScale} // set yScale here since it covers all columns
               color={colorScale}
             >
               {(barStacks) => {
@@ -153,15 +162,19 @@ const renderData = (
               }}
             </BarStack>
           )}
-          {lineYNames?.length &&
-            yScaleRight &&
-            yScaleLeft &&
-            lineYNames.map((colName, i) => (
+          {lineNames.length &&
+            lineNames.map((colName, i) => (
               <LinePath
                 key={i}
                 data={data}
                 x={(d) => xScale(parseValue(d[xName])) || 0}
-                y={(d) => yScaleRight(d[colName]) || 0}
+                y={(d) =>
+                  yScaleRight && rightAxesNames.find((c) => c == colName)
+                    ? yScaleRight(d[colName]) || 0
+                    : yScaleLeft && leftAxesNames.find((c) => c == colName)
+                      ? yScaleLeft(d[colName]) || 0
+                      : 0
+                }
                 stroke='#fff'
               />
             ))}
@@ -174,8 +187,7 @@ interface BaseChartProps {
   chartType?: ChartType;
   xName: string;
   yNames?: string[];
-  customizableColumnsTypes?: CustomizableChartOptions[];
-  customizableAxesTypes?: LeftRight[];
+  chartConfigs?: ChartConfigs;
   data: any[];
   gradientColor: string;
   xScale: AxisScale<number> | ScaleBand<number>;
@@ -202,8 +214,7 @@ export default function BaseChart({
   chartType = ChartType.line,
   xName, // name on the x-axis
   yNames, // column names that contain the y-values
-  customizableColumnsTypes,
-  customizableAxesTypes,
+  chartConfigs,
   data,
   gradientColor,
   height,
@@ -226,8 +237,8 @@ export default function BaseChart({
   children, // used for the brush chart
 }: BaseChartProps) {
   if (width < 10) return null;
-  hideVerticalAxis = hideVerticalAxis || Boolean(!yNames?.length); // hide y axis if more than 1 y column or none
-  console.table(width);
+  hideVerticalAxis = hideVerticalAxis; //|| yNames?.length == 0;
+  console.log('hideVerticalAxishideVerticalAxis', hideVerticalAxis, yNames);
   return (
     <Group left={margin.left} top={top || margin.top}>
       <LinearGradient
@@ -263,7 +274,7 @@ export default function BaseChart({
         handleTooltip,
         hideTooltip,
         yNames,
-        customizableColumnsTypes
+        chartConfigs
       )}
       <Watermark height={height} width={width} />
       {!hideBottomAxis && (
@@ -279,9 +290,9 @@ export default function BaseChart({
           labelProps={axisLabelProps as any}
         />
       )}
-      {!hideVerticalAxis && yScaleLeft && (
+      {!hideVerticalAxis && (yScale || yScaleLeft) && (
         <AxisLeft
-          scale={yScaleLeft}
+          scale={yScaleLeft || yScale}
           numTicks={5}
           stroke={axisColor}
           tickStroke={axisColor}
@@ -293,7 +304,11 @@ export default function BaseChart({
                 ? v.slice(0, 7) + '..'
                 : v
           }
-          label={!hideVerticalAxis && yNames?.length ? yNames![0] : ''}
+          label={
+            !hideVerticalAxis && chartConfigs?.leftAxisColumnNames?.length
+              ? chartConfigs.leftAxisColumnNames![0]
+              : ''
+          }
           labelProps={axisLabelProps as any}
         />
       )}
@@ -312,7 +327,11 @@ export default function BaseChart({
                 ? v.slice(0, 7) + '..'
                 : v
           }
-          label={!hideVerticalAxis && yNames?.length ? yNames![0] : ''}
+          label={
+            !hideVerticalAxis && chartConfigs?.rightAxisColumnNames?.length
+              ? chartConfigs.rightAxisColumnNames![0]
+              : ''
+          }
           labelProps={axisLabelProps as any}
         />
       )}

@@ -5,9 +5,9 @@ import { FaGithub } from 'react-icons/fa';
 
 const Options = () => {
   return (
-    <div className='dropdown dropdown-end dropdown-top dropdown-hover fixed bottom-0 right-0 z-50 flex'>
+    <div className='dropdown dropdown-end dropdown-top dropdown-hover fixed bottom-2 right-2 z-50 flex'>
       <div tabIndex={0} role='button' className='btn m-1'>
-        <CiMenuKebab />
+        <CiMenuKebab colot='white' size={25} />
       </div>
       <ul
         tabIndex={0}

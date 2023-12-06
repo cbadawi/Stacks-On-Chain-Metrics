@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ChartConfigs,
   ChartType,
   CustomizableChartOptions,
   LeftRight,
@@ -16,8 +17,7 @@ interface BarChartProps {
   filteredData: any[];
   xName: string;
   yNames: string[];
-  customizableColumnsTypes: CustomizableChartOptions[];
-  customizableAxesTypes: LeftRight[];
+  chartConfigs: ChartConfigs;
   chartType: ChartType;
   xMax: number;
   yMax: number;
@@ -32,8 +32,7 @@ const BarChart = ({
   filteredData,
   xName,
   yNames,
-  customizableColumnsTypes,
-  customizableAxesTypes,
+  chartConfigs,
   chartType,
   xMax,
   yMax,
@@ -58,22 +57,18 @@ const BarChart = ({
     chartType
   )!;
 
-  const leftAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == LeftRight.left
-  );
-  const rightAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == LeftRight.right
-  );
-
+  const yScaleCallback = getScaleCallback(filteredData, yNames[0], 'y') as
+    | typeof scaleLinear
+    | typeof scaleTime;
   const yScaleLeftCallback = getScaleCallback(
     filteredData,
-    leftAxisColumnNames[0], // TODO checking only the first column's type is fragile and might break with un-knowing users
+    chartConfigs.leftAxisColumnNames[0], // TODO checking only the first column's type is fragile and might break with un-knowing users
     'y'
   ) as typeof scaleLinear | typeof scaleTime;
 
   const yScaleRightCallback = getScaleCallback(
     filteredData,
-    rightAxisColumnNames[0],
+    chartConfigs.rightAxisColumnNames[0],
     'y'
   ) as typeof scaleLinear | typeof scaleTime;
 
@@ -81,7 +76,7 @@ const BarChart = ({
     filteredData,
     yNames,
     yMax,
-    yScaleLeftCallback,
+    yScaleCallback,
     chartType
   )!;
 
@@ -94,37 +89,29 @@ const BarChart = ({
     | ScaleLinear<number, number, never>
     | ScaleTime<number, number, never>
     | undefined;
-  if (leftAxisColumnNames?.length)
+  if (chartConfigs.leftAxisColumnNames?.length)
     yScaleLeft = getYScale(
       filteredData,
-      leftAxisColumnNames,
+      chartConfigs.leftAxisColumnNames,
       yMax,
       yScaleLeftCallback,
       chartType
     )!;
 
-  if (rightAxisColumnNames?.length)
+  if (chartConfigs.rightAxisColumnNames?.length)
     yScaleRight = getYScale(
       filteredData,
-      rightAxisColumnNames,
+      chartConfigs.rightAxisColumnNames,
       yMax,
       yScaleRightCallback,
       ChartType.line
     )!;
 
-  console.log(
-    leftAxisColumnNames,
-    yScaleLeftCallback.name,
-    rightAxisColumnNames,
-    yScaleRightCallback?.name
-  );
-
   return (
     <BaseChart
       xName={xName}
       yNames={yNames}
-      customizableColumnsTypes={customizableColumnsTypes}
-      customizableAxesTypes={customizableAxesTypes}
+      chartConfigs={chartConfigs}
       chartType={chartType}
       data={filteredData}
       height={Number(height)}
