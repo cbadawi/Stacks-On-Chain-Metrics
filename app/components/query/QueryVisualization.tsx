@@ -12,7 +12,11 @@ import { BiSolidBellRing } from 'react-icons/bi';
 import ChartContainer from '../charts/ChartContainer';
 import { FiSave, FiDownload } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
-import { ChartType, CustomizableChartOptions } from '../charts/helpers';
+import {
+  ChartType,
+  CustomizableChartOptions,
+  LeftRight,
+} from '../charts/helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import StarterPlaceholderMessage from './StarterPlaceholderMessage';
 
@@ -22,12 +26,16 @@ interface QueryVisualizationProps {
   setCustomizableColumnsTypes: React.Dispatch<
     React.SetStateAction<CustomizableChartOptions[]>
   >;
+  customizableAxesTypes: LeftRight[];
+  setCustomizableAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
 }
 
 const QueryVisualization = ({
   data,
   customizableColumnsTypes,
   setCustomizableColumnsTypes,
+  customizableAxesTypes,
+  setCustomizableAxesTypes,
 }: QueryVisualizationProps) => {
   // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
   // whereas the barchart will have a combination of lines and chart but no brush
@@ -84,6 +92,8 @@ const QueryVisualization = ({
           columnNames={Object.keys(data[0]).slice(1)}
           customizableColumnTypes={customizableColumnsTypes}
           setCustomizableColumnsTypes={setCustomizableColumnsTypes}
+          customizableAxesTypes={customizableAxesTypes}
+          setCustomizableAxesTypes={setCustomizableAxesTypes}
         />
       )}
       {!!data?.length && (
@@ -93,6 +103,7 @@ const QueryVisualization = ({
           height={700}
           width={900}
           customizableColumnsTypes={customizableColumnsTypes}
+          customizableAxesTypes={customizableAxesTypes}
         />
       )}
       {!data?.length && <StarterPlaceholderMessage />}

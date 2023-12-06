@@ -152,7 +152,7 @@ const getBrush = ({
         top={topChartHeight + topChartBottomMargin + (margin?.top || 0)}
         gradientColor={background2}
         hideBottomAxis={true}
-        hideLeftAxis={true}
+        hideVerticalAxis={true}
       >
         <PatternLines
           id={PATTERN_ID}

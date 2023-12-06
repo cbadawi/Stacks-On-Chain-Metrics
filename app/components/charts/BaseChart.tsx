@@ -3,7 +3,7 @@ import { LinePath, BarStack } from '@visx/shape';
 import { GridColumns } from '@visx/grid';
 import React from 'react';
 import { Group } from '@visx/group';
-import { AxisLeft, AxisBottom, AxisScale } from '@visx/axis';
+import { AxisLeft, AxisBottom, AxisScale, AxisRight } from '@visx/axis';
 import { LinearGradient } from '@visx/gradient';
 import { scaleOrdinal } from '@visx/scale';
 
@@ -13,9 +13,9 @@ import {
   ChartType,
   colors,
   MarginObject,
-  customizableChartOptions,
   CustomizableChartOptions,
   getBarAndLineColNames,
+  LeftRight,
 } from './helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
 
@@ -29,13 +29,23 @@ const axisBottomTickLabelProps = {
   angle: 50,
   fill: axisColor,
 };
-export const axisLeftTickLabelProps = {
-  dx: '-0.25em',
+
+const axisVerticalTickLabelProps = {
   dy: '0.25em',
   fontFamily: 'Arial',
-  fontSize: 10,
+  fontSize: 7,
   textAnchor: 'end' as const,
   fill: axisColor,
+};
+
+export const axisLeftTickLabelProps = {
+  dx: '-0.25em',
+  ...axisVerticalTickLabelProps,
+};
+
+export const axisRightTickLabelProps = {
+  dx: '1.5em',
+  ...axisVerticalTickLabelProps,
 };
 
 const axisLabelProps = {
@@ -54,6 +64,8 @@ const renderData = (
   data: any[],
   xScale: AxisScale<number> | ScaleBand<string>,
   yScale: AxisScale<number>,
+  yScaleLeft?: AxisScale<number>,
+  yScaleRight?: AxisScale<number>,
   xMax?: number,
   yMax?: number,
   localPoint?: any,
@@ -69,7 +81,7 @@ const renderData = (
 ) => {
   switch (Number(chartType)) {
     case ChartType.line:
-      if (yNames && yNames.length)
+      if (yNames && yNames.length && yScaleLeft)
         return yNames.map((colName, i) => (
           <LinePath
             key={i}
@@ -79,12 +91,13 @@ const renderData = (
             onMouseMove={handleTooltip}
             onMouseLeave={() => hideTooltip && hideTooltip()}
             x={(d) => xScale(parseValue(d[xName])) || 0}
-            y={(d) => yScale(d[colName]) || 0}
+            y={(d) => yScaleLeft(d[colName]) || 0}
             stroke='#fff'
           />
         ));
     case ChartType.bar:
-      if (!yNames) return;
+      if (!yNames || !yScale) return;
+      if (!yScaleLeft && !yScaleRight) return;
       const names = [...yNames] as const;
       type YNamesUnion = (typeof names)[number];
       const colorScale = scaleOrdinal<YNamesUnion, string>({
@@ -98,7 +111,7 @@ const renderData = (
           customizableColumnsTypes,
           yNames
         ));
-      const bars = barYNames?.length ? barYNames : yNames;
+      const bars = barYNames?.length ? barYNames : [];
       return (
         <>
           {bars?.length && (
@@ -141,12 +154,14 @@ const renderData = (
             </BarStack>
           )}
           {lineYNames?.length &&
+            yScaleRight &&
+            yScaleLeft &&
             lineYNames.map((colName, i) => (
               <LinePath
                 key={i}
                 data={data}
                 x={(d) => xScale(parseValue(d[xName])) || 0}
-                y={(d) => yScale(d[colName]) || 0}
+                y={(d) => yScaleRight(d[colName]) || 0}
                 stroke='#fff'
               />
             ))}
@@ -160,10 +175,13 @@ interface BaseChartProps {
   xName: string;
   yNames?: string[];
   customizableColumnsTypes?: CustomizableChartOptions[];
+  customizableAxesTypes?: LeftRight[];
   data: any[];
   gradientColor: string;
   xScale: AxisScale<number> | ScaleBand<number>;
   yScale: AxisScale<number>;
+  yScaleLeft?: AxisScale<number>;
+  yScaleRight?: AxisScale<number>;
   height: number;
   width: number;
   xMax?: number;
@@ -173,7 +191,7 @@ interface BaseChartProps {
   handleTooltip?: any;
   hideTooltip?: () => void;
   hideBottomAxis?: boolean;
-  hideLeftAxis?: boolean;
+  hideVerticalAxis?: boolean;
   localPoint?: any;
   showTooltip?: any;
   showGrid?: boolean;
@@ -185,6 +203,7 @@ export default function BaseChart({
   xName, // name on the x-axis
   yNames, // column names that contain the y-values
   customizableColumnsTypes,
+  customizableAxesTypes,
   data,
   gradientColor,
   height,
@@ -194,18 +213,21 @@ export default function BaseChart({
   margin,
   xScale,
   yScale,
+  yScaleLeft,
+  yScaleRight,
   top,
   handleTooltip,
   hideTooltip,
   hideBottomAxis,
-  hideLeftAxis,
+  hideVerticalAxis,
   localPoint,
   showTooltip,
   showGrid,
   children, // used for the brush chart
 }: BaseChartProps) {
   if (width < 10) return null;
-  hideLeftAxis = hideLeftAxis || Boolean(!yNames?.length); // hide y axis if more than 1 y column or none
+  hideVerticalAxis = hideVerticalAxis || Boolean(!yNames?.length); // hide y axis if more than 1 y column or none
+  console.table(width);
   return (
     <Group left={margin.left} top={top || margin.top}>
       <LinearGradient
@@ -232,6 +254,8 @@ export default function BaseChart({
         data,
         xScale,
         yScale,
+        yScaleLeft,
+        yScaleRight,
         xMax,
         yMax,
         localPoint,
@@ -255,9 +279,9 @@ export default function BaseChart({
           labelProps={axisLabelProps as any}
         />
       )}
-      {!hideLeftAxis && (
+      {!hideVerticalAxis && yScaleLeft && (
         <AxisLeft
-          scale={yScale}
+          scale={yScaleLeft}
           numTicks={5}
           stroke={axisColor}
           tickStroke={axisColor}
@@ -269,7 +293,26 @@ export default function BaseChart({
                 ? v.slice(0, 7) + '..'
                 : v
           }
-          label={!hideLeftAxis && yNames?.length ? yNames![0] : ''}
+          label={!hideVerticalAxis && yNames?.length ? yNames![0] : ''}
+          labelProps={axisLabelProps as any}
+        />
+      )}
+      {!hideVerticalAxis && yScaleRight && (
+        <AxisRight
+          scale={yScaleRight}
+          numTicks={5}
+          stroke={axisColor}
+          left={width - margin.right - margin.left}
+          tickStroke={axisColor}
+          tickLabelProps={axisRightTickLabelProps}
+          tickFormat={(v) =>
+            !isNaN(v) && v > 1000
+              ? Number(v).toExponential()
+              : v.length > 10
+                ? v.slice(0, 7) + '..'
+                : v
+          }
+          label={!hideVerticalAxis && yNames?.length ? yNames![0] : ''}
           labelProps={axisLabelProps as any}
         />
       )}

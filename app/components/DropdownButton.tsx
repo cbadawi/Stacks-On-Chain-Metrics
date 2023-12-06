@@ -21,10 +21,10 @@ const DropdownButton = ({
       </div>
       <ul
         tabIndex={0}
-        className='menu dropdown-content z-[1] rounded-bl-box bg-base-100 text-white shadow'
+        className='menu dropdown-content relative z-20 rounded-bl-box bg-base-100 text-white shadow'
       >
         {options.map((option, index) => (
-          <li key={'li-' + index}>
+          <li key={'li-' + index} className='relative z-50'>
             <a
               key={'a-' + index}
               onClick={() => {

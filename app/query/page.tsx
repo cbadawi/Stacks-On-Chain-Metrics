@@ -11,6 +11,7 @@ import QueryErrorContainer from '../components/QueryErrorContainer';
 import {
   ChartType,
   CustomizableChartOptions,
+  LeftRight,
   getYAxesNamesFromData,
 } from '../components/charts/helpers';
 
@@ -26,6 +27,9 @@ const Query = () => {
   // array containing the type of column. ex ['bar', 'bar', 'line']
   const [customizableColumnsTypes, setCustomizableColumnsTypes] = useState<
     CustomizableChartOptions[]
+  >([]);
+  const [customizableAxesTypes, setCustomizableAxesTypes] = useState<
+    LeftRight[]
   >([]);
   const [data, setData] = useState([]);
 
@@ -45,11 +49,15 @@ const Query = () => {
     setIsLoading(false);
     if (response.status == 500) return setError(json.message);
     setData(json);
-    // default for customizable charts is bar columns
-    if (json?.length)
+    // default for customizable charts is bar columns, and left axes
+    if (json?.length) {
       setCustomizableColumnsTypes(
         getYAxesNamesFromData(json).map((col) => ChartType.bar)
       );
+      setCustomizableAxesTypes(
+        getYAxesNamesFromData(json).map((col) => LeftRight.left)
+      );
+    }
   };
 
   // TODO Error message container
@@ -72,6 +80,8 @@ const Query = () => {
           data={data}
           customizableColumnsTypes={customizableColumnsTypes}
           setCustomizableColumnsTypes={setCustomizableColumnsTypes}
+          customizableAxesTypes={customizableAxesTypes}
+          setCustomizableAxesTypes={setCustomizableAxesTypes}
         />
       </div>
     </div>

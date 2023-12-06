@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ChartType,
   CustomizableChartOptions,
+  LeftRight,
   getScaleCallback,
   getXScale,
   getYScale,
@@ -9,12 +10,14 @@ import {
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import BaseChart from './BaseChart';
 import { localPoint } from '@visx/event';
+import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
 
 interface BarChartProps {
   filteredData: any[];
   xName: string;
   yNames: string[];
   customizableColumnsTypes: CustomizableChartOptions[];
+  customizableAxesTypes: LeftRight[];
   chartType: ChartType;
   xMax: number;
   yMax: number;
@@ -30,6 +33,7 @@ const BarChart = ({
   xName,
   yNames,
   customizableColumnsTypes,
+  customizableAxesTypes,
   chartType,
   xMax,
   yMax,
@@ -44,9 +48,7 @@ const BarChart = ({
 
   const xScaleCallback = getScaleCallback(filteredData, xName, 'x', chartType)!;
   // Getting the scale for just the first Y col, for simplicity
-  const yScaleCallback = getScaleCallback(filteredData, yNames[0], 'y') as
-    | typeof scaleLinear
-    | typeof scaleTime;
+
   const xScale = getXScale(
     filteredData,
     xName,
@@ -55,18 +57,74 @@ const BarChart = ({
     'x',
     chartType
   )!;
+
+  const leftAxisColumnNames = yNames.filter(
+    (_, index) => customizableAxesTypes[index] == LeftRight.left
+  );
+  const rightAxisColumnNames = yNames.filter(
+    (_, index) => customizableAxesTypes[index] == LeftRight.right
+  );
+
+  const yScaleLeftCallback = getScaleCallback(
+    filteredData,
+    leftAxisColumnNames[0], // TODO checking only the first column's type is fragile and might break with un-knowing users
+    'y'
+  ) as typeof scaleLinear | typeof scaleTime;
+
+  const yScaleRightCallback = getScaleCallback(
+    filteredData,
+    rightAxisColumnNames[0],
+    'y'
+  ) as typeof scaleLinear | typeof scaleTime;
+
   const yScale = getYScale(
     filteredData,
     yNames,
     yMax,
-    yScaleCallback,
+    yScaleLeftCallback,
     chartType
   )!;
+
+  let yScaleLeft:
+    | ScaleLinear<number, number, never>
+    | ScaleTime<number, number, never>
+    | undefined;
+
+  let yScaleRight:
+    | ScaleLinear<number, number, never>
+    | ScaleTime<number, number, never>
+    | undefined;
+  if (leftAxisColumnNames?.length)
+    yScaleLeft = getYScale(
+      filteredData,
+      leftAxisColumnNames,
+      yMax,
+      yScaleLeftCallback,
+      chartType
+    )!;
+
+  if (rightAxisColumnNames?.length)
+    yScaleRight = getYScale(
+      filteredData,
+      rightAxisColumnNames,
+      yMax,
+      yScaleRightCallback,
+      ChartType.line
+    )!;
+
+  console.log(
+    leftAxisColumnNames,
+    yScaleLeftCallback.name,
+    rightAxisColumnNames,
+    yScaleRightCallback?.name
+  );
+
   return (
     <BaseChart
       xName={xName}
       yNames={yNames}
       customizableColumnsTypes={customizableColumnsTypes}
+      customizableAxesTypes={customizableAxesTypes}
       chartType={chartType}
       data={filteredData}
       height={Number(height)}
@@ -76,6 +134,8 @@ const BarChart = ({
       yMax={yMax}
       xScale={xScale!}
       yScale={yScale!}
+      yScaleLeft={yScaleLeft}
+      yScaleRight={yScaleRight}
       localPoint={localPoint}
       showTooltip={showTooltip}
       gradientColor={background2}

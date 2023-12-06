@@ -28,7 +28,14 @@ export enum ChartType {
   'number',
 }
 
+export enum LeftRight {
+  'left',
+  'right',
+}
+
 // Functions
+export const enumToArray = (e: any) =>
+  Object.keys(e).filter((key) => isNaN(Number(key)));
 
 export const getBarAndLineColNames = (
   customizableColumnTypes: CustomizableChartOptions[],
@@ -145,6 +152,7 @@ export function getYScale(
         : Math.max(
             ...data.map((d) => Math.max(...yNames.map((key) => Number(d[key]))))
           );
+    console.log('maxY', maxY, 'chartType', chartType);
     return scale<number>({
       range: [yMax, 0],
       domain: [0, maxY || 0],

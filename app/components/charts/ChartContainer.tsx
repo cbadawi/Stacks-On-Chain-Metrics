@@ -6,6 +6,7 @@ import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import {
   ChartType,
   CustomizableChartOptions,
+  LeftRight,
   accentColorDark,
 } from './helpers';
 import Table from './Table';
@@ -22,6 +23,7 @@ interface ChartContainerProps {
   height: number;
   width: number;
   customizableColumnsTypes: CustomizableChartOptions[];
+  customizableAxesTypes: LeftRight[];
 }
 
 const getChartComponent = (
@@ -30,6 +32,7 @@ const getChartComponent = (
   xName: string,
   yNames: string[],
   customizableColumnsTypes: CustomizableChartOptions[],
+  customizableAxesTypes: LeftRight[],
   title: string,
   height: number | string,
   width: number | string,
@@ -67,6 +70,7 @@ const getChartComponent = (
           xName={xName}
           yNames={yNames}
           customizableColumnsTypes={customizableColumnsTypes}
+          customizableAxesTypes={customizableAxesTypes}
           chartType={chartType}
           xMax={xMax}
           yMax={yMax}
@@ -96,6 +100,7 @@ const ChartContainer = ({
   height,
   width,
   customizableColumnsTypes,
+  customizableAxesTypes,
 }: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
   // Error: Hydration failed because the initial UI does not match what was rendered on the server.
@@ -175,6 +180,7 @@ const ChartContainer = ({
 
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
+      {JSON.stringify({ customizableAxesTypes, customizableColumnsTypes })}
       {chartType != ChartType.table && (
         <div className='relative'>
           <svg width={width} height={height}>
@@ -199,9 +205,10 @@ const ChartContainer = ({
                 xName,
                 yNames,
                 customizableColumnsTypes,
+                customizableAxesTypes,
                 '',
-                '700',
-                '900',
+                height,
+                width,
                 topChartHeight,
                 topChartBottomMargin,
                 margin,
