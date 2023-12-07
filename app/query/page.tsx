@@ -14,6 +14,7 @@ import {
   LeftRight,
   getYColNamesFromData,
 } from '../components/charts/helpers';
+import QueryFilters from '../components/query/QueryVariablesForm';
 
 const DEFAULT_QUERY = `-- PostgreSQL
 select * from accounts limit 2`;
@@ -33,7 +34,8 @@ const Query = () => {
   >([]);
   const [data, setData] = useState([]);
 
-  const runQuery = async () => {
+  const runQuery = async (query: string) => {
+    console.log('running queyr', query);
     setIsLoading(true);
     setData([]);
     setError('');
@@ -70,14 +72,17 @@ const Query = () => {
         <SqlEditor
           query={query}
           setQuery={setQuery}
+          setError={setError}
           isLoading={isLoading}
           runQuery={runQuery}
         />
       </div>
+      {query}
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
         <QueryVisualization
           data={data}
+          query={query}
           customizableColumnsTypes={customizableColumnsTypes}
           setCustomizableColumnsTypes={setCustomizableColumnsTypes}
           customizableAxesTypes={customizableAxesTypes}

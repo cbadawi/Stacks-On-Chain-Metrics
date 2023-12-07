@@ -19,9 +19,11 @@ import {
 } from '../charts/helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import StarterPlaceholderMessage from './StarterPlaceholderMessage';
+import QueryFilters from './QueryVariablesForm';
 
 interface QueryVisualizationProps {
   data: any[];
+  query: string;
   customizableColumnsTypes: CustomizableChartOptions[];
   setCustomizableColumnsTypes: React.Dispatch<
     React.SetStateAction<CustomizableChartOptions[]>
