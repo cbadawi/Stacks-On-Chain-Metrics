@@ -162,7 +162,6 @@ const ChartContainer = ({
   const columns = Object.keys(data[0]);
   const xName = columns[0];
   const yNames = columns.slice(1);
-  console.log('chartcontaineryNames', yNames);
 
   const showTooltipData =
     chartType == ChartType.line || chartType == ChartType.bar;

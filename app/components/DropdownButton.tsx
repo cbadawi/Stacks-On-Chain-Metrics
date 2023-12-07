@@ -1,5 +1,4 @@
 import React from 'react';
-import { CustomizableChartOptions } from './charts/helpers';
 
 interface DropdownButtonProps {
   buttonText: string;

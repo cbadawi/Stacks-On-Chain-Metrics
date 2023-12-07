@@ -81,10 +81,6 @@ const renderData = (
 ) => {
   switch (Number(chartType)) {
     case ChartType.line:
-      console.log(
-        'yNames && yNames.length && yScale',
-        yNames && yNames?.length && yScale
-      );
       if (yNames && yNames?.length && yScale)
         return yNames.map((colName, i) => (
           <LinePath
@@ -238,7 +234,6 @@ export default function BaseChart({
 }: BaseChartProps) {
   if (width < 10) return null;
   hideVerticalAxis = hideVerticalAxis; //|| yNames?.length == 0;
-  console.log('hideVerticalAxishideVerticalAxis', hideVerticalAxis, yNames);
   return (
     <Group left={margin.left} top={top || margin.top}>
       <LinearGradient

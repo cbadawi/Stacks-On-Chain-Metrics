@@ -97,7 +97,6 @@ const LineChart = ({
     },
     [showTooltip, yScale, xScale]
   );
-  console.log('linechartlinechart', yNames);
   return (
     <BaseChart
       xName={xName}
