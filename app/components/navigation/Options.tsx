@@ -19,7 +19,7 @@ const Options = () => {
             target='_blank'
             className='flex items-center justify-between'
           >
-            Report an issue <FaGithub size={25} />
+            Report an issue, idea or feedback <FaGithub size={25} />
           </a>
         </li>
         <li>
