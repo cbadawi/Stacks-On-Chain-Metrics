@@ -1,0 +1,136 @@
+.layoutRoot {
+  display: flex;
+  background: #eee;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.absoluteLayout {
+  height: 600px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+.scaledLayout {
+  width: 125%;
+  left: -12.5vw;
+  transform: scale(0.75);
+  margin-top: -7.5vh;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #ccc;
+  border: 1px solid black;
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
+  margin: 20px;
+}
+.box .text {
+  text-align: center;
+}
+
+.hoverhandles .reactresizablehandle {
+  display: none;
+}
+.hoverhandles:hover .reactresizablehandle {
+  display: block;
+}
+.absolutelypositioned {
+  position: absolute !important;
+}
+.leftaligned {
+  left: 0;
+}
+.rightaligned {
+  right: 0;
+}
+.topaligned {
+  top: 0;
+}
+.bottomaligned {
+  bottom: 0;
+}
+
+.custombox {
+  overflow: visible;
+}
+.customhandle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #1153aa;
+  opacity: 0.75;
+  border-radius: 4px;
+}
+
+.newHandle {
+  position: absolute;
+  display: inline-block;
+  /* margin-right: 3rem; */
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0);
+  border-top: 0.5rem solid #fff;
+  border-right: 0.5rem solid #fff;
+
+  bottom: -0.75rem;
+  right: -0.75rem;
+  cursor: all-scroll;
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+.customhandlesw {
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+.customhandlese {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+.customhandlenw {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+.customhandlene {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+.customhandlew,
+.customhandlee {
+  top: 50%;
+  margin-top: -4px;
+  cursor: ew-resize;
+}
+.customhandlew {
+  left: -4px;
+}
+.customhandlee {
+  right: -4px;
+}
+.customhandlen,
+.customhandles {
+  left: 50%;
+  margin-left: -4px;
+  cursor: ns-resize;
+}
+.customhandlen {
+  top: -4px;
+}
+.customhandles {
+  bottom: -4px;
+}
+.customresizehandlecomponent {
+  background-color: rgb(0, 55, 255);
+}
