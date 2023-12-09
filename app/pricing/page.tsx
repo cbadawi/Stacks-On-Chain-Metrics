@@ -12,7 +12,7 @@ const Pricing = () => {
     <section className='w-full'>
       <div className='mx-auto mt-10 max-w-4xl items-center text-center'>
         <h2 className='text-4xl font-semibold leading-7 text-[#f1592a]'>
-          Join Us
+          Support Us!
         </h2>
         <p className='mt-2 text-base font-bold tracking-tight text-gray-300 sm:text-3xl'>
           API access or Charts Premium Features : Choose the best option for

@@ -29,7 +29,6 @@ const QueryVariablesForm = ({
       const element = e.target.elements[index] as HTMLInputElement;
       const variableNameFromClass = element.className.split(' ')[0];
       const value = element.value;
-      console.log('valueeee', value, v, Boolean(value));
       value
         ? (replacementsMap[v] = value)
         : setError(`Variable "${v}" not set.`);

@@ -9,7 +9,8 @@ export const plans: IPlans = {
       perks: [
         'Hopes & prayers',
         'Dedicated Support',
-        'Slower queries with low priority execution',
+        'Limited up to 300 rows returned per query',
+        'Slower queries with very low priority execution',
       ],
     },
     {
@@ -17,25 +18,29 @@ export const plans: IPlans = {
       price: '10',
       perks: [
         'Faster queries & high priority execution',
+        'Up to 1000 rows returned per query',
         '100 rows of csv downloads per billing cycle',
+        'Full access to alpha insights dashboards', // for ex: blur our lower timeframes and add tooltip to upgrade plans
+        'No watermarks on charts',
       ],
     },
     {
       name: 'Gold',
       price: '25',
+      // TODO maybe add 1 alert here
       perks: [
-        '1000 rows of csv downloads per billing cycle',
-        'No watermarks on charts',
+        'Unlimited rows of csv downloads',
+        'Unlimited & Paginated query results',
+        'All previously mentioned benefits',
       ],
     },
     {
       name: 'Digital Gold',
-      price: '45',
+      price: '35',
       perks: [
-        'Unlimited csv downloads',
         'Ability to create, insert and read custom tables',
         'Alerts (Soon)',
-        'Private Dashboards (Soon)',
+        `Create Private Dashboards. Don't share private data (Soon)`,
         'All previously mentioned benefits',
       ],
     },
@@ -57,7 +62,6 @@ export const plans: IPlans = {
         'Faster API requests & priority execution',
         'Ability to query the blockchain using SQL with the /query API route',
         '1000 RPM per API key',
-        'All previously mentioned benefits',
       ],
     },
     {

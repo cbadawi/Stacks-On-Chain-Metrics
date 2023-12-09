@@ -66,7 +66,10 @@ const QueryVisualization = ({
               <FiDownload />
             </div>
           </div>
-          <div className='tooltip tooltip-primary' data-tip='Create Alerts'>
+          <div
+            className='tooltip tooltip-primary hidden'
+            data-tip='Create Alerts (SOON)'
+          >
             <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
               <BiSolidBellRing />
             </div>
