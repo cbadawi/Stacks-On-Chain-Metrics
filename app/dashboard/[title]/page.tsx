@@ -4,32 +4,22 @@ import DraggableCard from '@/app/components/dashboards/DraggableCard';
 import Card from '@/app/components/dashboards/DraggableCard';
 import DropZone from '@/app/components/dashboards/DropZone';
 import ResizableCard from '@/app/components/dashboards/ResizableCard';
-import { findAvailablePositions } from '@/app/components/dashboards/helpers';
+import {
+  Position,
+  dragendEventListener,
+  dragEventListener,
+} from '@/app/components/dashboards/helpers';
+import { setDefaultAutoSelectFamily } from 'net';
 import React, { useEffect, useState } from 'react';
 
 type DashboardProps = {
   params: { title: string };
 };
 
-type DropboxesPositions = {
-  x: number;
-  y: number;
-};
-
-const saveChartInitialPosition = (
-  chartUniqueKey: string,
-  initialPosition: { x: number; y: number }
-) => {
-  if (!localStorage.getItem(chartUniqueKey))
-    localStorage.setItem(chartUniqueKey, JSON.stringify(initialPosition));
-};
-
-const getChartInitialPosition = (chartUniqueKey: string) => {
-  return localStorage.getItem(chartUniqueKey);
-};
-
 const dashboard = ({ params }: DashboardProps) => {
-  const [dropboxes, setDropboxes] = useState<DropboxesPositions[]>([]);
+  const [dropboxes, setDropboxes] = useState<Position[]>([]);
+
+  const DISPLAYED_DROPBOXES = 8;
   // TODO refactor to use refs (recommended) instead of dom selectors
   useEffect(() => {
     const draggables = document.querySelectorAll('.draggable');
@@ -51,55 +41,27 @@ const dashboard = ({ params }: DashboardProps) => {
       allDraggablesBoundingRects.push(draggable.getBoundingClientRect());
 
       const chartUniqueKey = `chart-initial-position-${params.title}-${index}`;
-      // @ts-ignore
-      draggable.addEventListener('dragstart', (e: DragEvent) => {
-        const initialPosition = { x: e.clientX, y: e.clientY };
-        console.log(
-          'allDraggablesBoundingRectsallDraggablesBoundingRects',
-          allDraggablesBoundingRects
-        );
-        // TODO this index should be safe to use since the event listeners are only added once
-        // But i can see a scenario where it could cause bugs, when a user exits the dashboard and comes back
-        // TODO use a new unique identifier for charts such as chart title, & see when its best to clear session/local storage
-        saveChartInitialPosition(chartUniqueKey, initialPosition);
-        draggable.classList.add('currently-dragging');
 
-        const draggableBoundingRect = draggable.getBoundingClientRect();
-        const dropBoxesPosition = findAvailablePositions(
-          draggableBoundingRect,
+      draggable.addEventListener('drag', (e: Event) =>
+        dragEventListener(
+          e as DragEvent,
+          chartUniqueKey,
+          draggable,
           wrapperBoundingRect,
-          allDraggablesBoundingRects
-        );
-        console.log('availablePositionsavailablePositions', dropBoxesPosition);
+          allDraggablesBoundingRects,
+          setDropboxes,
+          DISPLAYED_DROPBOXES
+        )
+      );
 
-        setDropboxes(dropBoxesPosition);
-
-        // getAllDropZones(initialPosition);
-        // findAvailablePositions(draggable.getBoundingClientRect());
-      });
-
-      draggable.addEventListener('dragend', (e: any) => {
-        if (!(draggable instanceof HTMLElement)) return;
-        const intialPosition = getChartInitialPosition(chartUniqueKey);
-        if (!intialPosition) {
-          console.error(
-            `Chart initial position not found chartUniqueKey: ${chartUniqueKey}`
-          );
-          return;
-        }
-        const newX = e.clientX;
-        const newY = e.clientY;
-        const distanceX = newX - JSON.parse(intialPosition!).x;
-        const distanceY = newY - JSON.parse(intialPosition!).y;
-
-        // translate requires the distance moved from current position, not the final destination
-        // TODO this works for only the first drag&drop since transform coordinates should be wrt to the initial position
-        // we can save the initial position in local storage instead of a state hook something with the key ${dashtitle}-${chartid}
-        //  if the key exists dont overwrite it.
-        const transform = `translate(${distanceX}px, ${distanceY}px)`;
-        draggable.style.transform = transform;
-        draggable.classList.remove('currently-dragging');
-      });
+      draggable.addEventListener('dragend', (e: Event) =>
+        dragendEventListener(
+          e as DragEvent,
+          chartUniqueKey,
+          draggable,
+          setDropboxes
+        )
+      );
     });
   }, []);
 
@@ -129,7 +91,7 @@ const dashboard = ({ params }: DashboardProps) => {
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
           <p>6666666666</p>
         </DraggableCard>
-        {dropboxes.length &&
+        {!!dropboxes.length &&
           dropboxes.map((d, i) => (
             <DropZone
               key={i}
@@ -140,7 +102,6 @@ const dashboard = ({ params }: DashboardProps) => {
             />
           ))}
       </div>
-      {JSON.stringify(dropboxes)}
     </div>
   );
 };
