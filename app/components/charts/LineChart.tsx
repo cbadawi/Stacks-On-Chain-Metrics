@@ -12,7 +12,6 @@ import { localPoint } from '@visx/event';
 
 import BaseChart from './BaseChart';
 import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
-import getBrush from './getBrush';
 import handleFailedScale from '@/app/lib/handleFailedScale';
 
 interface LineChartProps {

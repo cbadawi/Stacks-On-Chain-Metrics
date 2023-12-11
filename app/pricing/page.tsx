@@ -2,8 +2,6 @@ import React from 'react';
 import { plans } from './plans';
 import PricingCard from '../components/PricingCard';
 
-export async function getProducts() {}
-
 const Pricing = () => {
   // TODO should probably be a grid outside a flex
   // TODO https://www.nansen.ai/plans has a nice page
