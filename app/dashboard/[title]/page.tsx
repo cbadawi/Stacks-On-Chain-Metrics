@@ -2,51 +2,80 @@
 
 import DraggableCard from '@/app/components/dashboards/DraggableCard';
 import Card from '@/app/components/dashboards/DraggableCard';
+import DropZone from '@/app/components/dashboards/DropZone';
 import ResizableCard from '@/app/components/dashboards/ResizableCard';
+import { findAvailablePositions } from '@/app/components/dashboards/helpers';
 import React, { useEffect, useState } from 'react';
 
-interface Props {
+type DashboardProps = {
   params: { title: string };
-}
+};
+
+type DropboxesPositions = {
+  x: number;
+  y: number;
+};
 
 const saveChartInitialPosition = (
   chartUniqueKey: string,
   initialPosition: { x: number; y: number }
 ) => {
-  if (localStorage.getItem(chartUniqueKey)) return false;
-  localStorage.setItem(chartUniqueKey, JSON.stringify(initialPosition));
-  return true;
+  if (!localStorage.getItem(chartUniqueKey))
+    localStorage.setItem(chartUniqueKey, JSON.stringify(initialPosition));
 };
 
 const getChartInitialPosition = (chartUniqueKey: string) => {
   return localStorage.getItem(chartUniqueKey);
 };
 
-const dashboard = ({ params }: Props) => {
+const dashboard = ({ params }: DashboardProps) => {
+  const [dropboxes, setDropboxes] = useState<DropboxesPositions[]>([]);
   // TODO refactor to use refs (recommended) instead of dom selectors
   useEffect(() => {
     const draggables = document.querySelectorAll('.draggable');
     const wrapper = document.querySelector('.draggables-wrapper')!;
+    let wrapperBoundingRect: DOMRect;
     if (wrapper) {
       // x, y are not between the viewport and the center, its to the top/left edges.
-      const { x, y, width, height } = wrapper.getBoundingClientRect();
       wrapper.addEventListener('dragover', (e) => {});
-    } else if (window) console.error('draggables-wrapper class not found.');
+      wrapperBoundingRect = wrapper.getBoundingClientRect();
+    } else if (window) {
+      console.error('draggables-wrapper class not found in window.');
+      return;
+    }
+
+    // TODO this will do the calculations only on initial render, needs to be in a seperate hook
+    const allDraggablesBoundingRects: DOMRect[] = [];
 
     draggables.forEach((draggable, index) => {
-      console.log(
-        `draggable.getBoundingClientRect() index ${index}`,
-        draggable.getBoundingClientRect()
-      );
+      allDraggablesBoundingRects.push(draggable.getBoundingClientRect());
+
       const chartUniqueKey = `chart-initial-position-${params.title}-${index}`;
       // @ts-ignore
       draggable.addEventListener('dragstart', (e: DragEvent) => {
         const initialPosition = { x: e.clientX, y: e.clientY };
+        console.log(
+          'allDraggablesBoundingRectsallDraggablesBoundingRects',
+          allDraggablesBoundingRects
+        );
         // TODO this index should be safe to use since the event listeners are only added once
         // But i can see a scenario where it could cause bugs, when a user exits the dashboard and comes back
         // TODO use a new unique identifier for charts such as chart title, & see when its best to clear session/local storage
         saveChartInitialPosition(chartUniqueKey, initialPosition);
         draggable.classList.add('currently-dragging');
+
+        const draggableBoundingRect = draggable.getBoundingClientRect();
+        const dropBoxesPosition = findAvailablePositions(
+          draggableBoundingRect,
+          wrapperBoundingRect,
+          allDraggablesBoundingRects
+        );
+        console.log('availablePositionsavailablePositions', dropBoxesPosition);
+
+        setDropboxes(dropBoxesPosition);
+
+        // getAllDropZones(initialPosition);
+        // findAvailablePositions(draggable.getBoundingClientRect());
       });
 
       draggable.addEventListener('dragend', (e: any) => {
@@ -74,17 +103,44 @@ const dashboard = ({ params }: Props) => {
     });
   }, []);
 
+  // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
-    <div className='p-4'>
+    <div className='inline-block h-full w-full border-2 border-solid border-red-900 p-4'>
       <header> {params.title} </header>
-      <div className='draggables-wrapper absolute'>
+      <div className='draggables-wrapper relative'>
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          {/* <ResizableCard> */}
           <p>ddd</p>
+          {/* </ResizableCard> */}
         </DraggableCard>
-        <DraggableCard width='w-[30rem]' height='h-[25rem]'>
-          <p>eeeee</p>
+
+        <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          <p>2222222</p>
         </DraggableCard>
+        <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          <p>333333</p>
+        </DraggableCard>
+        <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          <p>444444</p>
+        </DraggableCard>
+        <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          <p>5555555</p>
+        </DraggableCard>
+        <DraggableCard width='w-[20rem]' height='h-[15rem]'>
+          <p>6666666666</p>
+        </DraggableCard>
+        {dropboxes.length &&
+          dropboxes.map((d, i) => (
+            <DropZone
+              key={i}
+              width='w-[20rem]'
+              height='h-[15rem]'
+              xTransform={`${d.x}px`}
+              yTransform={`${d.y}px`}
+            />
+          ))}
       </div>
+      {JSON.stringify(dropboxes)}
     </div>
   );
 };
