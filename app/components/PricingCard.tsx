@@ -21,7 +21,7 @@ const PricingCard = ({ plan }: PricingCardProps) => {
         ))}
         <div className='empty-filler flex-grow'></div>
         <div className='buy-button-container card-actions flex justify-center'>
-          <button className='rounded bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 font-bold text-white'>
+          <button className='rounded bg-red-400 bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 font-bold text-white transition duration-500 ease-in-out hover:skew-y-12'>
             Buy Now
           </button>
         </div>
