@@ -117,6 +117,13 @@ export const onMouseDown = (
   moveAt({ x: e.pageX - shiftX, y: e.pageY - shiftY });
 
   function moveAt({ x, y }: Position) {
+    const incrementX = 50;
+    const incrementY = 50;
+
+    x = Math.round(x / incrementX) * incrementX;
+    y = Math.round(y / incrementY) * incrementY;
+
+    console.log(x, y);
     draggable.style.left = x + 'px';
     draggable.style.top = y + 'px';
   }
