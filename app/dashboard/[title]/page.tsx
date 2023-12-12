@@ -8,6 +8,7 @@ import {
   Position,
   dragendEventListener,
   dragEventListener,
+  onMouseDown,
 } from '@/app/components/dashboards/helpers';
 import React, { useEffect, useState } from 'react';
 
@@ -35,31 +36,38 @@ const dashboard = ({ params }: DashboardProps) => {
 
     draggables.forEach((draggable, index) => {
       const chartUniqueKey = `chart-initial-position-${params.title}-${index}`;
-      draggable.addEventListener('drag', (e: Event) =>
-        dragEventListener(
-          e as DragEvent,
-          chartUniqueKey,
-          draggable,
-          draggables,
-          setDropzones,
-          DISPLAYED_DROPBOXES
-        )
-      );
 
-      draggable.addEventListener('dragend', (e: Event) =>
-        dragendEventListener(
-          e as DragEvent,
-          chartUniqueKey,
-          draggable,
-          setDropzones
-        )
-      );
+      draggable.addEventListener('mousedown', (e: Event) => {});
+      // draggable.addEventListener('dragstart', (e: Event) => false);
+      (draggable as HTMLElement).onmousedown = (e) =>
+        onMouseDown(e as DragEvent, draggable as HTMLElement);
+      (draggable as HTMLElement).ondragstart = () => false;
+
+      // draggable.addEventListener('drag', (e: Event) =>
+      // dragEventListener(
+      //   e as DragEvent,
+      //   chartUniqueKey,
+      //   draggable,
+      //   draggables,
+      //   setDropzones,
+      //   DISPLAYED_DROPBOXES
+      // )
+      // );
+
+      // draggable.addEventListener('dragend', (e: Event) =>
+      //   dragendEventListener(
+      //     e as DragEvent,
+      //     chartUniqueKey,
+      //     draggable,
+      //     setDropzones
+      //   )
+      // );
     });
   }, []);
 
   // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
-    <div className='inline-block h-full w-full border-2 border-solid border-red-900 p-4'>
+    <div className='inline-block h-full min-h-full w-full border-2 border-solid border-red-900 p-4'>
       <header> {params.title} </header>
       <div className='draggables-wrapper relative'>
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
