@@ -123,7 +123,6 @@ export const onMouseDown = (
     x = Math.round(x / incrementX) * incrementX;
     y = Math.round(y / incrementY) * incrementY;
 
-    console.log(x, y);
     draggable.style.left = x + 'px';
     draggable.style.top = y + 'px';
   }
@@ -174,7 +173,6 @@ export const onMouseDown = (
 
   // https://melkornemesis.medium.com/handling-javascript-mouseup-event-outside-element-b0a34090bb56
   document.addEventListener('mouseup', () => {
-    console.log('mouseee uppppp');
     document.removeEventListener('mousemove', onMouseMove);
     draggable.onmouseup = null;
   });
