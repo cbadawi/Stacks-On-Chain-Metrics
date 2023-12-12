@@ -37,10 +37,15 @@ const dashboard = ({ params }: DashboardProps) => {
     draggables.forEach((draggable, index) => {
       const chartUniqueKey = `chart-initial-position-${params.title}-${index}`;
 
-      draggable.addEventListener('mousedown', (e: Event) => {});
-      // draggable.addEventListener('dragstart', (e: Event) => false);
-      (draggable as HTMLElement).onmousedown = (e) =>
-        onMouseDown(e as DragEvent, draggable as HTMLElement);
+      draggable.addEventListener('mousedown', (e: Event) => {
+        onMouseDown(
+          e as DragEvent,
+          draggable as HTMLElement,
+          draggables,
+          setDropzones,
+          DISPLAYED_DROPBOXES
+        );
+      });
       (draggable as HTMLElement).ondragstart = () => false;
 
       // draggable.addEventListener('drag', (e: Event) =>
@@ -67,7 +72,7 @@ const dashboard = ({ params }: DashboardProps) => {
 
   // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
-    <div className='inline-block h-full min-h-full w-full border-2 border-solid border-red-900 p-4'>
+    <div className='h-full min-h-[100vh] w-full border-2 border-solid border-red-900 p-4'>
       <header> {params.title} </header>
       <div className='draggables-wrapper relative'>
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
@@ -75,7 +80,6 @@ const dashboard = ({ params }: DashboardProps) => {
           <p>ddd</p>
           {/* </ResizableCard> */}
         </DraggableCard>
-
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
           <p>2222222</p>
         </DraggableCard>

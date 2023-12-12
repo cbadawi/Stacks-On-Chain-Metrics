@@ -68,18 +68,9 @@ export const getClosestDropzones = (
   }));
 
   distances.sort((a, b) => a.distance - b.distance);
-  // console.log(
-  //   'currentPosition',
-  //   currentPosition,
-  //   'distances',
-  //   distances.map((d) => {
-  //     return { distance: d.distance, dropzone: JSON.stringify(d.dropzone) };
-  //   })
-  // );
   if (!n) return distances.map((d) => d.dropzone);
 
   const closestTargets = distances.slice(0, n).map((item) => item.dropzone);
-  console.log('closestTargets', closestTargets);
   return closestTargets;
 };
 
@@ -107,6 +98,109 @@ export const getPositionFromParent = (child: Position, parent: Position) => {
 };
 
 // Event Listeners
+// https://javascript.info/mouse-drag-and-drop
+export const onMouseDown = (
+  e: DragEvent,
+  draggable: HTMLElement,
+  draggables: NodeListOf<Element>,
+  setDropzones: React.Dispatch<React.SetStateAction<Position[]>>,
+  displayedDropzones: number
+) => {
+  const draggableBoundingRect = draggable.getBoundingClientRect();
+  let shiftX = e.clientX - draggableBoundingRect.left;
+  let shiftY = e.clientY - draggableBoundingRect.top;
+
+  draggable.style.position = 'absolute';
+  draggable.style.zIndex = '1000';
+  document.body.append(draggable);
+
+  moveAt({ x: e.pageX - shiftX, y: e.pageY - shiftY });
+
+  function moveAt({ x, y }: Position) {
+    draggable.style.left = x + 'px';
+    draggable.style.top = y + 'px';
+  }
+
+  function handleDropzones(wrapper: Element) {
+    const wrapperBoundingRect: DOMRect = wrapper.getBoundingClientRect();
+    let allDraggablesBoundingRects: DOMRect[] = [];
+    draggables.forEach((d) =>
+      allDraggablesBoundingRects.push(d.getBoundingClientRect())
+    );
+    const dropzonesPositionsFromViewport = findAvailablePositions(
+      draggable.getBoundingClientRect(),
+      wrapperBoundingRect,
+      allDraggablesBoundingRects
+    );
+    const dropzonePositionsFromParent = dropzonesPositionsFromViewport.map(
+      (pos) => getPositionFromParent(pos, wrapperBoundingRect)
+    );
+
+    const currentPosition = getPositionFromParent(
+      draggableBoundingRect,
+      wrapperBoundingRect
+    );
+
+    const closestDropzones = getClosestDropzones(
+      currentPosition,
+      dropzonePositionsFromParent,
+      displayedDropzones
+    );
+
+    setDropzones(closestDropzones);
+  }
+
+  function onMouseMove(e: any) {
+    const wrapper = document.querySelector('.draggables-wrapper');
+    if (!wrapper || !draggable) return;
+
+    const cardPositionFromDoc = {
+      x: (e as DragEvent).pageX - shiftX,
+      y: (e as DragEvent).pageY - shiftY,
+    };
+    moveAt(cardPositionFromDoc);
+    // TODO handle bugs
+    // handleDropzones(wrapper)
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+
+  // https://melkornemesis.medium.com/handling-javascript-mouseup-event-outside-element-b0a34090bb56
+  document.addEventListener('mouseup', () => {
+    console.log('mouseee uppppp');
+    document.removeEventListener('mousemove', onMouseMove);
+    draggable.onmouseup = null;
+  });
+};
+
+// drag & drop api
+export const dragendEventListener = (
+  e: DragEvent,
+  chartUniqueKey: string,
+  draggable: Element,
+  setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>
+) => {
+  if (!(draggable instanceof HTMLElement)) return;
+  // setDropboxes([]);
+  const intialPosition = getChartInitialPosition(chartUniqueKey);
+  if (!intialPosition) {
+    console.error(
+      `Chart initial position not found chartUniqueKey: ${chartUniqueKey}`
+    );
+    return;
+  }
+  // const finalPosition = getDraggingPositionFromWrapper(draggable);
+  // if (!currentPosition) return;
+
+  // // translate requires the distance moved from current position, not the final destination
+  // // both finalPosition & intialPosition are with respect to the parent container
+  // const distanceX = finalPosition.x - JSON.parse(intialPosition!).x;
+  // const distanceY = finalPosition.y - JSON.parse(intialPosition!).y;
+  // const transform = `translate(${distanceX}px, ${distanceY}px)`;
+  // draggable.style.transform = transform;
+  draggable.classList.remove('currently-dragging');
+};
+
 export function dragEventListener(
   e: DragEvent,
   chartUniqueKey: string,
@@ -162,62 +256,3 @@ export function dragEventListener(
 
   setDropzones(closestDropzones);
 }
-
-export const onMouseDown = (
-  e: DragEvent,
-  draggable: HTMLElement
-  // setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>
-) => {
-  //  initial position of the element relative to the pointer
-  let shiftX = e.clientX - draggable.getBoundingClientRect().left;
-  let shiftY = e.clientY - draggable.getBoundingClientRect().top;
-
-  draggable.style.position = 'absolute';
-  draggable.style.zIndex = '1000';
-  document.body.append(draggable);
-
-  moveAt(e.pageX, e.pageY);
-
-  function moveAt(pageX: number, pageY: number) {
-    draggable.style.left = pageX - shiftX + 'px';
-    draggable.style.top = pageY - shiftY + 'px';
-  }
-
-  function onMouseMove(e: any) {
-    moveAt((e as DragEvent).pageX, (e as DragEvent).pageY);
-  }
-
-  document.addEventListener('mousemove', onMouseMove);
-
-  draggable.addEventListener('mouseup', () => {
-    document.removeEventListener('mousemove', onMouseMove);
-    draggable.onmouseup = null;
-  });
-};
-
-export const dragendEventListener = (
-  e: DragEvent,
-  chartUniqueKey: string,
-  draggable: Element,
-  setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>
-) => {
-  if (!(draggable instanceof HTMLElement)) return;
-  // setDropboxes([]);
-  const intialPosition = getChartInitialPosition(chartUniqueKey);
-  if (!intialPosition) {
-    console.error(
-      `Chart initial position not found chartUniqueKey: ${chartUniqueKey}`
-    );
-    return;
-  }
-  // const finalPosition = getDraggingPositionFromWrapper(draggable);
-  // if (!currentPosition) return;
-
-  // // translate requires the distance moved from current position, not the final destination
-  // // both finalPosition & intialPosition are with respect to the parent container
-  // const distanceX = finalPosition.x - JSON.parse(intialPosition!).x;
-  // const distanceY = finalPosition.y - JSON.parse(intialPosition!).y;
-  // const transform = `translate(${distanceX}px, ${distanceY}px)`;
-  // draggable.style.transform = transform;
-  draggable.classList.remove('currently-dragging');
-};
