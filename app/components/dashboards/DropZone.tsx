@@ -14,13 +14,15 @@ type DropZoneProps = {
 };
 
 const DropZone = ({ height, width, xTransform, yTransform }: DropZoneProps) => {
-  let className = `drop-zone ${height} ${width} absolute top-0 left-0 bg-red-100`;
+  let className = `drop-zone ${height} ${width} absolute top-0 left-0 bg-red-100 text-black`;
   // hadling complex dynamic styling : https://stackoverflow.com/questions/72560190/using-dynamic-position-values-in-tailwind-css
   return (
     <div
       className={className}
       style={{ transform: `translate(${xTransform}, ${yTransform})` }}
-    />
+    >
+      {`translate(${xTransform}, ${yTransform})`}{' '}
+    </div>
   );
 };
 

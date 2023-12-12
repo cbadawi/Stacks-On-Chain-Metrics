@@ -7,7 +7,7 @@ type DraggableCardProps = {
 };
 
 const DraggableCard = ({ height, width, children }: DraggableCardProps) => {
-  const cardClass = `draggable ${height} ${width} cursor-grabbing border-2 border-black bg-[#1E2122] p-2 m-4`;
+  const cardClass = `draggable ${height} ${width} cursor-grabbing border-2 border-black bg-[#1E2122] p-2 m-4 transition-all duration-200 ease-in-out`;
   return (
     <div draggable={true} className={cardClass}>
       <div className='card bg-neutral text-neutral-content'>
