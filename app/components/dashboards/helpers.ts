@@ -1,4 +1,4 @@
-const STEPS_IN_PIXEL = 16 * 5;
+const STEPS_IN_PIXEL = 16 * 2;
 
 // TODO this does not include parent padding and starts from 0 eventhough parent has p-4
 export function findAvailablePositions(
@@ -52,13 +52,12 @@ export function findAvailablePositions(
 export type Position = { x: number; y: number };
 
 const getDistance = (pos1: Position, pos2: Position) => {
-  // pythagorean theorem
   const dx = pos2.x - pos1.x;
   const dy = pos2.y - pos1.y;
   return Math.sqrt(dx * dx + dy * dy);
 };
 
-export const getClosestDropZones = (
+export const getClosestDropzones = (
   currentPosition: Position,
   dropzones: Position[],
   n?: number // number of dropzones to return
@@ -69,9 +68,18 @@ export const getClosestDropZones = (
   }));
 
   distances.sort((a, b) => a.distance - b.distance);
+  // console.log(
+  //   'currentPosition',
+  //   currentPosition,
+  //   'distances',
+  //   distances.map((d) => {
+  //     return { distance: d.distance, dropzone: JSON.stringify(d.dropzone) };
+  //   })
+  // );
   if (!n) return distances.map((d) => d.dropzone);
 
   const closestTargets = distances.slice(0, n).map((item) => item.dropzone);
+  console.log('closestTargets', closestTargets);
   return closestTargets;
 };
 
@@ -87,34 +95,105 @@ const getChartInitialPosition = (chartUniqueKey: string) => {
   return localStorage.getItem(chartUniqueKey);
 };
 
+/**
+ * Calculates x & y coordinates of the child with respect from the parent given the
+ * position from the viewport.
+ */
+export const getPositionFromParent = (child: Position, parent: Position) => {
+  return {
+    x: child.x - parent.x,
+    y: child.y - parent.y,
+  };
+};
+
 // Event Listeners
 export function dragEventListener(
   e: DragEvent,
   chartUniqueKey: string,
   draggable: Element,
-  wrapperBoundingRect: DOMRect,
-  allDraggablesBoundingRects: DOMRect[],
-  setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>,
+  draggables: NodeListOf<Element>,
+  setDropzones: React.Dispatch<React.SetStateAction<Position[]>>,
   displayedDropboxes: number
 ) {
-  const currentPosition = { x: e.clientX, y: e.clientY };
+  const currentPositionFromEvent = { x: e.clientX, y: e.clientY };
+  const wrapper = document.querySelector('.draggables-wrapper');
+  if (!wrapper) return;
+  const wrapperBoundingRect: DOMRect = wrapper.getBoundingClientRect();
+  let allDraggablesBoundingRects: DOMRect[] = [];
+  draggables.forEach((d) =>
+    allDraggablesBoundingRects.push(d.getBoundingClientRect())
+  );
+  const draggableBoundingRect = draggable.getBoundingClientRect();
+
+  console.log(
+    'draggableBoundingRect',
+    draggableBoundingRect.x,
+    draggableBoundingRect.y,
+    currentPositionFromEvent
+  );
+
+  const currentPosition = getPositionFromParent(
+    draggableBoundingRect,
+    wrapperBoundingRect
+  );
+  if (!currentPosition) return;
+
   // TODO this index should be safe to use since the event listeners are only added once
   // But i can see a scenario where it could cause bugs, when a user exits the dashboard and comes back
   // So use a new unique identifier for charts such as chart title, & see when its best to clear session/local storage
   saveChartInitialPosition(chartUniqueKey, currentPosition);
-  draggable.classList.add('currently-dragging');
 
-  const draggableBoundingRect = draggable.getBoundingClientRect();
-  const dropboxesPositions = findAvailablePositions(
+  // Bounding rect values are relative to viewport
+  const dropzonesPositions = findAvailablePositions(
     draggableBoundingRect,
     wrapperBoundingRect,
     allDraggablesBoundingRects
   );
 
-  setDropboxes(
-    getClosestDropZones(currentPosition, dropboxesPositions, displayedDropboxes)
+  const dropzonePositionsFromParent = dropzonesPositions.map((pos) =>
+    getPositionFromParent(pos, wrapperBoundingRect)
   );
+
+  const closestDropzones = getClosestDropzones(
+    currentPosition,
+    dropzonesPositions,
+    displayedDropboxes
+  );
+
+  setDropzones(closestDropzones);
 }
+
+export const onMouseDown = (
+  e: DragEvent,
+  draggable: HTMLElement
+  // setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>
+) => {
+  //  initial position of the element relative to the pointer
+  let shiftX = e.clientX - draggable.getBoundingClientRect().left;
+  let shiftY = e.clientY - draggable.getBoundingClientRect().top;
+
+  draggable.style.position = 'absolute';
+  draggable.style.zIndex = '1000';
+  document.body.append(draggable);
+
+  moveAt(e.pageX, e.pageY);
+
+  function moveAt(pageX: number, pageY: number) {
+    draggable.style.left = pageX - shiftX + 'px';
+    draggable.style.top = pageY - shiftY + 'px';
+  }
+
+  function onMouseMove(e: any) {
+    moveAt((e as DragEvent).pageX, (e as DragEvent).pageY);
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+
+  draggable.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', onMouseMove);
+    draggable.onmouseup = null;
+  });
+};
 
 export const dragendEventListener = (
   e: DragEvent,
@@ -123,7 +202,7 @@ export const dragendEventListener = (
   setDropboxes: React.Dispatch<React.SetStateAction<Position[]>>
 ) => {
   if (!(draggable instanceof HTMLElement)) return;
-  setDropboxes([]);
+  // setDropboxes([]);
   const intialPosition = getChartInitialPosition(chartUniqueKey);
   if (!intialPosition) {
     console.error(
@@ -131,12 +210,14 @@ export const dragendEventListener = (
     );
     return;
   }
-  const newX = e.clientX;
-  const newY = e.clientY;
-  // translate requires the distance moved from current position, not the final destination
-  const distanceX = newX - JSON.parse(intialPosition!).x;
-  const distanceY = newY - JSON.parse(intialPosition!).y;
-  const transform = `translate(${distanceX}px, ${distanceY}px)`;
-  draggable.style.transform = transform;
+  // const finalPosition = getDraggingPositionFromWrapper(draggable);
+  // if (!currentPosition) return;
+
+  // // translate requires the distance moved from current position, not the final destination
+  // // both finalPosition & intialPosition are with respect to the parent container
+  // const distanceX = finalPosition.x - JSON.parse(intialPosition!).x;
+  // const distanceY = finalPosition.y - JSON.parse(intialPosition!).y;
+  // const transform = `translate(${distanceX}px, ${distanceY}px)`;
+  // draggable.style.transform = transform;
   draggable.classList.remove('currently-dragging');
 };

@@ -9,7 +9,6 @@ import {
   dragendEventListener,
   dragEventListener,
 } from '@/app/components/dashboards/helpers';
-import { setDefaultAutoSelectFamily } from 'net';
 import React, { useEffect, useState } from 'react';
 
 type DashboardProps = {
@@ -17,9 +16,9 @@ type DashboardProps = {
 };
 
 const dashboard = ({ params }: DashboardProps) => {
-  const [dropboxes, setDropboxes] = useState<Position[]>([]);
+  const [dropzones, setDropzones] = useState<Position[]>([]);
 
-  const DISPLAYED_DROPBOXES = 8;
+  const DISPLAYED_DROPBOXES = 4;
   // TODO refactor to use refs (recommended) instead of dom selectors
   useEffect(() => {
     const draggables = document.querySelectorAll('.draggable');
@@ -34,22 +33,15 @@ const dashboard = ({ params }: DashboardProps) => {
       return;
     }
 
-    // TODO this will do the calculations only on initial render, needs to be in a seperate hook
-    const allDraggablesBoundingRects: DOMRect[] = [];
-
     draggables.forEach((draggable, index) => {
-      allDraggablesBoundingRects.push(draggable.getBoundingClientRect());
-
       const chartUniqueKey = `chart-initial-position-${params.title}-${index}`;
-
       draggable.addEventListener('drag', (e: Event) =>
         dragEventListener(
           e as DragEvent,
           chartUniqueKey,
           draggable,
-          wrapperBoundingRect,
-          allDraggablesBoundingRects,
-          setDropboxes,
+          draggables,
+          setDropzones,
           DISPLAYED_DROPBOXES
         )
       );
@@ -59,7 +51,7 @@ const dashboard = ({ params }: DashboardProps) => {
           e as DragEvent,
           chartUniqueKey,
           draggable,
-          setDropboxes
+          setDropzones
         )
       );
     });
@@ -91,8 +83,8 @@ const dashboard = ({ params }: DashboardProps) => {
         <DraggableCard width='w-[20rem]' height='h-[15rem]'>
           <p>6666666666</p>
         </DraggableCard>
-        {!!dropboxes.length &&
-          dropboxes.map((d, i) => (
+        {!!dropzones.length &&
+          dropzones.map((d, i) => (
             <DropZone
               key={i}
               width='w-[20rem]'
@@ -101,6 +93,81 @@ const dashboard = ({ params }: DashboardProps) => {
               yTransform={`${d.y}px`}
             />
           ))}
+        <DropZone
+          width='w-[20rem]'
+          height='h-[5rem]'
+          yTransform={`700px`}
+          xTransform={`700px`}
+        />
+        <DropZone
+          width='w-[20rem]'
+          height='h-[5rem]'
+          yTransform={`600px`}
+          xTransform={`600px`}
+        />
+
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`500px`}
+          xTransform={`500px`}
+        />
+
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`0px`}
+          xTransform={`0px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`200px`}
+          xTransform={`200px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`100px`}
+          xTransform={`100px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`300px`}
+          xTransform={`300px`}
+        />
+
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`800px`}
+          xTransform={`800px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`900px`}
+          xTransform={`900px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`400px`}
+          xTransform={`400px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`1000px`}
+          xTransform={`1000px`}
+        />
+        <DropZone
+          width='w-[15rem]'
+          height='h-[5rem]'
+          yTransform={`1100px`}
+          xTransform={`1100px`}
+        />
       </div>
     </div>
   );
