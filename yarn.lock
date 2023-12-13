@@ -515,15 +515,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-resizable@npm:^3":
-  version: 3.0.7
-  resolution: "@types/react-resizable@npm:3.0.7"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 1f9ca7f83c85344a53bb456fee8b09ce8fb12582df67b7ed55c0b9d5e8e912ccce191e8651b49141add948e0da096a26d8065f27df80975c7da16d535df9eb57
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*, @types/react@npm:^18":
   version: 18.2.42
   resolution: "@types/react@npm:18.2.42"
@@ -2521,6 +2512,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-memoize@npm:^2.5.1":
+  version: 2.5.2
+  resolution: "fast-memoize@npm:2.5.2"
+  checksum: 6f658f182f6eaf25a8ecdaf49affee4cac20df4e61e7ef3f04145fb86e887e7a0bd9975740ce88a9015da99459d7386eaf1342ac15be820f72f4be1ecf934d95
+  languageName: node
+  linkType: hard
+
 "fastparse@npm:^1.1.2":
   version: 1.1.2
   resolution: "fastparse@npm:1.1.2"
@@ -4289,7 +4287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -4323,6 +4321,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"re-resizable@npm:6.9.6":
+  version: 6.9.6
+  resolution: "re-resizable@npm:6.9.6"
+  dependencies:
+    fast-memoize: "npm:^2.5.1"
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+  checksum: 19a82a568ca41a7f3c48263c3b7cb9581005da85481b9ee8fe25dc0c01873ac1acc5b435398940ed7d054d5484e9445c7565c6ee4ce90f4b1fb0a366df745faf
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^18":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
@@ -4335,16 +4345,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:^4.0.3":
-  version: 4.4.6
-  resolution: "react-draggable@npm:4.4.6"
+"react-draggable@npm:4.4.5":
+  version: 4.4.5
+  resolution: "react-draggable@npm:4.4.5"
   dependencies:
     clsx: "npm:^1.1.1"
     prop-types: "npm:^15.8.1"
   peerDependencies:
     react: ">= 16.3.0"
     react-dom: ">= 16.3.0"
-  checksum: 1e8cf47414a8554caa68447e5f27749bc40e1eabb4806e2dadcb39ab081d263f517d6aaec5231677e6b425603037c7e3386d1549898f9ffcc98a86cabafb2b9a
+  checksum: d950e25b41092ffd689e9882c287f7f49dbd8eb7e8a220af6e08c0dc06f1ae778871b0f414e30bd2891a96c6be1f673c3a698c0e642903542ff5ab5b0cbaf805
   languageName: node
   linkType: hard
 
@@ -4364,15 +4374,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "react-resizable@npm:3.0.5"
+"react-rnd@npm:^10.4.1":
+  version: 10.4.1
+  resolution: "react-rnd@npm:10.4.1"
   dependencies:
-    prop-types: "npm:15.x"
-    react-draggable: "npm:^4.0.3"
+    re-resizable: "npm:6.9.6"
+    react-draggable: "npm:4.4.5"
+    tslib: "npm:2.3.1"
   peerDependencies:
-    react: ">= 16.3"
-  checksum: cfe50aa6efb79e0aa09bd681a5beab2fcd1186737c4952eb4c3974ed9395d5d263ccd1130961d06b8f5e24c8f544dd2967b5c740ce68719962d1771de7bdb350
+    react: ">=16.3.0"
+    react-dom: ">=16.3.0"
+  checksum: cf93fcbf456d16fcc038e6db13451cb3b0ce9a8a395aa0242c0dd6ac4aa2eb8f7734b143c66b69e923dd9b779818bb87cee97b3322356c7058a75f3842232489
   languageName: node
   linkType: hard
 
@@ -4749,7 +4761,6 @@ __metadata:
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
-    "@types/react-resizable": "npm:^3"
     "@visx/visx": "npm:^3.5.1"
     autoprefixer: "npm:^10.0.1"
     daisyui: "npm:^4.4.9"
@@ -4764,7 +4775,7 @@ __metadata:
     react: "npm:^18"
     react-dom: "npm:^18"
     react-icons: "npm:^4.12.0"
-    react-resizable: "npm:^3.0.5"
+    react-rnd: "npm:^10.4.1"
     stripe: "npm:^14.5.0"
     tailwindcss: "npm:^3.3.0"
     typescript: "npm:^5"
@@ -5062,6 +5073,13 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: fdc92bb7b18b31c0e76f8ec4f98d07236b09590fd6578e587ad024792c8b2235d65125a8fd007fa47a84400f84ceccbf33f24e5198d953249e7204f4cef3517c
+  languageName: node
+  linkType: hard
+
+"tslib@npm:2.3.1":
+  version: 2.3.1
+  resolution: "tslib@npm:2.3.1"
+  checksum: 4efd888895bdb3b987086b2b7793ad1013566f882b0eb7a328384e5ecc0d71cafb16bbeab3196200cbf7f01a73ccc25acc2f131d4ea6ee959be7436a8a306482
   languageName: node
   linkType: hard
 
