@@ -28,7 +28,7 @@ const TooltipData = ({
       </div>
       {yNames.map((y, index) => {
         return (
-          <div style={{ color: colors[index] }}>
+          <div key={'tooltipdata-' + index} style={{ color: colors[index] }}>
             {y + ' : ' + formatTooltipData(tooltipData[y])}
           </div>
         );

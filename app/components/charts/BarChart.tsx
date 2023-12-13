@@ -17,14 +17,13 @@ interface BarChartProps {
   filteredData: any[];
   xName: string;
   yNames: string[];
-  chartConfigs: ChartConfigs;
+  chartConfigs?: ChartConfigs;
   chartType: ChartType;
   xMax: number;
   yMax: number;
   height: number;
   width: number;
   margin: { top: number; right: number; bottom: number; left: number };
-  topChartBottomMargin: number;
   showTooltip?: any;
   hideTooltip?: any;
 }
@@ -39,7 +38,6 @@ const BarChart = ({
   height,
   width,
   margin,
-  topChartBottomMargin,
   showTooltip,
   hideTooltip,
 }: BarChartProps) => {
@@ -60,17 +58,21 @@ const BarChart = ({
   const yScaleCallback = getScaleCallback(filteredData, yNames[0], 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
-  const yScaleLeftCallback = getScaleCallback(
-    filteredData,
-    chartConfigs.leftAxisColumnNames[0], // TODO checking only the first column's type is fragile and might break with un-knowing users
-    'y'
-  ) as typeof scaleLinear | typeof scaleTime;
+  const yScaleLeftCallback =
+    chartConfigs &&
+    (getScaleCallback(
+      filteredData,
+      chartConfigs.leftAxisColumnNames[0], // TODO checking only the first column's type is fragile and might break with un-knowing users
+      'y'
+    ) as typeof scaleLinear | typeof scaleTime);
 
-  const yScaleRightCallback = getScaleCallback(
-    filteredData,
-    chartConfigs.rightAxisColumnNames[0],
-    'y'
-  ) as typeof scaleLinear | typeof scaleTime;
+  const yScaleRightCallback =
+    chartConfigs &&
+    (getScaleCallback(
+      filteredData,
+      chartConfigs.rightAxisColumnNames[0],
+      'y'
+    ) as typeof scaleLinear | typeof scaleTime);
 
   const yScale = getYScale(
     filteredData,
@@ -89,7 +91,7 @@ const BarChart = ({
     | ScaleLinear<number, number, never>
     | ScaleTime<number, number, never>
     | undefined;
-  if (chartConfigs.leftAxisColumnNames?.length)
+  if (chartConfigs?.leftAxisColumnNames?.length && yScaleLeftCallback)
     yScaleLeft = getYScale(
       filteredData,
       chartConfigs.leftAxisColumnNames,
@@ -98,7 +100,7 @@ const BarChart = ({
       chartType
     )!;
 
-  if (chartConfigs.rightAxisColumnNames?.length)
+  if (chartConfigs?.rightAxisColumnNames?.length && yScaleRightCallback)
     yScaleRight = getYScale(
       filteredData,
       chartConfigs.rightAxisColumnNames,
@@ -116,7 +118,7 @@ const BarChart = ({
       data={filteredData}
       height={Number(height)}
       width={Number(width)}
-      margin={{ ...margin, bottom: topChartBottomMargin }}
+      margin={margin}
       xMax={xMax}
       yMax={yMax}
       xScale={xScale!}

@@ -23,7 +23,6 @@ const QueryVariablesForm = ({
 
   const handleFormSubmit = (e: any) => {
     e.preventDefault();
-    console.log(e.target.elements);
     let replacementsMap: Record<string, string> = {};
     variables.map((v, index) => {
       const element = e.target.elements[index] as HTMLInputElement;

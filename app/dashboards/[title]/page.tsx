@@ -19,11 +19,9 @@ type DashboardProps = {
 const dashboard = ({ params }: DashboardProps) => {
   // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
-    <div className='h-full min-h-[100vh] w-full border-2 border-solid border-red-900 p-4'>
-      <header> {params.title} </header>
-      <div className='draggables-wrapper relative'>
-        <DraggablesWrapper />
-      </div>
+    <div className='border-2 border-solid border-red-900 px-4'>
+      <header className='dahsboard-title py-8'> {params.title} </header>
+      <DraggablesWrapper />
     </div>
   );
 };

@@ -17,14 +17,15 @@ import TooltipLine from './TooltipLine';
 import TooltipData from './TooltipData';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
+import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 
 interface ChartContainerProps {
   chartType: ChartType;
   data: any[];
   height: number;
   width: number;
-  customizableColumnsTypes: CustomizableChartOptions[];
-  customizableAxesTypes: LeftRight[];
+  customizableColumnsTypes?: CustomizableChartOptions[];
+  customizableAxesTypes?: LeftRight[];
 }
 
 const getChartComponent = (
@@ -32,18 +33,14 @@ const getChartComponent = (
   filteredData: any[],
   xName: string,
   yNames: string[],
-  customizableColumnsTypes: CustomizableChartOptions[],
-  customizableAxesTypes: LeftRight[],
-  title: string,
   height: number | string,
   width: number | string,
   topChartHeight: number,
-  topChartBottomMargin: number,
   margin: { top: number; right: number; bottom: number; left: number },
-  background2: string,
-  // localPoint?: any,
   showTooltip?: any,
-  hideTooltip?: () => void
+  hideTooltip?: () => void,
+  customizableColumnsTypes?: CustomizableChartOptions[],
+  customizableAxesTypes?: LeftRight[]
 ) => {
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
   const yMax = Math.max(topChartHeight, 0);
@@ -56,6 +53,7 @@ const getChartComponent = (
           xName={xName}
           yNames={yNames}
           chartType={chartType}
+          margin={margin}
           xMax={xMax}
           yMax={yMax}
           height={Number(height)}
@@ -66,11 +64,14 @@ const getChartComponent = (
       );
     case ChartType.bar:
       // Bar chart is the customizable chart
-      const chartConfigs = createChartConfigs(
-        yNames,
-        customizableColumnsTypes,
-        customizableAxesTypes
-      );
+      const chartConfigs =
+        customizableColumnsTypes &&
+        customizableAxesTypes &&
+        createChartConfigs(
+          yNames,
+          customizableColumnsTypes,
+          customizableAxesTypes
+        );
       return (
         <BarChart
           filteredData={filteredData}
@@ -83,7 +84,6 @@ const getChartComponent = (
           height={Number(height)}
           width={Number(width)}
           margin={margin}
-          topChartBottomMargin={topChartBottomMargin}
           showTooltip={showTooltip}
           hideTooltip={hideTooltip}
         />
@@ -146,18 +146,18 @@ const ChartContainer = ({
   const background2 = '#af8baf';
 
   const margin = {
-    top: 50,
-    left: 80,
+    top: 20,
+    left: 30,
     bottom: 0,
-    right: 50,
+    right: 30,
   };
 
+  // seperation from brush
   const chartSeparation = 30;
-
   const innerHeight = height - margin.top - margin.bottom;
   const topChartBottomMargin = chartSeparation + 20; // need seperation to make room for the x-axis title
   const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
-  const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
+  const bottomChartHeight = innerHeight - topChartHeight - topChartBottomMargin;
 
   const columns = Object.keys(data[0]);
   const xName = columns[0];
@@ -167,6 +167,8 @@ const ChartContainer = ({
     chartType == ChartType.line || chartType == ChartType.bar;
   const showTooltipLine = chartType == ChartType.line;
   const showBrush = chartType == ChartType.line;
+  const resetScaleHeightPx = 24;
+  if (showBrush) height = height - resetScaleHeightPx;
   // data
 
   const { handleResetClick, brush } = getBrush({
@@ -178,7 +180,7 @@ const ChartContainer = ({
     width,
     topChartHeight,
     topChartBottomMargin,
-    margin,
+    mainChartMargin: margin,
     setFilteredData,
     bottomChartHeight,
     background2,
@@ -209,17 +211,14 @@ const ChartContainer = ({
                 filteredData,
                 xName,
                 yNames,
-                customizableColumnsTypes,
-                customizableAxesTypes,
-                '',
                 height,
                 width,
                 topChartHeight,
-                topChartBottomMargin,
                 margin,
-                background2,
                 showTooltip,
-                hideTooltip
+                hideTooltip,
+                customizableColumnsTypes,
+                customizableAxesTypes
               )}
             {showBrush && brush}
             {tooltipData && showTooltipLine && (
@@ -243,10 +242,16 @@ const ChartContainer = ({
               yNames={yNames}
             />
           )}
-          {showBrush && <button onClick={handleResetClick}>Reset Scale</button>}
+          {showBrush && (
+            <button
+              className={`h-[${resetScaleHeightPx}px]`}
+              onClick={handleResetClick}
+            >
+              Reset Scale
+            </button>
+          )}
         </div>
       )}
-      {/* <Table data={filteredData} /> */}
     </div>
   );
 };

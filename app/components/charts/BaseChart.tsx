@@ -12,9 +12,6 @@ import {
   ChartType,
   colors,
   MarginObject,
-  CustomizableChartOptions,
-  getBarAndLineColNames,
-  LeftRight,
   ChartConfigs,
 } from './helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
@@ -66,8 +63,6 @@ const renderData = (
   yScale: AxisScale<number>,
   yScaleLeft?: AxisScale<number>,
   yScaleRight?: AxisScale<number>,
-  xMax?: number,
-  yMax?: number,
   localPoint?: any,
   showTooltip?: any,
   handleTooltip?: (
@@ -262,8 +257,6 @@ export default function BaseChart({
         yScale,
         yScaleLeft,
         yScaleRight,
-        xMax,
-        yMax,
         localPoint,
         showTooltip,
         handleTooltip,

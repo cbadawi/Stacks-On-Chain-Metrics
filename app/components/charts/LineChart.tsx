@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { bisector } from '@visx/vendor/d3-array';
 import {
   ChartType,
+  MarginObject,
   getScaleCallback,
   getXScale,
   getYScale,
@@ -19,6 +20,7 @@ interface LineChartProps {
   xName: string;
   yNames: string[];
   chartType: ChartType;
+  margin: MarginObject;
   xMax: number;
   yMax: number;
   height: number;
@@ -32,6 +34,7 @@ const LineChart = ({
   xName,
   yNames,
   chartType,
+  margin,
   xMax,
   yMax,
   height,
@@ -39,20 +42,7 @@ const LineChart = ({
   showTooltip,
   hideTooltip,
 }: LineChartProps) => {
-  const margin = {
-    top: 50,
-    left: 80,
-    bottom: 0,
-    right: 50,
-  };
-
-  const chartSeparation = 30;
-
-  const innerHeight = height - margin.top - margin.bottom;
-  const topChartBottomMargin = chartSeparation + 20; // need seperation to make room for the x-axis title
-  const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
-  const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
-
+  // chart margin between the chart and the svg
   // Styles
   const background2 = '#af8baf';
 
@@ -104,7 +94,7 @@ const LineChart = ({
       data={data}
       height={Number(height)}
       width={Number(width)}
-      margin={{ ...margin, bottom: topChartBottomMargin }}
+      margin={margin}
       yMax={yMax}
       xScale={xScale}
       yScale={yScale}

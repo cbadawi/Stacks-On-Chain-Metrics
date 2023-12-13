@@ -12,6 +12,7 @@ import {
   getXScale,
   getYScale,
   isNum,
+  MarginObject,
   parseValue,
 } from './helpers';
 import { Group } from '@visx/group';
@@ -28,7 +29,7 @@ type BrushProps = {
   data: any[];
   width: number;
   height: number;
-  margin?: { top: number; right: number; bottom: number; left: number };
+  mainChartMargin?: MarginObject;
   xName: string;
   yName: string;
   bottomChartHeight: number;
@@ -47,7 +48,7 @@ const getBrush = ({
   width,
   topChartHeight,
   topChartBottomMargin,
-  margin = { top: 0, right: 0, bottom: 0, left: 0 },
+  mainChartMargin,
   setFilteredData,
   bottomChartHeight,
   background2,
@@ -56,7 +57,12 @@ const getBrush = ({
 
   if (!showBrush) return EMPTY_RESPONSE;
 
-  const brushMargin = { top: 50, bottom: 0, left: 50, right: 20 };
+  const brushMargin = {
+    top: 20,
+    bottom: 10,
+    left: mainChartMargin?.left || 0,
+    right: mainChartMargin?.right || 0,
+  };
   // brush bounds
   const xBrushMax = Math.max(width - brushMargin.left - brushMargin.right, 0);
   const yBrushMax = Math.max(
@@ -149,7 +155,7 @@ const getBrush = ({
         xScale={brushXScale}
         yScale={brushYScale}
         margin={brushMargin}
-        top={topChartHeight + topChartBottomMargin + (margin?.top || 0)}
+        top={topChartHeight + topChartBottomMargin + (brushMargin?.top || 0)}
         gradientColor={background2}
         hideBottomAxis={true}
         hideVerticalAxis={true}
