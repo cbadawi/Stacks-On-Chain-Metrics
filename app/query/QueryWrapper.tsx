@@ -37,7 +37,7 @@ const QueryWrapper = () => {
     setData([]);
     setError('');
     const response = await fetchData(query);
-    const json = stacksData2Array(await response.json());
+    const json = stacksData2Array(response);
     setIsLoading(false);
     if (response.status == 500) return setError(json.message);
     setData(json);
