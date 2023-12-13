@@ -186,7 +186,6 @@ const ChartContainer = ({
 
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
-      {JSON.stringify({ customizableAxesTypes, customizableColumnsTypes })}
       {chartType != ChartType.table && (
         <div className='relative'>
           <svg width={width} height={height}>
