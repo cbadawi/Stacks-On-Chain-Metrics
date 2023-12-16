@@ -5,13 +5,13 @@ import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import QueryVisualization from '../components/query/QueryVisualization';
 import {
-  ChartType,
   CustomizableChartOptions,
   LeftRight,
   getYColNamesFromData,
 } from '../components/charts/helpers';
 import { stacksData2Array } from '../helpers/delet';
-import { fetchData } from '../lib/serverData';
+import { fetchData } from '../lib/fetch';
+import { ChartType } from '@prisma/client';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
 -- Press Ctrl+Enter to run
@@ -44,7 +44,7 @@ const QueryWrapper = () => {
     // default for customizable charts is bar columns, and left axes
     if (json?.length) {
       setCustomizableColumnsTypes(
-        getYColNamesFromData(json).map((col) => ChartType.bar)
+        getYColNamesFromData(json).map((col) => ChartType.BAR)
       );
       setCustomizableAxesTypes(
         getYColNamesFromData(json).map((col) => LeftRight.left)

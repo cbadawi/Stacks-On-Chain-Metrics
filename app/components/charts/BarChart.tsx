@@ -1,9 +1,6 @@
 import React from 'react';
 import {
   ChartConfigs,
-  ChartType,
-  CustomizableChartOptions,
-  LeftRight,
   getScaleCallback,
   getXScale,
   getYScale,
@@ -12,6 +9,7 @@ import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import BaseChart from './BaseChart';
 import { localPoint } from '@visx/event';
 import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
+import { ChartType } from '@prisma/client';
 
 interface BarChartProps {
   filteredData: any[];
@@ -106,7 +104,7 @@ const BarChart = ({
       chartConfigs.rightAxisColumnNames,
       yMax,
       yScaleRightCallback,
-      ChartType.line
+      ChartType.LINE
     )!;
 
   return (

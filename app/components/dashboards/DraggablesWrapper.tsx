@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/ChartContainer';
-import { fetchData } from '@/app/lib/serverData';
+import { fetchData } from '@/app/lib/fetch';
 import { stacksData2Array } from '@/app/helpers/delet';
-import { ChartType } from '../charts/helpers';
+import { ChartType } from '@prisma/client';
 
 export type CardProperties = { height: number; width: number };
 
@@ -18,7 +18,8 @@ const DraggablesWrapper = () => {
   });
 
   const query = `select block_height, count(1) from transactions group by 1 order by 1 limit 50`;
-  const chart: ChartType = ChartType.line;
+  const chart: ChartType = ChartType.LINE;
+
   useEffect(() => {
     runQuery(query);
   }, []);
@@ -32,6 +33,7 @@ const DraggablesWrapper = () => {
     convertRemToPixels(titleHeaderHeightRem + 2 * titleHeaderPaddingRem);
   const chartContainerWidth =
     cardProperties.width - convertRemToPixels(childrenHorizontalPaddingRem);
+
   const runQuery = async (query: string) => {
     const response = await fetchData(query);
     const json = stacksData2Array(response);

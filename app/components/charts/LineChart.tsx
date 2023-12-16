@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { bisector } from '@visx/vendor/d3-array';
 import {
-  ChartType,
   MarginObject,
   getScaleCallback,
   getXScale,
@@ -14,6 +13,7 @@ import { localPoint } from '@visx/event';
 import BaseChart from './BaseChart';
 import { ScaleLinear, ScaleTime } from '@visx/vendor/d3-scale';
 import handleFailedScale from '@/app/lib/handleFailedScale';
+import { ChartType } from '@prisma/client';
 
 interface LineChartProps {
   data: any[];

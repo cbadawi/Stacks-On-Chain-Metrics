@@ -7,14 +7,9 @@ import { LinearGradient } from '@visx/gradient';
 import { scaleOrdinal } from '@visx/scale';
 
 import Watermark from '../Watermark';
-import {
-  parseValue,
-  ChartType,
-  colors,
-  MarginObject,
-  ChartConfigs,
-} from './helpers';
+import { parseValue, colors, MarginObject, ChartConfigs } from './helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
+import { ChartType } from '@prisma/client';
 
 // Initialize some variables
 const accentColor = '#edffea';
@@ -74,8 +69,8 @@ const renderData = (
   yNames?: string[],
   chartConfigs?: ChartConfigs
 ) => {
-  switch (Number(chartType)) {
-    case ChartType.line:
+  switch (chartType) {
+    case ChartType.LINE:
       if (yNames && yNames?.length && yScale)
         return yNames.map((colName, i) => (
           <LinePath
@@ -90,7 +85,7 @@ const renderData = (
             stroke='#fff'
           />
         ));
-    case ChartType.bar:
+    case ChartType.BAR:
       if (!yNames || !yScale) return;
       if (!yScaleLeft && !yScaleRight) return;
       const names = [...yNames] as const;
@@ -202,7 +197,7 @@ interface BaseChartProps {
 }
 
 export default function BaseChart({
-  chartType = ChartType.line,
+  chartType = ChartType.LINE,
   xName, // name on the x-axis
   yNames, // column names that contain the y-values
   chartConfigs,

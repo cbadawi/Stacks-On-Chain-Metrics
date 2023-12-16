@@ -1,11 +1,6 @@
 import React from 'react';
 import DropdownButton from '../DropdownButton';
-import {
-  ChartType,
-  CustomizableChartOptions,
-  customizableChartOptions,
-  enumToArray,
-} from '../charts/helpers';
+import { enumToArray } from '../charts/helpers';
 
 interface SetCustomizationProps {
   header: string;

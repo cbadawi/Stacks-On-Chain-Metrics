@@ -1,6 +1,6 @@
 import { max, min, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
-import { useMemo } from 'react';
+import { ChartType } from '@prisma/client';
 
 // Types
 export type Scales = typeof scaleLinear | typeof scaleTime | typeof scaleBand;
@@ -22,18 +22,9 @@ export type ChartConfigs = {
 export const customizableChartOptions = ['bar', 'line'];
 
 export type CustomizableChartOptions = Exclude<
-  ChartType,
-  [ChartType.table, ChartType.pie, ChartType.treemap, ChartType.number]
+  keyof typeof ChartType,
+  'TABLE' | 'PIE' | 'TREEMAP' | 'NUMBER'
 >;
-
-export enum ChartType {
-  'table',
-  'line',
-  'bar',
-  'pie',
-  'treemap',
-  'number',
-}
 
 export enum LeftRight {
   'left',
@@ -51,8 +42,8 @@ export const getBarAndLineColNames = (
   let barYNames: string[] = [];
   let lineYNames: string[] = [];
   customizableColumnTypes?.map((type, index) => {
-    if (type == ChartType.bar) barYNames.push(yNames[index]);
-    if (type == ChartType.line) lineYNames.push(yNames[index]);
+    if (type == ChartType.BAR) barYNames.push(yNames[index]);
+    if (type == ChartType.LINE) lineYNames.push(yNames[index]);
   });
 
   return {
@@ -74,10 +65,10 @@ export const createChartConfigs = (
   );
 
   const lineColumnNames = yNames.filter(
-    (_, index) => customizableColumnsTypes[index] == ChartType.line
+    (_, index) => customizableColumnsTypes[index] == ChartType.LINE
   );
   const barColumnNames = yNames.filter(
-    (_, index) => customizableColumnsTypes[index] == ChartType.bar
+    (_, index) => customizableColumnsTypes[index] == ChartType.BAR
   );
   return {
     lineColumnNames,
@@ -118,7 +109,7 @@ export function getScaleCallback(
   axes: 'x' | 'y',
   chartType?: ChartType
 ) {
-  if (chartType == ChartType.bar && axes == 'x') return scaleBand;
+  if (chartType == ChartType.BAR && axes == 'x') return scaleBand;
   const value = data[0][colName];
   if (isNum(value)) return scaleLinear;
   else if (isDate(value)) return scaleTime;
@@ -136,7 +127,7 @@ export function getXScale(
   chartType?: ChartType
 ) {
   // TODO wrap scales in useMemo [xMax, data]
-  if (chartType == ChartType.bar && axis == 'x')
+  if (chartType == ChartType.BAR && axis == 'x')
     return scaleBand<string>({
       range: [0, xMax],
       round: true,
@@ -174,7 +165,7 @@ export function getYScale(
     // in case of bar chart, the bars will stack on top of each other
     // hence, we add(stack) all the y values before finding their max.
     const maxY =
-      chartType == ChartType.bar
+      chartType == ChartType.BAR
         ? Math.max(
             ...data.map((d) =>
               [...yNames.map((key) => Number(d[key]))].reduce(

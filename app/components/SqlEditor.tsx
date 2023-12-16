@@ -3,7 +3,7 @@ import { FaPlayCircle } from 'react-icons/fa';
 import React, { useState } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
 import Spinner from './Spinner';
-import QueryFiltersForm from './query/QueryVariablesForm';
+import QueryVariablesForm from './query/QueryVariablesForm';
 
 interface SqlEditorProps {
   query: string;
@@ -61,7 +61,7 @@ const SqlEditor = ({
           </button>
         </div>
       </div>
-      <QueryFiltersForm
+      <QueryVariablesForm
         query={query}
         setQuery={setQuery}
         runQuery={runQuery}

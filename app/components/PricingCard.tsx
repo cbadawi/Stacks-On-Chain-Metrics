@@ -11,11 +11,11 @@ const PricingCard = ({ plan }: PricingCardProps) => {
     <div className='card w-96 bg-slate-800 shadow-xl'>
       <div className='card-body'>
         <h2 className='card-title'>{plan.name}</h2>
-        <text>
+        <span>
           {isNaN(parseInt(plan.price)) ? '' : '$'}
           {plan.price}
           {isNaN(parseInt(plan.price)) ? '' : '/month'}
-        </text>
+        </span>
         {plan.perks.map((perk) => (
           <PricingPerk key={perk} perk={perk} />
         ))}

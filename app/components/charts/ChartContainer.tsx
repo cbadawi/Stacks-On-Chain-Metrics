@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import {
-  ChartType,
   CustomizableChartOptions,
   LeftRight,
   accentColorDark,
@@ -17,7 +16,7 @@ import TooltipLine from './TooltipLine';
 import TooltipData from './TooltipData';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
-import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
+import { ChartType } from '@prisma/client';
 
 interface ChartContainerProps {
   chartType: ChartType;
@@ -45,8 +44,8 @@ const getChartComponent = (
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
   const yMax = Math.max(topChartHeight, 0);
 
-  switch (Number(chartType)) {
-    case ChartType.line:
+  switch (chartType) {
+    case ChartType.LINE:
       return (
         <LineChart
           data={filteredData}
@@ -62,7 +61,7 @@ const getChartComponent = (
           hideTooltip={hideTooltip!}
         />
       );
-    case ChartType.bar:
+    case ChartType.BAR:
       // Bar chart is the customizable chart
       const chartConfigs =
         customizableColumnsTypes &&
@@ -88,7 +87,7 @@ const getChartComponent = (
           hideTooltip={hideTooltip}
         />
       );
-    case ChartType.pie:
+    case ChartType.PIE:
       return (
         <Pie
           data={filteredData}
@@ -164,9 +163,9 @@ const ChartContainer = ({
   const yNames = columns.slice(1);
 
   const showTooltipData =
-    chartType == ChartType.line || chartType == ChartType.bar;
-  const showTooltipLine = chartType == ChartType.line;
-  const showBrush = chartType == ChartType.line;
+    chartType == ChartType.LINE || chartType == ChartType.BAR;
+  const showTooltipLine = chartType == ChartType.LINE;
+  const showBrush = chartType == ChartType.LINE;
   const resetScaleHeightPx = 24;
   if (showBrush) height = height - resetScaleHeightPx;
   // data
@@ -188,7 +187,7 @@ const ChartContainer = ({
 
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
-      {chartType != ChartType.table && (
+      {chartType != ChartType.TABLE && (
         <div className='relative'>
           <svg width={width} height={height}>
             <LinearGradient

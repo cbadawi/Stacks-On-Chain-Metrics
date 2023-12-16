@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ChartType {
+  TABLE
+  LINE
+  BAR
+  PIE
+  TREEMAP
+  NUMBER
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  hash        String
+  name        String?      
+  dashboards  Dashboard[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  
+  @@index([email], map: "USER_EMAIL")
+  @@map("users")
+}
+
+model Dashboard {
+  id          Int          @id @default(autoincrement())
+  title       String       
+  description String?
+  private     Boolean  @default(false)
+  creator     User         @relation(fields: [creatorId], references: [id])
+  creatorId   Int
+  deleted     Boolean      @default(false) 
+  charts      Chart[]
+  tags        Tag[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@index([deleted, title], map: "DASH_TITLE")
+  @@unique([deleted, title])
+  @@map("dashboards")
+}
+
+model Chart {
+  id          Int          @id @default(autoincrement())
+  title       String
+  query       String
+  variables   String[]
+  type        ChartType
+  x           Int
+  y           Int
+  width       Int
+  height      Int
+  deleted     Boolean      @default(false) 
+  dashboard   Dashboard    @relation(fields: [dashboardId], references: [id])
+  dashboardId Int          @map("dashboard_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  @@index([deleted, dashboardId], map: "CHART_DASHBOARD_ID")
+  @@map("charts")
+}
+
+model Tag {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  dashboard   Dashboard    @relation(fields: [dashboardId], references: [id])
+  dashboardId Int          @map("dashboard_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  
+  @@map("tags")
+}

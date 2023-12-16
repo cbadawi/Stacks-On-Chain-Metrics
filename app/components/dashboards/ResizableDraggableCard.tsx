@@ -29,6 +29,8 @@ const ResizableDraggableCard = ({
   return (
     <Rnd
       bounds='parent'
+      minHeight={150}
+      minWidth={150}
       dragGrid={[50, 50]} // increments
       onResize={(e, direction, ref, delta, position) => {
         setCardProperties({

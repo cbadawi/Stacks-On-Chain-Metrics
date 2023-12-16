@@ -3,7 +3,7 @@ import React from 'react';
 const About = () => {
   // TODO mention the API, pointing to its documentation and offerings
   return (
-    <text>
+    <p>
       At Stacks Metrics, we believe in the power of blockchain technology and
       its potential to revolutionize industries. Our mission is to make this
       technology accessible and understandable for all. We provide a platform
@@ -16,7 +16,7 @@ const About = () => {
       commitment to delivering quality results, were dedicated to making
       blockchain accessible for everyone. Discover the hidden potential of
       blockchain. Check out ourDashboardsand get started now!
-    </text>
+    </p>
   );
 };
 

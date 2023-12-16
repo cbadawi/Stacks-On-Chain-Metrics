@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
-import DropdownButton from '../DropdownButton';
-import {
-  ChartType,
-  CustomizableChartOptions,
-  LeftRight,
-  customizableChartOptions,
-} from '../charts/helpers';
+import React from 'react';
+import { CustomizableChartOptions, LeftRight } from '../charts/helpers';
 import SetCustomization from './SetCustomization';
+import { ChartType } from '@prisma/client';
 
 interface CustomizeBarChart {
   columnNames: string[];
@@ -31,14 +26,13 @@ const CustomizeBarChart = ({
     columnIndex: number
   ) => {
     const types = [...customizableColumnTypes];
-    types[columnIndex] = ChartType[newType] as unknown as ChartType;
+    types[columnIndex] = ChartType[
+      newType
+    ] as unknown as CustomizableChartOptions;
     setCustomizableColumnsTypes(types);
   };
 
-  const setAxesType = (
-    newType: CustomizableChartOptions,
-    columnIndex: number
-  ) => {
+  const setAxesType = (newType: LeftRight, columnIndex: number) => {
     const types = [...customizableAxesTypes];
     types[columnIndex] = LeftRight[newType] as unknown as LeftRight;
     setCustomizableAxesTypes(types);

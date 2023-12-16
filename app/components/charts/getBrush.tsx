@@ -7,7 +7,6 @@ import { PatternLines } from '@visx/pattern';
 import BaseChart from './BaseChart';
 import {
   accentColor,
-  ChartType,
   getScaleCallback,
   getXScale,
   getYScale,
@@ -21,6 +20,7 @@ import BaseBrush, {
   UpdateBrush,
 } from '@visx/brush/lib/BaseBrush';
 import handleFailedScale from '@/app/lib/handleFailedScale';
+import { ChartType } from '@prisma/client';
 
 const EMPTY_RESPONSE = { handleResetClick: undefined, brush: undefined };
 
@@ -77,7 +77,7 @@ const getBrush = ({
     stroke: 'white',
   };
 
-  const xScaleCallback = getScaleCallback(data, xName, 'x', ChartType.line)!;
+  const xScaleCallback = getScaleCallback(data, xName, 'x', ChartType.LINE)!;
   const yScaleCallback = getScaleCallback(data, yName, 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
@@ -90,7 +90,7 @@ const getBrush = ({
     xBrushMax,
     xScaleCallback,
     'x',
-    ChartType.line
+    ChartType.LINE
   )!;
 
   const brushYScale = getYScale(
@@ -98,7 +98,7 @@ const getBrush = ({
     [yName],
     yBrushMax,
     yScaleCallback,
-    ChartType.line
+    ChartType.LINE
   )!;
 
   // In case of multi-line chart, for simplicity, the brush parameters should be depending on the first line

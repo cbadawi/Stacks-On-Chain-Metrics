@@ -12,7 +12,7 @@ const PricingPerk = ({ perk }: PricingPerkProps) => {
         className='ml-2 h-5 w-5 flex-shrink-0 text-green-500'
         aria-hidden='true'
       />
-      <text className='p-3'>{perk}</text>
+      <span className='p-3'>{perk}</span>
     </div>
   );
 };
