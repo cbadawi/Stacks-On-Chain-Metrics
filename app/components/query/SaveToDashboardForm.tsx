@@ -5,6 +5,7 @@ import { createNewDashboardAndChart, addChartToDashboard } from './actions';
 import Button from '../filter/Button';
 import { ChartType, Dashboard, Prisma } from '@prisma/client';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 type SaveToDashboardFormProps = {
   query: string;
@@ -25,9 +26,10 @@ const SaveToDashboardForm = ({
   const [createDashboardError, setCreateDashboardError] = useState<string>('');
 
   useEffect(() => {
-    console.log('running use effect');
     getDashboardTitles();
   }, []);
+
+  const { data: session, status } = useSession();
 
   const getDashboardTitles = async () => {
     const res = await fetch(`api/dashboards?email=dummy@`);

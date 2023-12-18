@@ -5,13 +5,24 @@
 import { AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import AuthButton from './AuthButton';
 
 const Navbar = () => {
   const [navbarMenu, setNavbarMenu] = useState(false);
+  const { data: session, status } = useSession();
+  console.log('navbar session', session, 'status', status);
 
   const handleNavbarMenu = () => {
     setNavbarMenu(!navbarMenu);
   };
+
+  const links = [
+    <Link href='/insights'>Insights</Link>,
+    <Link href='/query'>Query</Link>,
+    <Link href='/'>API Docs</Link>,
+    <Link href='/pricing'>Upgrade</Link>,
+  ];
 
   return (
     <div className='navbar bg-base-100'>
@@ -23,36 +34,18 @@ const Navbar = () => {
           Stacks Metrics
         </Link>
         <div className='ml-10 hidden md:flex'>
-          <Link
-            href='/insights'
-            className='btn btn-square btn-ghost w-24 text-lg font-thin text-white  hover:underline'
-          >
-            Insights
-          </Link>
-          <Link
-            href='/query'
-            className='btn btn-square btn-ghost w-24 text-lg font-thin text-white hover:underline'
-          >
-            Query
-          </Link>
-          <Link
-            href='/'
-            className='btn btn-square btn-ghost w-24 text-lg font-thin text-white hover:underline'
-          >
-            API Docs
-          </Link>
-          <Link
-            href='/pricing'
-            className='btn btn-square btn-ghost w-24 text-lg  font-thin text-white hover:underline'
-          >
-            Upgrade
-          </Link>
+          {links.map((link, index) => (
+            <div
+              key={'bar-' + index}
+              className='btn btn-square btn-ghost w-24 text-lg font-thin text-white hover:underline'
+            >
+              {link}
+            </div>
+          ))}
         </div>
       </div>
       <div className='hidden md:flex'>
-        <Link href='/' className='btn btn-square btn-ghost w-20 text-lg'>
-          Sign In
-        </Link>
+        <AuthButton />
       </div>
       <div
         className='btn btn-square btn-ghost flex md:hidden'
@@ -74,35 +67,20 @@ const Navbar = () => {
       >
         <div className='w-full'>
           <ul className='text-2xl font-bold uppercase'>
+            {links.map((link, index) => (
+              <li
+                key={'menu-' + index}
+                onClick={handleNavbarMenu}
+                className='cursor-pointer py-5 hover:text-[#747FFF]'
+              >
+                {link}
+              </li>
+            ))}
             <li
               onClick={handleNavbarMenu}
               className='cursor-pointer py-5 hover:text-[#747FFF]'
             >
-              <Link href={'/insights'}>Insights</Link>
-            </li>
-            <li
-              onClick={handleNavbarMenu}
-              className='cursor-pointer py-5 hover:text-[#747FFF]'
-            >
-              <Link href={'/'}>Query</Link>
-            </li>
-            <li
-              onClick={handleNavbarMenu}
-              className='cursor-pointer py-5 hover:text-[#747FFF]'
-            >
-              <Link href={'/'}>API Docs</Link>
-            </li>
-            <li
-              onClick={handleNavbarMenu}
-              className='cursor-pointer py-5 hover:text-[#747FFF]'
-            >
-              <Link href={'/pricing'}>Upgrade</Link>
-            </li>
-            <li
-              onClick={handleNavbarMenu}
-              className='cursor-pointer py-5 hover:text-[#747FFF]'
-            >
-              <Link href={'/'}>Sign In</Link>
+              <AuthButton />
             </li>
           </ul>
         </div>

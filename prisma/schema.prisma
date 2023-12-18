@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas = ["public", "dash"]
 }
 
 enum ChartType {
@@ -14,9 +16,11 @@ enum ChartType {
   PIE
   TREEMAP
   NUMBER
+
+  @@schema("dash")
 }
 
-model User {
+model Owner {
   id          Int          @id @default(autoincrement())
   email       String       @unique
   hash        String
@@ -26,25 +30,27 @@ model User {
   updatedAt   DateTime     @updatedAt @map("updated_at")
   
   @@index([email], map: "USER_EMAIL")
-  @@map("users")
+  @@map("owner")
+  @@schema("dash")
 }
 
 model Dashboard {
-  id          Int          @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String       
   description String?
-  private     Boolean  @default(false)
-  creator     User         @relation(fields: [creatorId], references: [id])
-  creatorId   Int
-  deleted     Boolean      @default(false) 
+  private     Boolean       @default(false)
+  owner       Owner         @relation(fields: [ownerId], references: [id])
+  ownerId     Int           @map("owner_id")
+  deleted     Boolean       @default(false) 
   charts      Chart[]
   tags        Tag[]
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
   @@index([deleted, title], map: "DASH_TITLE")
   @@unique([deleted, title])
   @@map("dashboards")
+  @@schema("dash")
 }
 
 model Chart {
@@ -64,6 +70,7 @@ model Chart {
   updatedAt   DateTime     @updatedAt @map("updated_at")
   @@index([deleted, dashboardId], map: "CHART_DASHBOARD_ID")
   @@map("charts")
+  @@schema("dash")
 }
 
 model Tag {
@@ -75,4 +82,58 @@ model Tag {
   updatedAt   DateTime     @updatedAt @map("updated_at")
   
   @@map("tags")
+  @@schema("dash")
+}
+
+// Next Auth email provider adabpter 
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@schema("public")
+
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@schema("public")
+
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  @@schema("public")
+
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@schema("public")
 }
