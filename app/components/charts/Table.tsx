@@ -9,8 +9,8 @@ const Table = ({ data }: TableProps) => {
   const colNames = Object.keys(data[0]);
   // TODO if styling fails, build a table with divs similar to gamma's
   return (
-    <div className='flex max-w-[90%] justify-center overflow-x-scroll'>
-      <table className='max-h-96 overflow-y-scroll'>
+    <div className='max-h-[90vh] max-w-[90%] overflow-x-scroll'>
+      <table className='h-auto w-auto'>
         <thead className=' bg-[#1e2023]'>
           <th key={'#'} className='p-2 text-center text-lg'>
             #
@@ -23,7 +23,7 @@ const Table = ({ data }: TableProps) => {
             );
           })}
         </thead>
-        <tbody className='divide-y divide-gray-400 divide-opacity-40  text-lg'>
+        <tbody className='divide-y divide-gray-400  divide-opacity-40  text-lg'>
           {data.map((row: any, index: any) => {
             return (
               <tr
