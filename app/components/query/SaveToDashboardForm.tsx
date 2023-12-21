@@ -32,8 +32,6 @@ const SaveToDashboardForm = ({
     getDashboardTitles();
   }, [saveToDashCounter]);
 
-  console.log('saveToDashCounter.current', saveToDashCounter);
-
   const { data: session, status } = useSession();
 
   const getDashboardTitles = async () => {
@@ -54,17 +52,17 @@ const SaveToDashboardForm = ({
 
   return (
     <div>
-      <form
-        action={addChartToDashboard}
-        autoComplete='off'
-        className='flex flex-col items-center justify-center'
-      >
-        <div className='card w-96 bg-neutral text-neutral-content'>
-          <div className='card-body items-center text-center'>
-            <h2 className='card-title'>Dashboards:</h2>
-            <div className='dashboards max-h-[8rem] w-64 overflow-y-scroll rounded border-[1px] border-gray-500'>
-              {dashboardTitles.length > 0 &&
-                dashboardTitles.map((title, index) => (
+      {dashboardTitles.length > 0 && (
+        <form
+          action={addChartToDashboard}
+          autoComplete='off'
+          className='flex flex-col items-center justify-center'
+        >
+          <div className='card w-96 bg-neutral text-neutral-content'>
+            <div className='card-body items-center p-5 text-center'>
+              <h2 className='card-title'>Dashboards:</h2>
+              <div className='dashboards max-h-[8rem] w-64 overflow-y-scroll rounded border-[1px] border-gray-500'>
+                {dashboardTitles.map((title, index) => (
                   <Link
                     key={'link-' + index}
                     className='flex min-h-[1.75rem] items-center justify-center hover:bg-gray-600'
@@ -73,13 +71,14 @@ const SaveToDashboardForm = ({
                     {title}
                   </Link>
                 ))}
-            </div>
-            <div className='card-actions justify-end'>
-              <button className='btn btn-primary'>Save Chart</button>
+              </div>
+              <div className='card-actions justify-end'>
+                <button className='btn btn-primary'>Save Chart</button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      )}
       <form
         action={async (f) => {
           const response = await createNewDashboardAndChart(f);
@@ -93,9 +92,10 @@ const SaveToDashboardForm = ({
           } else if (response.error) setCreateDashboardError(response.message);
         }}
         autoComplete='off'
+        className='mt-5 gap-5'
       >
-        <p>create your first dashboard if no dashboard in db</p>
-        <div className='flex'>
+        <p>Create your new dashboard :</p>
+        <div className='my-2 flex'>
           <input
             type='checkbox'
             name='private'
