@@ -31,14 +31,11 @@ const QueryWrapper = () => {
   const [data, setData] = useState([]);
 
   const runQuery = async (query: string) => {
-    console.log('running queyr', query);
     setIsLoading(true);
     setData([]);
     setError('');
-    const res = await fetchData(query);
+    const res = await fetchData(query, setError);
     setIsLoading(false);
-    if (res.status == 500) return setError(res.message);
-    console.log('res.data ', res.data);
     setData(res.data);
     // default for customizable charts is bar columns, and left axes
     if (res.data?.length) {
@@ -50,7 +47,6 @@ const QueryWrapper = () => {
       );
     }
   };
-
   return (
     <div>
       <div className='relative mx-auto my-10 min-h-[350px] w-[95%]'>

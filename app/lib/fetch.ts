@@ -1,6 +1,9 @@
 import { NODE_QUERY_API } from './constants';
 
-export const fetchData = async (query: string) => {
+export const fetchData = async (
+  query: string,
+  errorHandler?: (message: string) => void
+) => {
   const body = JSON.stringify({
     query,
   });
@@ -15,5 +18,6 @@ export const fetchData = async (query: string) => {
     body,
   });
   const json = await response.json();
+  if (!response.ok && errorHandler) errorHandler(json.message);
   return json;
 };
