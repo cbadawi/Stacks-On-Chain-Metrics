@@ -28,49 +28,53 @@ const QueryButtons = ({ setChart, chartType, query }: QueryButtonsProps) => {
   let [saveToDashCounter, setSaveToDashCounter] = useState(0);
   return (
     <div className='icons-flex-container relative m-0 flex min-h-[4rem] flex-row items-center justify-between gap-2 pl-12 pr-12'>
-      <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
-        <Modal
-          saveToDashCounter={saveToDashCounter}
-          setSaveToDashCounter={setSaveToDashCounter}
-          OpenButtonChilden={<FiSave />}
-          ModalChildren={
-            <SaveToDashboardForm
-              query={query}
-              chartType={chartType}
-              saveToDashCounter={saveToDashCounter}
-            />
-          }
-        />
-      </div>
-      <div className='tooltip tooltip-primary' data-tip='Download to CSV'>
-        <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
-          <FiDownload />
+      <div className='flex items-center justify-center gap-8'>
+        <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
+          <Modal
+            saveToDashCounter={saveToDashCounter}
+            setSaveToDashCounter={setSaveToDashCounter}
+            OpenButtonChilden={<FiSave />}
+            ModalChildren={
+              <SaveToDashboardForm
+                query={query}
+                chartType={chartType}
+                saveToDashCounter={saveToDashCounter}
+              />
+            }
+          />
         </div>
-      </div>
-      <div
-        className='tooltip tooltip-primary hidden'
-        data-tip='Create Alerts (SOON)'
-      >
-        <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
-          <BiSolidBellRing />
-        </div>
-      </div>
-      {chartIcons.map((icon, index) => {
-        return (
-          <div
-            className='chart-icons-container flex h-16 flex-row items-center gap-2 overflow-x-auto'
-            key={index}
-            onClick={() => setChart(icon.key! as unknown as ChartType)}
-          >
-            <button
-              className='btn hover:relative hover:bottom-1 hover:overflow-visible'
-              key={index}
-            >
-              {icon}
-            </button>
+        <div className='tooltip tooltip-primary' data-tip='Download to CSV'>
+          <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+            <FiDownload />
           </div>
-        );
-      })}
+        </div>
+        <div
+          className='tooltip tooltip-primary hidden'
+          data-tip='Create Alerts (SOON)'
+        >
+          <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+            <BiSolidBellRing />
+          </div>
+        </div>
+      </div>
+      <div className='flex items-center justify-center gap-8'>
+        {chartIcons.map((icon, index) => {
+          return (
+            <div
+              className='chart-icons-container flex h-16 flex-row items-center gap-2 overflow-x-auto'
+              key={index}
+              onClick={() => setChart(icon.key! as unknown as ChartType)}
+            >
+              <button
+                className='btn hover:relative hover:bottom-1 hover:overflow-visible'
+                key={index}
+              >
+                {icon}
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
