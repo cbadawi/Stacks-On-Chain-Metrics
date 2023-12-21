@@ -13,7 +13,7 @@ const chartIcons = [
   <FcLineChart size={20} key={ChartType.LINE} />,
   <FcPieChart size={20} key={ChartType.PIE} />,
   <FcBarChart size={20} key={ChartType.BAR} />,
-  <FcFrame size={20} key={ChartType.TREEMAP} />,
+  // <FcFrame size={20} key={ChartType.TREEMAP} />,
   <MdOutlineNumbers size={20} key={ChartType.NUMBER} />,
 ];
 

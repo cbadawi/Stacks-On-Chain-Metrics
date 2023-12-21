@@ -17,6 +17,7 @@ import TooltipData from './TooltipData';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
 import { ChartType } from '@prisma/client';
+import Stats from './Stats';
 
 interface ChartContainerProps {
   chartType: ChartType;
@@ -183,7 +184,7 @@ const ChartContainer = ({
 
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
-      {chartType != ChartType.TABLE && (
+      {chartType != ChartType.TABLE && chartType != ChartType.NUMBER && (
         <div className='relative'>
           <svg width={width} height={height}>
             <LinearGradient
@@ -248,6 +249,7 @@ const ChartContainer = ({
         </div>
       )}
       {chartType == ChartType.TABLE && <Table data={filteredData} />}
+      {chartType == ChartType.NUMBER && <Stats data={filteredData} />}
     </div>
   );
 };

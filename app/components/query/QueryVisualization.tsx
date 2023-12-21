@@ -44,15 +44,12 @@ const QueryVisualization = ({
 
   return (
     <div className='visualization-container relative my-12 flex w-full flex-col justify-center rounded-t-3xl bg-[#111111] px-5 py-4 md:px-0'>
-      {!!data?.length && (
-        // todo pass variables
-        <QueryButtons
-          setChart={setChartType}
-          chartType={chartType}
-          query={query}
-        />
-      )}
-      {!!data?.length && chartType == ChartType.BAR && (
+      <QueryButtons
+        setChart={setChartType}
+        chartType={chartType}
+        query={query}
+      />
+      {chartType == ChartType.BAR && (
         <CustomizeBarChart
           columnNames={Object.keys(data[0]).slice(1)}
           customizableColumnTypes={customizableColumnsTypes}
@@ -61,16 +58,14 @@ const QueryVisualization = ({
           setCustomizableAxesTypes={setCustomizableAxesTypes}
         />
       )}
-      {!!data?.length && (
-        <ChartContainer
-          data={data}
-          chartType={chartType}
-          height={700}
-          width={900}
-          customizableColumnsTypes={customizableColumnsTypes}
-          customizableAxesTypes={customizableAxesTypes}
-        />
-      )}
+      <ChartContainer
+        data={data}
+        chartType={chartType}
+        height={700}
+        width={900}
+        customizableColumnsTypes={customizableColumnsTypes}
+        customizableAxesTypes={customizableAxesTypes}
+      />
       {!data?.length && <StarterPlaceholderMessage />}
       <span>{JSON.stringify(data, null, 2)}</span>
     </div>

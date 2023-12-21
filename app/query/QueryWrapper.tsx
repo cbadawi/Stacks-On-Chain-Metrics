@@ -9,7 +9,7 @@ import {
   LeftRight,
   getYColNamesFromData,
 } from '../components/charts/helpers';
-import { fetchData } from '../lib/fetch';
+import { fetchData, orderData } from '../lib/fetch';
 import { ChartType } from '@prisma/client';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
@@ -28,7 +28,7 @@ const QueryWrapper = () => {
   const [customizableAxesTypes, setCustomizableAxesTypes] = useState<
     LeftRight[]
   >([]);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[] | undefined | never[]>([]);
 
   const runQuery = async (query: string) => {
     setIsLoading(true);
@@ -36,7 +36,11 @@ const QueryWrapper = () => {
     setError('');
     const res = await fetchData(query, setError);
     setIsLoading(false);
-    setData(res.data);
+
+    const data = orderData(res);
+
+    setData(data);
+
     // default for customizable charts is bar columns, and left axes
     if (res.data?.length) {
       setCustomizableColumnsTypes(
@@ -61,14 +65,16 @@ const QueryWrapper = () => {
       {query}
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <QueryVisualization
-          data={data}
-          query={query}
-          customizableColumnsTypes={customizableColumnsTypes}
-          setCustomizableColumnsTypes={setCustomizableColumnsTypes}
-          customizableAxesTypes={customizableAxesTypes}
-          setCustomizableAxesTypes={setCustomizableAxesTypes}
-        />
+        {!!data?.length && (
+          <QueryVisualization
+            data={data}
+            query={query}
+            customizableColumnsTypes={customizableColumnsTypes}
+            setCustomizableColumnsTypes={setCustomizableColumnsTypes}
+            customizableAxesTypes={customizableAxesTypes}
+            setCustomizableAxesTypes={setCustomizableAxesTypes}
+          />
+        )}
       </div>
     </div>
   );
