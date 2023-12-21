@@ -3,7 +3,7 @@
 import prisma from '@/app/lib/db/client';
 import { Dashboard, Chart, Prisma } from '@prisma/client';
 import { fetchData } from '../../fetch';
-import { addUser, getUser } from '../users';
+import { addOwner, getOwner } from '../users';
 
 export type ChartWithData = Chart & { data: any[] };
 
@@ -18,14 +18,14 @@ export async function addDashboard(
 ) {
   // TODO get user from session
   const email = 'dummy@';
-  let user = await getUser(email);
-  if (!user) user = await addUser(email, 'hash');
+  let owner = await getOwner(email);
+  if (!owner) owner = await addOwner(email, 'hash');
   const newDashboard = await prisma.dashboard.create({
     data: {
       title,
       private: privateDashboard,
       description,
-      creatorId: user.id,
+      ownerId: owner.id,
     },
   });
   return newDashboard;

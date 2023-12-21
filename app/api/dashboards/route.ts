@@ -7,12 +7,12 @@ export async function GET(request: NextRequest) {
 
   let whereClause: {
     deleted: boolean;
-    creator?: {
+    owner?: {
       email: string;
     };
   } = { deleted: false };
   if (email) {
-    whereClause = { ...whereClause, creator: { email: email } };
+    whereClause = { ...whereClause, owner: { email: email } };
   }
 
   const dashboards = await prisma.dashboard.findMany({

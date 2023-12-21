@@ -1,11 +1,18 @@
+import { NODE_QUERY_API } from './constants';
+
 export const fetchData = async (query: string) => {
-  const response = await fetch('https://api.stacksdata.info/v1/sql', {
+  const body = JSON.stringify({
+    query,
+  });
+  const url = NODE_QUERY_API + '/v1/query';
+
+  const response = await fetch(url, {
     method: 'POST',
     next: { revalidate: 90 },
     headers: {
       'Content-Type': 'application/json',
     },
-    body: query,
+    body,
   });
   const json = await response.json();
   return json;

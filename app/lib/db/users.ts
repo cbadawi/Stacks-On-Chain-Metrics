@@ -1,14 +1,14 @@
 import prisma from './client';
 
-export async function addUser(email: string, hash: string, name: string = '') {
-  const user = await prisma.user.create({
+export async function addOwner(email: string, hash: string, name: string = '') {
+  const user = await prisma.owner.create({
     data: { name, email, hash },
   });
   return user;
 }
 
-export async function getUser(email: string) {
-  return prisma.user.findUnique({
+export async function getOwner(email: string) {
+  return prisma.owner.findUnique({
     where: {
       email,
     },

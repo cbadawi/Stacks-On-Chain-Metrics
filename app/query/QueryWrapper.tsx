@@ -9,7 +9,6 @@ import {
   LeftRight,
   getYColNamesFromData,
 } from '../components/charts/helpers';
-import { stacksData2Array } from '../helpers/delet';
 import { fetchData } from '../lib/fetch';
 import { ChartType } from '@prisma/client';
 
@@ -36,18 +35,18 @@ const QueryWrapper = () => {
     setIsLoading(true);
     setData([]);
     setError('');
-    const response = await fetchData(query);
-    const json = stacksData2Array(response);
+    const res = await fetchData(query);
     setIsLoading(false);
-    if (response.status == 500) return setError(json.message);
-    setData(json);
+    if (res.status == 500) return setError(res.message);
+    console.log('res.data ', res.data);
+    setData(res.data);
     // default for customizable charts is bar columns, and left axes
-    if (json?.length) {
+    if (res.data?.length) {
       setCustomizableColumnsTypes(
-        getYColNamesFromData(json).map((col) => ChartType.BAR)
+        getYColNamesFromData(res.data).map((col) => ChartType.BAR)
       );
       setCustomizableAxesTypes(
-        getYColNamesFromData(json).map((col) => LeftRight.left)
+        getYColNamesFromData(res.data).map((col) => LeftRight.left)
       );
     }
   };

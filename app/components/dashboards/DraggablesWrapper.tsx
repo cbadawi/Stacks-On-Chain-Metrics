@@ -5,7 +5,6 @@ import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/ChartContainer';
 import { fetchData } from '@/app/lib/fetch';
-import { stacksData2Array } from '@/app/helpers/delet';
 import { ChartType } from '@prisma/client';
 
 export type CardProperties = { height: number; width: number };
@@ -36,8 +35,7 @@ const DraggablesWrapper = () => {
 
   const runQuery = async (query: string) => {
     const response = await fetchData(query);
-    const json = stacksData2Array(response);
-    setData(json);
+    setData(response.data);
   };
 
   return (

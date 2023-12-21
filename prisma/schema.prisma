@@ -86,6 +86,7 @@ model Tag {
 }
 
 // Next Auth email provider adabpter 
+// Auth tables should be in the public schema since i have not figured out how to make next auth use a diff schema.
 model Account {
   id                 String  @id @default(cuid())
   userId             String
