@@ -9,29 +9,41 @@ const Table = ({ data }: TableProps) => {
   const colNames = Object.keys(data[0]);
   // TODO if styling fails, build a table with divs similar to gamma's
   return (
-    <table className='max-h-96 w-[90%] overflow-x-scroll overflow-y-scroll'>
-      <thead className=' bg-[#1e2023]'>
-        <th key={'#'}>#</th>
-        {colNames.map((col: any) => {
-          return <th key={col}>{col}</th>;
-        })}
-      </thead>
-      <tbody>
-        {data.map((row: any, index: any) => {
-          return (
-            <tr
-              key={index}
-              className='border-b border-solid border-gray-400 border-opacity-40'
-            >
-              <td>{index}</td>
-              {colNames.map((col: any) => {
-                return <td key={col}>{data[index][col]}</td>;
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className='flex max-w-[90%] justify-center overflow-x-scroll'>
+      <table className='max-h-96 overflow-y-scroll'>
+        <thead className=' bg-[#1e2023]'>
+          <th key={'#'} className='p-2 text-center text-lg'>
+            #
+          </th>
+          {colNames.map((col: any) => {
+            return (
+              <th key={col} className='p-2 text-center text-lg'>
+                {col}
+              </th>
+            );
+          })}
+        </thead>
+        <tbody className='divide-y divide-gray-400 divide-opacity-40  text-lg'>
+          {data.map((row: any, index: any) => {
+            return (
+              <tr
+                key={index}
+                className='border-b border-solid border-gray-400 border-opacity-40  text-lg hover:bg-gray-800'
+              >
+                <td className='p-2 text-center'>{index}</td>
+                {colNames.map((col: any) => {
+                  return (
+                    <td key={col} className='p-2 text-center'>
+                      {data[index][col]}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

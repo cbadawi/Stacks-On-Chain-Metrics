@@ -108,12 +108,6 @@ const ChartContainer = ({
   customizableAxesTypes,
 }: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
-  // Error: Hydration failed because the initial UI does not match what was rendered on the server.
-  // Warning: Expected server HTML to contain a matching <div> in <div>.
-  // See more info here: https://nextjs.org/docs/messages/react-hydration-error
-  // if (typeof window == 'undefined') return null;
-  // const height = window.innerHeight * 0.75;
-  // const width = window.innerWidth * 0.75;
   const [filteredData, setFilteredData] = useState(data);
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
@@ -185,6 +179,8 @@ const ChartContainer = ({
     background2,
   });
 
+  console.log('rendering chart container data', filteredData);
+
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
       {chartType != ChartType.TABLE && (
@@ -251,6 +247,7 @@ const ChartContainer = ({
           )}
         </div>
       )}
+      {chartType == ChartType.TABLE && <Table data={filteredData} />}
     </div>
   );
 };
