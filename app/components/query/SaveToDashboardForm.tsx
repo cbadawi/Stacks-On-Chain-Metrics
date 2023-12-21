@@ -11,6 +11,7 @@ type SaveToDashboardFormProps = {
   query: string;
   variables?: any;
   chartType: ChartType;
+  saveToDashCounter: number;
 };
 
 const closeModal = () =>
@@ -20,19 +21,25 @@ const SaveToDashboardForm = ({
   query,
   chartType,
   variables = [],
+  saveToDashCounter,
 }: SaveToDashboardFormProps) => {
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [dashboardTitles, setDashboardTitles] = useState<string[]>([]);
   const [createDashboardError, setCreateDashboardError] = useState<string>('');
 
   useEffect(() => {
+    console.log('running use effect');
     getDashboardTitles();
-  }, []);
+  }, [saveToDashCounter]);
+
+  console.log('saveToDashCounter.current', saveToDashCounter);
 
   const { data: session, status } = useSession();
 
   const getDashboardTitles = async () => {
-    const res = await fetch(`api/dashboards?email=dummy@`);
+    const res = await fetch(`api/dashboards?email=dummy@`, {
+      cache: 'no-cache',
+    });
     const json: { dashboards: Dashboard[] } = await res.json();
     const titles = json.dashboards.map((d) => d.title);
     setDashboardTitles(titles);

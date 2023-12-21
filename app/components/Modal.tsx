@@ -3,16 +3,24 @@ import React from 'react';
 type ModalProps = {
   OpenButtonChilden: any;
   ModalChildren: any;
+  saveToDashCounter: number;
+  setSaveToDashCounter: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const Modal = ({ OpenButtonChilden, ModalChildren }: ModalProps) => {
+const Modal = ({
+  OpenButtonChilden,
+  ModalChildren,
+  saveToDashCounter,
+  setSaveToDashCounter,
+}: ModalProps) => {
   return (
     <div>
       <button
         className='btn'
-        onClick={() =>
-          (document.getElementById('modal') as HTMLDialogElement).showModal()
-        }
+        onClick={() => {
+          (document.getElementById('modal') as HTMLDialogElement).showModal();
+          setSaveToDashCounter(saveToDashCounter++);
+        }}
       >
         {OpenButtonChilden}
       </button>

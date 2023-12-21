@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { BiSolidBellRing } from 'react-icons/bi';
 import { BsTable } from 'react-icons/bs';
 import { FcBarChart, FcFrame, FcLineChart, FcPieChart } from 'react-icons/fc';
@@ -24,13 +24,21 @@ type QueryButtonsProps = {
 };
 
 const QueryButtons = ({ setChart, chartType, query }: QueryButtonsProps) => {
+  // needed to trigger the use effect hook in the form & fetch dashboards
+  let [saveToDashCounter, setSaveToDashCounter] = useState(0);
   return (
     <div className='icons-flex-container relative m-0 flex min-h-[4rem] flex-row items-center justify-between gap-2 pl-12 pr-12'>
       <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
         <Modal
+          saveToDashCounter={saveToDashCounter}
+          setSaveToDashCounter={setSaveToDashCounter}
           OpenButtonChilden={<FiSave />}
           ModalChildren={
-            <SaveToDashboardForm query={query} chartType={chartType} />
+            <SaveToDashboardForm
+              query={query}
+              chartType={chartType}
+              saveToDashCounter={saveToDashCounter}
+            />
           }
         />
       </div>
