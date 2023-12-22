@@ -6,6 +6,7 @@ import { colors } from './helpers';
 
 export interface PieChartProps {
   data: any[];
+  height: number;
   width: number;
   xName: string;
   yName: string;
@@ -15,21 +16,22 @@ export default function PieChart({
   data,
   xName,
   yName,
+  height = 400,
   width = 600,
 }: PieChartProps) {
   const [active, setActive] = useState({} as any);
-  const somePadding = 100;
-  const half = (width - somePadding) / 2;
+  const outerRadius = width / 3.5;
+  const innerRadius = width / 4;
 
   return (
-    <Group top={width / 2} left={width}>
+    <Group top={height / 2} left={width / 2}>
       <Pie
         data={data}
         pieValue={(data) => data[yName]}
-        outerRadius={half}
+        outerRadius={outerRadius}
         innerRadius={({ data }) => {
-          const size = active && active[xName] == data[xName] ? 12 : 8;
-          return half - size;
+          const activeSize = active && active[xName] == data[xName] ? 20 : 0;
+          return innerRadius + activeSize;
         }}
         padAngle={0.01}
       >

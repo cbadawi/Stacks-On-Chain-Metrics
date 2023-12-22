@@ -94,6 +94,7 @@ const getChartComponent = (
           data={filteredData}
           xName={xName}
           yName={yNames[0]}
+          height={Number(height)}
           width={Number(width)}
         />
       );
