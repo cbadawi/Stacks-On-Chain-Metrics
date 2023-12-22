@@ -12,16 +12,18 @@ const Table = ({ data }: TableProps) => {
     <div className='max-h-[90vh] max-w-[90%] overflow-x-scroll'>
       <table className='h-auto w-auto'>
         <thead className=' bg-[#1e2023]'>
-          <th key={'#'} className='p-2 text-center text-lg'>
-            #
-          </th>
-          {colNames.map((col: any) => {
-            return (
-              <th key={col} className='p-2 text-center text-lg'>
-                {col}
-              </th>
-            );
-          })}
+          <tr>
+            <th key={'#'} className='p-2 text-center text-lg'>
+              #
+            </th>
+            {colNames.map((col: string, index: number) => {
+              return (
+                <th key={'th-' + index} className='p-2 text-center text-lg'>
+                  {col}
+                </th>
+              );
+            })}
+          </tr>
         </thead>
         <tbody className='divide-y divide-gray-400  divide-opacity-40  text-lg'>
           {data.map((row: any, index: any) => {
