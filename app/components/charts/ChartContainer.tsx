@@ -26,6 +26,7 @@ interface ChartContainerProps {
   width: number;
   customizableColumnsTypes?: CustomizableChartOptions[];
   customizableAxesTypes?: LeftRight[];
+  errorHandler?: (msg: string) => void;
 }
 
 const getChartComponent = (
@@ -40,7 +41,8 @@ const getChartComponent = (
   showTooltip?: any,
   hideTooltip?: () => void,
   customizableColumnsTypes?: CustomizableChartOptions[],
-  customizableAxesTypes?: LeftRight[]
+  customizableAxesTypes?: LeftRight[],
+  errorHandler?: (msg: string) => void
 ) => {
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
   const yMax = Math.max(topChartHeight, 0);
@@ -60,6 +62,7 @@ const getChartComponent = (
           width={Number(width)}
           showTooltip={showTooltip}
           hideTooltip={hideTooltip!}
+          errorHandler={errorHandler}
         />
       );
     case ChartType.BAR:
@@ -96,6 +99,7 @@ const getChartComponent = (
           yName={yNames[0]}
           height={Number(height)}
           width={Number(width)}
+          errorHandler={errorHandler}
         />
       );
   }
@@ -108,6 +112,7 @@ const ChartContainer = ({
   width,
   customizableColumnsTypes,
   customizableAxesTypes,
+  errorHandler,
 }: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
   const [filteredData, setFilteredData] = useState(data);
@@ -215,7 +220,8 @@ const ChartContainer = ({
                 showTooltip,
                 hideTooltip,
                 customizableColumnsTypes,
-                customizableAxesTypes
+                customizableAxesTypes,
+                errorHandler
               )}
             {showBrush && brush}
             {tooltipData && showTooltipLine && (

@@ -10,6 +10,7 @@ export interface PieChartProps {
   width: number;
   xName: string;
   yName: string;
+  errorHandler?: (msg: string) => void;
 }
 
 export default function PieChart({
@@ -18,10 +19,15 @@ export default function PieChart({
   yName,
   height = 400,
   width = 600,
+  errorHandler,
 }: PieChartProps) {
   const [active, setActive] = useState({} as any);
   const outerRadius = width / 3.5;
   const innerRadius = width / 4;
+
+  if (!yName)
+    if (errorHandler) errorHandler('Data not suitable for Pie chart.');
+    else return;
 
   return (
     <Group top={height / 2} left={width / 2}>

@@ -21,9 +21,15 @@ type QueryButtonsProps = {
   chartType: ChartType;
   query: string;
   setChart: React.Dispatch<React.SetStateAction<ChartType>>;
+  errorHandler?: (msg: string) => void;
 };
 
-const QueryButtons = ({ setChart, chartType, query }: QueryButtonsProps) => {
+const QueryButtons = ({
+  setChart,
+  chartType,
+  query,
+  errorHandler,
+}: QueryButtonsProps) => {
   // needed to trigger the use effect hook in the form & fetch dashboards
   let [saveToDashCounter, setSaveToDashCounter] = useState(0);
   return (
@@ -63,7 +69,10 @@ const QueryButtons = ({ setChart, chartType, query }: QueryButtonsProps) => {
             <div
               className='chart-icons-container flex h-16 flex-row items-center gap-2 overflow-x-auto'
               key={index}
-              onClick={() => setChart(icon.key! as unknown as ChartType)}
+              onClick={() => {
+                setChart(icon.key! as unknown as ChartType);
+                if (errorHandler) errorHandler('');
+              }}
             >
               <button
                 className='btn hover:relative hover:bottom-1 hover:overflow-visible'

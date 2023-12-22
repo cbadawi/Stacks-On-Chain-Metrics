@@ -16,6 +16,7 @@ interface QueryVisualizationProps {
   >;
   customizableAxesTypes: LeftRight[];
   setCustomizableAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
+  errorHandler?: (msg: string) => void;
 }
 
 const QueryVisualization = ({
@@ -25,6 +26,7 @@ const QueryVisualization = ({
   setCustomizableColumnsTypes,
   customizableAxesTypes,
   setCustomizableAxesTypes,
+  errorHandler,
 }: QueryVisualizationProps) => {
   // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
   // whereas the barchart will have a combination of lines and chart but no brush
@@ -36,6 +38,7 @@ const QueryVisualization = ({
         setChart={setChartType}
         chartType={chartType}
         query={query}
+        errorHandler={errorHandler}
       />
       {chartType == ChartType.BAR && (
         <CustomizeBarChart
@@ -53,6 +56,7 @@ const QueryVisualization = ({
         width={900}
         customizableColumnsTypes={customizableColumnsTypes}
         customizableAxesTypes={customizableAxesTypes}
+        errorHandler={errorHandler}
       />
       {!data?.length && <StarterPlaceholderMessage />}
       <span>{JSON.stringify(data, null, 2)}</span>

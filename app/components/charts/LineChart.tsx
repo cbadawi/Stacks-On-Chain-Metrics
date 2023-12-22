@@ -27,6 +27,7 @@ interface LineChartProps {
   width: number;
   hideTooltip: () => void;
   showTooltip: any;
+  errorHandler?: (msg: string) => void;
 }
 
 const LineChart = ({
@@ -41,6 +42,7 @@ const LineChart = ({
   width,
   showTooltip,
   hideTooltip,
+  errorHandler,
 }: LineChartProps) => {
   // chart margin between the chart and the svg
   // Styles
@@ -52,9 +54,10 @@ const LineChart = ({
   const yScaleCallback = getScaleCallback(data, firstYName, 'y') as
     | typeof scaleLinear
     | typeof scaleTime;
-  if (!xScaleCallback || !yScaleCallback)
+  if (!xScaleCallback || !yScaleCallback) {
+    if (errorHandler) errorHandler('Data not suitable for Line chart.');
     return handleFailedScale(xScaleCallback, data);
-
+  }
   const xScale = getXScale(data, xName, xMax, xScaleCallback, 'x', chartType)!;
   const yScale = getYScale(data, yNames, yMax, yScaleCallback, chartType)!;
 
