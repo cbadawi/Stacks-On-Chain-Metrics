@@ -38,6 +38,11 @@ const CustomizeBarChart = ({
     setCustomizableAxesTypes(types);
   };
 
+  const BarAndLineChartTypes = {
+    BAR: ChartType.BAR,
+    LINE: ChartType.LINE,
+  };
+
   return (
     <div className='m-7 flex justify-center'>
       <div className='collapse collapse-arrow w-full rounded-lg bg-base-200 shadow-md sm:w-3/4 lg:w-9/12'>
@@ -46,13 +51,13 @@ const CustomizeBarChart = ({
           Customize Bar Chart
         </div>
         <form className='collapse-content p-4'>
-          <div className='flex justify-center'>
+          <div className='flex justify-center overflow-y-scroll'>
             <SetCustomization
               header='Set Chart Types'
               columnNames={columnNames}
               columnTypes={customizableColumnTypes}
               setter={setColumnType}
-              optionsEnum={ChartType}
+              optionsEnum={BarAndLineChartTypes}
             />
             <SetCustomization
               header='Set Axis Position'
