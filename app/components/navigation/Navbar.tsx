@@ -11,7 +11,6 @@ import AuthButton from './AuthButton';
 const Navbar = () => {
   const [navbarMenu, setNavbarMenu] = useState(false);
   const { data: session, status } = useSession();
-  console.log('navbar session', session, 'status', status);
 
   const handleNavbarMenu = () => {
     setNavbarMenu(!navbarMenu);

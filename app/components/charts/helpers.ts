@@ -126,6 +126,7 @@ export function getXScale(
   axis: 'x' | 'y',
   chartType?: ChartType
 ) {
+  if (!scale) return;
   // TODO wrap scales in useMemo [xMax, data]
   if (chartType == ChartType.BAR && axis == 'x')
     return scaleBand<string>({
@@ -159,6 +160,7 @@ export function getYScale(
   scale: typeof scaleLinear | typeof scaleTime,
   chartType?: ChartType
 ) {
+  if (!scale) return;
   // TODO wrap scale in useMemo [yMax, data]), these are probably high cost since its looping through all points several times
   // https://react.dev/reference/react/useMemo#caveats
   if (scale.name == 'createLinearScale') {

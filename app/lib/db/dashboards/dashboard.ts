@@ -53,12 +53,12 @@ export async function getDashboard(
 export async function getDashboards({ email }: { email?: string }) {
   let whereClause: {
     deleted: boolean;
-    creator?: {
+    owner?: {
       email: string;
     };
   } = { deleted: false };
   if (email) {
-    whereClause = { ...whereClause, creator: { email } };
+    whereClause = { ...whereClause, owner: { email } };
   }
   return await prisma.dashboard.findMany({
     where: whereClause,

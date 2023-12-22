@@ -28,7 +28,6 @@ const SaveToDashboardForm = ({
   const [createDashboardError, setCreateDashboardError] = useState<string>('');
 
   useEffect(() => {
-    console.log('running use effect');
     getDashboardTitles();
   }, [saveToDashCounter]);
 
@@ -99,12 +98,12 @@ const SaveToDashboardForm = ({
           <input
             type='checkbox'
             name='private'
-            className='toggle toggle-warning'
+            className='toggle toggle-warning mr-2'
             checked={isPrivate}
             onChange={handleToggleChange}
           />
           <span className={isPrivate ? 'text-yellow-500' : 'text-gray-500'}>
-            private dashboard
+            Set to private
           </span>
         </div>
         <input

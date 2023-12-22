@@ -1,13 +1,4 @@
 import React, { useState } from 'react';
-import { BsTable } from 'react-icons/bs';
-import {
-  FcAreaChart,
-  FcLineChart,
-  FcBarChart,
-  FcPieChart,
-  FcFrame,
-} from 'react-icons/fc';
-import { BiSolidBellRing } from 'react-icons/bi';
 
 import ChartContainer from '../charts/ChartContainer';
 import { FiSave, FiDownload } from 'react-icons/fi';
