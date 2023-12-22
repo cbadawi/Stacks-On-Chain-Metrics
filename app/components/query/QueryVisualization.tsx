@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 
 import ChartContainer from '../charts/ChartContainer';
-import { FiSave, FiDownload } from 'react-icons/fi';
-import { MdOutlineNumbers } from 'react-icons/md';
 import { CustomizableChartOptions, LeftRight } from '../charts/helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import StarterPlaceholderMessage from './StarterPlaceholderMessage';
-import QueryFilters from './QueryVariablesForm';
 import QueryButtons from './QueryButtons';
 import { ChartType } from '@prisma/client';
 
