@@ -6,6 +6,7 @@ import Button from '../filter/Button';
 import { ChartType, Dashboard, Prisma } from '@prisma/client';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import SaveToExistingDashboardForm from './SaveToExistingDashboardForm';
 
 type SaveToDashboardFormProps = {
   query: string;
@@ -14,7 +15,7 @@ type SaveToDashboardFormProps = {
   saveToDashCounter: number;
 };
 
-const closeModal = () =>
+export const closeModal = () =>
   (document.getElementById('modal') as HTMLDialogElement).close();
 
 const SaveToDashboardForm = ({
@@ -52,31 +53,12 @@ const SaveToDashboardForm = ({
   return (
     <div>
       {dashboardTitles.length > 0 && (
-        <form
-          action={addChartToDashboard}
-          autoComplete='off'
-          className='flex flex-col items-center justify-center'
-        >
-          <div className='card w-96 bg-neutral text-neutral-content'>
-            <div className='card-body items-center p-5 text-center'>
-              <h2 className='card-title'>Dashboards:</h2>
-              <div className='dashboards max-h-[8rem] w-64 overflow-y-scroll rounded border-[1px] border-gray-500'>
-                {dashboardTitles.map((title, index) => (
-                  <Link
-                    key={'link-' + index}
-                    className='flex min-h-[1.75rem] items-center justify-center hover:bg-gray-600'
-                    href={'/dashboards/' + title}
-                  >
-                    {title}
-                  </Link>
-                ))}
-              </div>
-              <div className='card-actions justify-end'>
-                <button className='btn btn-primary'>Save Chart</button>
-              </div>
-            </div>
-          </div>
-        </form>
+        <SaveToExistingDashboardForm
+          query={query}
+          variables={variables}
+          chartType={chartType}
+          dashboardTitles={dashboardTitles}
+        />
       )}
       <form
         action={async (f) => {
