@@ -1,4 +1,4 @@
-import { Scales } from '../components/charts/helpers';
+import { Scales } from '../components/helpers';
 
 export default (
   xScaleCallback: Scales | undefined,

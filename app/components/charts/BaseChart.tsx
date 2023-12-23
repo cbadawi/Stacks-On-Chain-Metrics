@@ -5,9 +5,8 @@ import { Group } from '@visx/group';
 import { AxisLeft, AxisBottom, AxisScale, AxisRight } from '@visx/axis';
 import { LinearGradient } from '@visx/gradient';
 import { scaleOrdinal } from '@visx/scale';
-
 import Watermark from '../Watermark';
-import { parseValue, colors, MarginObject, ChartConfigs } from './helpers';
+import { parseValue, colors, MarginObject, ChartConfigs } from '../helpers';
 import { ScaleBand } from '@visx/vendor/d3-scale';
 import { ChartType } from '@prisma/client';
 

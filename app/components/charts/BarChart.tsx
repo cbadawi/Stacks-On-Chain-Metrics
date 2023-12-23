@@ -4,7 +4,7 @@ import {
   getScaleCallback,
   getXScale,
   getYScale,
-} from './helpers';
+} from '../helpers';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import BaseChart from './BaseChart';
 import { localPoint } from '@visx/event';

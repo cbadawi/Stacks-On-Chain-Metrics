@@ -1,5 +1,5 @@
 import React from 'react';
-import { colors, parseValue } from './helpers';
+import { colors, parseValue } from '../helpers';
 import { TooltipInPortalProps } from '@visx/tooltip/lib/hooks/useTooltipInPortal';
 
 const formatTooltipData = (value: any) => JSON.stringify(parseValue(value));

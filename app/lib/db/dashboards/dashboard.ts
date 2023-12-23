@@ -5,11 +5,9 @@ import { Dashboard, Chart, Prisma } from '@prisma/client';
 import { fetchData } from '../../fetch';
 import { addOwner, getOwner } from '../users';
 
-export type ChartWithData = Chart & { data: any[] };
+export type ChartWithData = { data: any[] } & Chart;
 
-export type DashboardWithCharts = Prisma.DashboardGetPayload<{
-  include: { charts: { where: { deleted: false } } };
-}>;
+export type DashboardWithCharts = Dashboard & { charts: ChartWithData[] };
 
 export async function addDashboard(
   title: string,
@@ -38,7 +36,7 @@ export async function getDashboard(
   const include = includeCharts
     ? { charts: { where: { deleted: false } } }
     : {};
-  const dashboard = await prisma.dashboard.findUniqueOrThrow({
+  const dashboard = await prisma.dashboard.findUnique({
     where: {
       deleted_title: {
         title,
@@ -47,10 +45,25 @@ export async function getDashboard(
     },
     include,
   });
+
+  if (includeCharts && dashboard?.charts.length) {
+    dashboard.charts = await Promise.all(
+      dashboard?.charts.map(async (chart) => {
+        const data = await fetchData(chart.query);
+        return { ...chart, data };
+      })
+    );
+  }
   return dashboard;
 }
 
-export async function getDashboards({ email }: { email?: string }) {
+export async function getDashboards({
+  email,
+  privateDashboard,
+}: {
+  email?: string;
+  privateDashboard?: boolean;
+}) {
   let whereClause: {
     deleted: boolean;
     owner?: {

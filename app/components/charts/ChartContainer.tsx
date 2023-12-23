@@ -8,7 +8,7 @@ import {
   LeftRight,
   accentColorDark,
   createChartConfigs,
-} from './helpers';
+} from '../helpers';
 import Table from './Table';
 import Pie from './Pie';
 import getBrush from './getBrush';
@@ -186,8 +186,6 @@ const ChartContainer = ({
     background2,
   });
 
-  console.log('rendering chart container data', filteredData);
-
   return (
     <div className='chart-container relative flex max-w-full items-center justify-center'>
       {chartType != ChartType.TABLE && chartType != ChartType.NUMBER && (
@@ -197,7 +195,7 @@ const ChartContainer = ({
               id={GRADIENT_ID}
               from={background}
               to={background2}
-              rotate={45}
+              rotate={25}
             />
             <rect
               x={0}

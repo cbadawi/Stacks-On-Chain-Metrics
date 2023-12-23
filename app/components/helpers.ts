@@ -3,6 +3,13 @@ import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import { ChartType } from '@prisma/client';
 
 // Types
+export type Position = {
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+};
+
 export type Scales = typeof scaleLinear | typeof scaleTime | typeof scaleBand;
 
 export type MarginObject = {

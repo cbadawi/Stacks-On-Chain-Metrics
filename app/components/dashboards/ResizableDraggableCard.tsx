@@ -1,26 +1,32 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { CardProperties } from './DraggablesWrapper';
+import { CardProperties } from './ResizableChart';
+import { Position } from '../helpers';
 
 type ResizableDraggableCardProps = {
   title: string;
-  height: number;
-  width: number;
-  setCardProperties: React.Dispatch<React.SetStateAction<CardProperties>>;
+  cardProperties: CardProperties;
   titleHeaderHeightRem: number;
   titleHeaderPaddingRem: number;
   childrenHorizontalPaddingRem: number;
+  defaultPosition: Position;
+  chartUpdateHandler: (Position: {
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+  }) => void;
   children?: React.ReactNode;
 };
 
 const ResizableDraggableCard = ({
   title,
-  height,
-  width,
-  setCardProperties,
+  cardProperties,
   titleHeaderHeightRem,
   titleHeaderPaddingRem,
   childrenHorizontalPaddingRem,
+  chartUpdateHandler,
+  defaultPosition,
   children,
 }: ResizableDraggableCardProps) => {
   const titleHeight = `h-[${titleHeaderHeightRem}rem]`;
@@ -32,26 +38,35 @@ const ResizableDraggableCard = ({
       minHeight={150}
       minWidth={150}
       dragGrid={[50, 50]} // increments
-      onResize={(e, direction, ref, delta, position) => {
-        setCardProperties({
+      onResizeStop={(e, direction, ref, delta, position) => {
+        console.log(
+          '(e, direction, ref, delta, position',
+          e,
+          direction,
+          ref,
+          delta,
+          position
+        );
+        const newPos = {
           height: parseInt(ref.style.height.replace('px', '')),
           width: parseInt(ref.style.width.replace('px', '')),
-        });
+          x: position.x,
+          y: position.y,
+        };
+        chartUpdateHandler(newPos);
       }}
       // x & y are realtive to the parent
       onDragStop={(e, data) => {
-        console.log(`New X position: ${data.x}`);
-        console.log(`New Y position: ${data.y}`);
+        const newPos = {
+          height: cardProperties.height,
+          width: cardProperties.width,
+          x: data.x,
+          y: data.y,
+        };
+        chartUpdateHandler(newPos);
       }}
       className='flex items-center justify-center border border-gray-300 bg-gray-900'
-      // enableResizing={false}
-      // disableDragging={true}
-      default={{
-        x: 0,
-        y: 0,
-        width,
-        height,
-      }}
+      default={defaultPosition}
     >
       <div className='h-full w-full'>
         {title && (

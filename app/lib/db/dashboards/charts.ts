@@ -1,5 +1,8 @@
-import { ChartType } from '@prisma/client';
+'use server';
+
+import { Chart, ChartType } from '@prisma/client';
 import prisma from '../client';
+import { ChartWithData } from './dashboard';
 
 export async function addChart(
   dashboardId: number,
@@ -28,4 +31,14 @@ export async function addChart(
   });
 
   return newChart;
+}
+
+export async function updateChart(chart: Chart | ChartWithData) {
+  const { title, x, y, height, width, query, variables, type } = chart;
+
+  const updatedChart = await prisma.chart.update({
+    where: { id: chart.id },
+    data: { title, x, y, height, width, query, variables, type },
+  });
+  return updatedChart;
 }

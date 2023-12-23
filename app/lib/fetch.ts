@@ -19,10 +19,10 @@ export const fetchData = async (
   });
   const json = await response.json();
   if (!response.ok && errorHandler) errorHandler(json.message);
-  return json;
+  return orderData(json);
 };
 
-export const orderData = (response: { data: any[]; order: string[] }) => {
+const orderData = (response: { data: any[]; order: string[] }) => {
   const data = response.data?.map((row: any, index: number) => {
     const orderedRow: any = {};
     response.order.forEach((col: string) => (orderedRow[col] = row[col]));

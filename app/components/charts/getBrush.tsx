@@ -13,7 +13,7 @@ import {
   isNum,
   MarginObject,
   parseValue,
-} from './helpers';
+} from '../helpers';
 import { Group } from '@visx/group';
 import BaseBrush, {
   BaseBrushState,

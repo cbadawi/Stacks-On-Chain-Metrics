@@ -18,7 +18,7 @@ const Dashboards = async ({ searchParams }: DashPageProps) => {
             {dashboards.map((d, index) => (
               <Link
                 href={'/dashboards/' + d.title}
-                className='dash-element flex flex-col items-center justify-between rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-lg'
+                className='dash-element flex cursor-pointer flex-col items-center justify-between rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-lg'
                 key={'dash-elem' + index}
               >
                 <h2 className='mb-4 overflow-hidden text-lg font-medium'>

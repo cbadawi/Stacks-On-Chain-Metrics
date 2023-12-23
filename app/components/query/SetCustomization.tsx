@@ -1,6 +1,6 @@
 import React from 'react';
 import DropdownButton from '../DropdownButton';
-import { enumToArray } from '../charts/helpers';
+import { enumToArray } from '../helpers';
 
 interface SetCustomizationProps {
   header: string;

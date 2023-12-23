@@ -6,7 +6,7 @@ import {
   getXScale,
   getYScale,
   parseValue,
-} from './helpers';
+} from '../helpers';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import { localPoint } from '@visx/event';
 

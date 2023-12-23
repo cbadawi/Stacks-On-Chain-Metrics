@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pie } from '@visx/shape';
 import { Group } from '@visx/group';
 import { Text } from '@visx/text';
-import { colors } from './helpers';
+import { colors } from '../helpers';
 
 export interface PieChartProps {
   data: any[];

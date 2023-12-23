@@ -8,8 +8,8 @@ import {
   CustomizableChartOptions,
   LeftRight,
   getYColNamesFromData,
-} from '../components/charts/helpers';
-import { fetchData, orderData } from '../lib/fetch';
+} from '../components/helpers';
+import { fetchData } from '../lib/fetch';
 import { ChartType } from '@prisma/client';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
@@ -34,20 +34,18 @@ const QueryWrapper = () => {
     setIsLoading(true);
     setData([]);
     setError('');
-    const res = await fetchData(query, setError);
+    const data = await fetchData(query, setError);
     setIsLoading(false);
-
-    const data = orderData(res);
 
     setData(data);
 
     // default for customizable charts is bar columns, and left axes
-    if (res.data?.length) {
+    if (data?.length) {
       setCustomizableColumnsTypes(
-        getYColNamesFromData(res.data).map((col) => ChartType.BAR)
+        getYColNamesFromData(data).map((col) => ChartType.BAR)
       );
       setCustomizableAxesTypes(
-        getYColNamesFromData(res.data).map((col) => LeftRight.left)
+        getYColNamesFromData(data).map((col) => LeftRight.left)
       );
     }
   };
@@ -73,6 +71,7 @@ const QueryWrapper = () => {
             setCustomizableColumnsTypes={setCustomizableColumnsTypes}
             customizableAxesTypes={customizableAxesTypes}
             setCustomizableAxesTypes={setCustomizableAxesTypes}
+            errorHandler={setError}
           />
         )}
       </div>

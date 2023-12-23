@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import ChartContainer from '../charts/ChartContainer';
-import { CustomizableChartOptions, LeftRight } from '../charts/helpers';
+import { CustomizableChartOptions, LeftRight } from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import StarterPlaceholderMessage from './StarterPlaceholderMessage';
 import QueryButtons from './QueryButtons';

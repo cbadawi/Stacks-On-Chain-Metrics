@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomizableChartOptions, LeftRight } from '../charts/helpers';
+import { CustomizableChartOptions, LeftRight } from '../helpers';
 import SetCustomization from './SetCustomization';
 import { ChartType } from '@prisma/client';
 
