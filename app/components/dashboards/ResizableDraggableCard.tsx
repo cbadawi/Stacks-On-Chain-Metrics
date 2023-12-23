@@ -1,11 +1,10 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
-import { CardProperties } from './ResizableChart';
 import { Position } from '../helpers';
 
 type ResizableDraggableCardProps = {
   title: string;
-  cardProperties: CardProperties;
+  cardProperties: Position;
   titleHeaderHeightRem: number;
   titleHeaderPaddingRem: number;
   childrenHorizontalPaddingRem: number;
@@ -67,6 +66,7 @@ const ResizableDraggableCard = ({
       }}
       className='flex items-center justify-center border border-gray-300 bg-gray-900'
       default={defaultPosition}
+      position={defaultPosition}
     >
       <div className='h-full w-full'>
         {title && (

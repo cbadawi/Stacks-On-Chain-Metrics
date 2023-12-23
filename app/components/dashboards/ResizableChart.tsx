@@ -7,21 +7,15 @@ import ChartContainer from '../charts/ChartContainer';
 import { Chart, ChartType } from '@prisma/client';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
-import { Position } from '../helpers';
-
-export type CardProperties = {
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-};
+import { Position, isCollidingWithOtherCharts } from '../helpers';
 
 type ResizableChartProps = {
   chart: ChartWithData;
+  allCharts: ChartWithData[];
 };
 
-const ResizableChart = ({ chart }: ResizableChartProps) => {
-  const [cardProperties, setCardProperties] = useState<CardProperties>({
+const ResizableChart = ({ chart, allCharts }: ResizableChartProps) => {
+  const [cardProperties, setCardProperties] = useState<Position>({
     height: 400,
     width: 550,
     x: 0,
@@ -38,6 +32,13 @@ const ResizableChart = ({ chart }: ResizableChartProps) => {
     cardProperties.width - convertRemToPixels(childrenHorizontalPaddingRem);
 
   const chartUpdateHandler = ({ height, width, x, y }: Position) => {
+    if (
+      isCollidingWithOtherCharts(
+        { id: chart.id, height, width, x, y },
+        allCharts
+      )
+    )
+      return;
     setCardProperties({ height, width, x, y });
     const newChart = chart;
     newChart.height = height;

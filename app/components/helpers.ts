@@ -1,6 +1,6 @@
 import { max, min, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
-import { ChartType } from '@prisma/client';
+import { Chart, ChartType } from '@prisma/client';
 
 // Types
 export type Position = {
@@ -39,6 +39,31 @@ export enum LeftRight {
 }
 
 // Functions
+export const isCollidingWithOtherCharts = (
+  movingChart: Position & { id: number },
+  allCharts: Chart[]
+) => {
+  let isOccupied = false;
+  const BreakLoop = {};
+  try {
+    allCharts.forEach((otherChart) => {
+      if (
+        movingChart.id != otherChart.id &&
+        movingChart.x + movingChart.width >= otherChart.x &&
+        movingChart.x < otherChart.x + otherChart.width &&
+        movingChart.y + movingChart.height >= otherChart.y &&
+        movingChart.y < otherChart.y + otherChart.height
+      ) {
+        isOccupied = true;
+        throw BreakLoop;
+      }
+    });
+  } catch (err) {
+    if (err !== BreakLoop) throw err;
+  }
+  return isOccupied;
+};
+
 export const enumToArray = (e: any) =>
   Object.keys(e).filter((key) => isNaN(Number(key)));
 

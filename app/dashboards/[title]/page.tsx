@@ -1,4 +1,6 @@
+import { Chart } from '.prisma/client';
 import ResizableChart from '@/app/components/dashboards/ResizableChart';
+import { Position, isCollidingWithOtherCharts } from '@/app/components/helpers';
 import {
   DashboardWithCharts,
   getDashboard,
@@ -16,7 +18,6 @@ const Dashboard = async ({ params }: DashboardProps) => {
   const title = decodeURIComponent(params.title);
   const dashboard = (await getDashboard(title)) as DashboardWithCharts;
   if (!dashboard) redirect('/dashboards');
-  console.log('dashboarddashboard', JSON.stringify(dashboard, null, 2));
 
   // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
@@ -26,7 +27,11 @@ const Dashboard = async ({ params }: DashboardProps) => {
       {/* <DraggablesWrapper /> */}
       <div className='draggables-wrapper relative h-full min-h-[100vh] w-full'>
         {dashboard.charts.map((chart, index) => (
-          <ResizableChart key={'chart-' + index} chart={chart} />
+          <ResizableChart
+            key={'chart-' + index}
+            chart={chart}
+            allCharts={dashboard.charts}
+          />
         ))}
       </div>
     </div>
