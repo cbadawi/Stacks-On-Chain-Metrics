@@ -37,7 +37,7 @@ const SqlEditor = ({
 
   return (
     <div className='relative grid w-full'>
-      <div className='flex h-[33rem] w-[97%] flex-col items-center justify-between p-0 lg:mx-auto lg:flex-row'>
+      <div className='flex h-[33rem] w-full flex-col items-center justify-between p-0 lg:mx-auto lg:flex-row'>
         <Editor
           height='30rem'
           width='100%'

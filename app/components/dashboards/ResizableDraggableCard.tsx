@@ -38,14 +38,6 @@ const ResizableDraggableCard = ({
       minWidth={150}
       dragGrid={[50, 50]} // increments
       onResizeStop={(e, direction, ref, delta, position) => {
-        console.log(
-          '(e, direction, ref, delta, position',
-          e,
-          direction,
-          ref,
-          delta,
-          position
-        );
         const newPos = {
           height: parseInt(ref.style.height.replace('px', '')),
           width: parseInt(ref.style.width.replace('px', '')),
@@ -73,7 +65,7 @@ const ResizableDraggableCard = ({
           <div
             className={`card-title ${titleHeight} ${titlePadding} text-lg font-normal`}
           >
-            Card Title
+            {title}
           </div>
         )}
         <div className={`card-children ${childPadding}`}>{children}</div>

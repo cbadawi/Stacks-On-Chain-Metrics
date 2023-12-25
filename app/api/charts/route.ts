@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const dashboardId = parseInt(
     request.nextUrl.searchParams.get('dashboard') || ''
   );
-  const filter = dashboardId
+  const whereClause = dashboardId
     ? {
         dashboardId,
         deleted: false,
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         deleted: false,
       };
   const users = await prisma.chart.findMany({
-    where: filter,
+    where: whereClause,
     orderBy: { id: 'asc' },
   });
 

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import ChartContainer from '../charts/ChartContainer';
 import { CustomizableChartOptions, LeftRight } from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
-import StarterPlaceholderMessage from './StarterPlaceholderMessage';
 import QueryButtons from './QueryButtons';
 import { ChartType } from '@prisma/client';
 
@@ -58,8 +57,6 @@ const QueryVisualization = ({
         customizableAxesTypes={customizableAxesTypes}
         errorHandler={errorHandler}
       />
-      {!data?.length && <StarterPlaceholderMessage />}
-      <span>{JSON.stringify(data, null, 2)}</span>
     </div>
   );
 };

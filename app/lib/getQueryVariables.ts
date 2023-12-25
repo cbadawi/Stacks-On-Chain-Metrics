@@ -9,8 +9,8 @@ export function getQueryVariables(input: string) {
 
   let match;
   while ((match = regex.exec(input)) !== null) {
-    matches.push(match[1]);
+    matches.push(match[1].trim());
   }
 
-  return matches;
+  return matches.filter((m) => m != '');
 }
