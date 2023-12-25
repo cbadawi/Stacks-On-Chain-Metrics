@@ -3,20 +3,12 @@ import React from 'react';
 
 interface QueryVariablesFormProps {
   query: string;
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
-  runQuery: (query: string) => Promise<void>;
-  setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // design inspired by dune https://dune.com/defimochi/token-god-mode
 // https://dune.com/queries/3262152
 
-const QueryVariablesForm = ({
-  query,
-  setQuery,
-  runQuery,
-  setError,
-}: QueryVariablesFormProps) => {
+const QueryVariablesForm = ({ query }: QueryVariablesFormProps) => {
   const variables = getQueryVariables(query);
   if (!variables.length) return;
 

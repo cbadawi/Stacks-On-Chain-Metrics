@@ -12,5 +12,5 @@ export function getQueryVariables(input: string) {
     matches.push(match[1].trim());
   }
 
-  return matches.filter((m) => m != '');
+  return Array.from(new Set(matches.filter((m) => m != '')));
 }

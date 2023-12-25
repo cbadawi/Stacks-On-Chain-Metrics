@@ -61,12 +61,7 @@ const SqlEditor = ({
           </button>
         </div>
       </div>
-      <QueryVariablesForm
-        query={query}
-        setQuery={setQuery}
-        runQuery={runQuery}
-        setError={setError}
-      />
+      <QueryVariablesForm query={query} />
     </div>
   );
 };
