@@ -38,7 +38,12 @@ const ChartsVariableWrapper = ({
           id={variablesFormId}
           className='variable-wrapper flex justify-between gap-4 pb-8'
         >
-          <div className='flex  max-w-[90%] gap-4 md:grid md:grid-flow-col'>
+          <div
+            className=' grid  max-w-[90%] gap-4'
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
+            }}
+          >
             {defaultVariableValues.map(
               (variableObject, index) =>
                 variableObject && (
@@ -50,10 +55,12 @@ const ChartsVariableWrapper = ({
                 )
             )}
           </div>
-          <RunButton
-            formId={variablesFormId}
-            setVariables={setVariableValues}
-          />
+          <div className='pt-2'>
+            <RunButton
+              formId={variablesFormId}
+              setVariables={setVariableValues}
+            />
+          </div>
         </form>
       )}
       <div className='draggables-wrapper h-full border-2 border-solid border-red-900 '>
