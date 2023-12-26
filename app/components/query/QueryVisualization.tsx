@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import ChartContainer from '../charts/ChartContainer';
-import { CustomizableChartOptions, LeftRight } from '../helpers';
+import { CustomizableChartOptions, LeftRight, VariableType } from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import QueryButtons from './QueryButtons';
 import { ChartType } from '@prisma/client';
@@ -9,6 +9,7 @@ import { ChartType } from '@prisma/client';
 interface QueryVisualizationProps {
   data: any[];
   query: string;
+  variableDefaults: VariableType[];
   customizableColumnsTypes: CustomizableChartOptions[];
   setCustomizableColumnsTypes: React.Dispatch<
     React.SetStateAction<CustomizableChartOptions[]>
@@ -21,6 +22,7 @@ interface QueryVisualizationProps {
 const QueryVisualization = ({
   data,
   query,
+  variableDefaults,
   customizableColumnsTypes,
   setCustomizableColumnsTypes,
   customizableAxesTypes,
@@ -32,12 +34,13 @@ const QueryVisualization = ({
   const [chartType, setChartType] = useState<ChartType>(ChartType.TABLE);
 
   return (
-    <div className='visualization-container relative my-12 flex w-full flex-col justify-center rounded-t-3xl bg-[#111111] px-5 py-4 md:px-0'>
+    <div className='visualization-container relative flex  flex-col justify-center'>
       <QueryButtons
         setChart={setChartType}
         chartType={chartType}
         query={query}
         errorHandler={errorHandler}
+        variableDefaults={variableDefaults}
       />
       {chartType == ChartType.BAR && (
         <CustomizeBarChart

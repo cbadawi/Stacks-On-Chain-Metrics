@@ -1,9 +1,11 @@
 'use server';
 
 import prisma from '@/app/lib/db/client';
-import { Dashboard, Chart, Prisma } from '@prisma/client';
+import { Dashboard, Chart } from '@prisma/client';
 import { fetchData } from '../../fetch';
 import { addOwner, getOwner } from '../users';
+import { replaceVariables } from '../replaceVariables';
+import { VariableType } from '@/app/components/helpers';
 
 export type ChartWithData = { data: any[] } & Chart;
 
@@ -31,6 +33,7 @@ export async function addDashboard(
 
 export async function getDashboard(
   title: string,
+  searchParams?: any,
   includeCharts: Boolean = true
 ): Promise<Dashboard | DashboardWithCharts | null> {
   const include = includeCharts
@@ -49,7 +52,18 @@ export async function getDashboard(
   if (includeCharts && dashboard?.charts.length) {
     dashboard.charts = await Promise.all(
       dashboard?.charts.map(async (chart) => {
-        const data = await fetchData(chart.query);
+        const defaultVariables = chart.variables.map((variableObj) => {
+          const variableType = variableObj as VariableType;
+          const value = searchParams
+            ? searchParams[variableType.variable]
+            : null;
+          if (value) variableType.value = value;
+          return variableType as VariableType;
+        });
+        const queryWithDefaultVariables = defaultVariables?.length
+          ? replaceVariables(chart.query, defaultVariables)
+          : chart.query;
+        const data = await fetchData(queryWithDefaultVariables);
         return { ...chart, data };
       })
     );

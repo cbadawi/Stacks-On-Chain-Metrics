@@ -13,7 +13,7 @@ const AuthButton = () => {
       href={
         status === 'authenticated' ? '/api/auth/signout' : '/api/auth/signin'
       }
-      className='btn btn-square btn-ghost w-20 text-lg'
+      className='btn btn-square btn-ghost w-20 text-sm'
     >
       {status === 'authenticated' ? 'Sign Out' : 'Sign In'}
     </Link>

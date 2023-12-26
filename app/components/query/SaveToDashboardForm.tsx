@@ -4,13 +4,13 @@ import React, { useState, ChangeEvent, useEffect } from 'react';
 import { createNewDashboardAndChart, addChartToDashboard } from './actions';
 import Button from '../filter/Button';
 import { ChartType, Dashboard, Prisma } from '@prisma/client';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import SaveToExistingDashboardForm from './SaveToExistingDashboardForm';
+import { VariableType } from '../helpers';
 
 type SaveToDashboardFormProps = {
   query: string;
-  variables?: any;
+  variableDefaults?: VariableType[];
   chartType: ChartType;
   saveToDashCounter: number;
 };
@@ -21,7 +21,7 @@ export const closeModal = () =>
 const SaveToDashboardForm = ({
   query,
   chartType,
-  variables = [],
+  variableDefaults,
   saveToDashCounter,
 }: SaveToDashboardFormProps) => {
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
@@ -43,8 +43,10 @@ const SaveToDashboardForm = ({
     setDashboardTitles(titles);
   };
 
-  // TODO
-  // if (isPrivate) alert('must be a subscriber');
+  if (isPrivate) {
+    alert('must be a subscriber');
+    setIsPrivate(false);
+  }
 
   const handleToggleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setIsPrivate(event.target.checked);
@@ -55,7 +57,7 @@ const SaveToDashboardForm = ({
       {dashboardTitles.length > 0 && (
         <SaveToExistingDashboardForm
           query={query}
-          variables={variables}
+          variableDefaults={variableDefaults}
           chartType={chartType}
           dashboardTitles={dashboardTitles}
         />
@@ -63,7 +65,7 @@ const SaveToDashboardForm = ({
       <form
         action={async (f) => {
           const response = await createNewDashboardAndChart(f);
-          if (response.dashboard) {
+          if (response?.dashboard) {
             closeModal();
             // window.open(
             //   BASE_URL + `/dashboards/${response.dashboard.title}`,
@@ -110,7 +112,7 @@ const SaveToDashboardForm = ({
         <input value={chartType} name='chartType' type='hidden' />
         <input value={query} name='query' type='hidden' />
         <input
-          value={JSON.stringify(variables)}
+          value={JSON.stringify(variableDefaults)}
           name='variables'
           type='hidden'
         />

@@ -1,26 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/ChartContainer';
 import { Chart, ChartType } from '@prisma/client';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
-import { Position, isCollidingWithOtherCharts } from '../helpers';
+import { Position, VariableType, isCollidingWithOtherCharts } from '../helpers';
+import { fetchData } from '@/app/lib/fetch';
+import { replaceVariables } from '@/app/lib/db/replaceVariables';
+import QueryErrorContainer from '../QueryErrorContainer';
+import Spinner from '../Spinner';
+import LoadingSkeleton from '@/app/dashboards/loading';
 
 type ResizableChartProps = {
   chart: ChartWithData;
   allCharts: ChartWithData[];
+  variables: VariableType[];
 };
 
-const ResizableChart = ({ chart, allCharts }: ResizableChartProps) => {
+const ResizableChart = ({
+  chart,
+  allCharts,
+  variables,
+}: ResizableChartProps) => {
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [cardProperties, setCardProperties] = useState<Position>({
     height: 400,
     width: 550,
     x: 0,
     y: 0,
   });
+
+  useEffect(() => {
+    if (variables?.length) {
+      fetchChartData(chart, variables);
+    } else setChartData(chart.data);
+  }, [variables]);
+
+  const fetchChartData = async (
+    chart: ChartWithData,
+    variables: VariableType[]
+  ) => {
+    setError('');
+    setIsLoading(true);
+    const queryWithVariables = replaceVariables(chart.query, variables);
+    const data = await fetchData(queryWithVariables, setError);
+    setChartData(data);
+    setIsLoading(false);
+  };
 
   const titleHeaderPaddingRem = 0.5;
   const titleHeaderHeightRem = 2;
@@ -58,13 +89,19 @@ const ResizableChart = ({ chart, allCharts }: ResizableChartProps) => {
       chartUpdateHandler={chartUpdateHandler}
       defaultPosition={chart}
     >
-      {!!chart.data?.length && (
-        <ChartContainer
-          data={chart.data}
-          chartType={chart.type}
-          height={chartContainerHeight}
-          width={chartContainerWidth}
-        />
+      {error && <QueryErrorContainer error={error} setError={setError} />}
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        !!chartData?.length && (
+          <ChartContainer
+            key={JSON.stringify(chartData)}
+            data={chartData}
+            chartType={chart.type}
+            height={chartContainerHeight}
+            width={chartContainerWidth}
+          />
+        )
       )}
     </ResizableDraggableCard>
   );

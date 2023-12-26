@@ -8,6 +8,7 @@ import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMes
 import {
   CustomizableChartOptions,
   LeftRight,
+  VariableType,
   getYColNamesFromData,
 } from '../components/helpers';
 import { fetchData } from '../lib/fetch';
@@ -31,31 +32,34 @@ const QueryWrapper = () => {
     LeftRight[]
   >([]);
   const [data, setData] = useState<any[] | undefined | never[]>([]);
+  const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
 
   const parseVariables = (
     query: string,
-    errorHandler: React.Dispatch<React.SetStateAction<string>>
+    errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const inputElements = document.getElementsByClassName('variable-input');
-
+    const variablesList: VariableType[] = [];
     const res = Array.from(inputElements).every((element) => {
       const variable = element.className.split(' ')[1];
       const value = (element as HTMLButtonElement).value;
       if (!value) {
-        errorHandler(`Variable "${variable}" not set.`);
+        errorHandler && errorHandler(`Variable "${variable}" not set.`);
         return false;
       }
       const regex = new RegExp(`{{${variable}}}`, 'g');
       query = query.replace(regex, value);
+      variablesList.push({ variable, value });
       return true;
     });
-
+    setVariableDefaults(variablesList);
     return res ? query : '';
   };
 
   const runQuery = async (query: string) => {
     setIsLoading(true);
     setData([]);
+    setVariableDefaults([]);
     setError('');
     const queryWithVariables = parseVariables(query, setError);
 
@@ -77,8 +81,8 @@ const QueryWrapper = () => {
   };
 
   return (
-    <div>
-      <div className='relative mx-auto my-10 min-h-[350px] w-[95%]'>
+    <div className='query-wrapper'>
+      <div className='editor-wrapper relative mx-auto mb-4 mt-10 flex min-h-[350px] w-[95%] items-center justify-center'>
         <SqlEditor
           query={query}
           setQuery={setQuery}
@@ -89,19 +93,22 @@ const QueryWrapper = () => {
       </div>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        {!data?.length ? (
-          <StarterPlaceholderMessage />
-        ) : (
-          <QueryVisualization
-            data={data}
-            query={query}
-            customizableColumnsTypes={customizableColumnsTypes}
-            setCustomizableColumnsTypes={setCustomizableColumnsTypes}
-            customizableAxesTypes={customizableAxesTypes}
-            setCustomizableAxesTypes={setCustomizableAxesTypes}
-            errorHandler={setError}
-          />
-        )}
+        <div className='relative my-12 w-full rounded-t-3xl bg-[#101011] px-5 py-4 md:px-0'>
+          {!data?.length ? (
+            <StarterPlaceholderMessage />
+          ) : (
+            <QueryVisualization
+              data={data}
+              query={query}
+              customizableColumnsTypes={customizableColumnsTypes}
+              setCustomizableColumnsTypes={setCustomizableColumnsTypes}
+              customizableAxesTypes={customizableAxesTypes}
+              setCustomizableAxesTypes={setCustomizableAxesTypes}
+              errorHandler={setError}
+              variableDefaults={variableDefaults}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

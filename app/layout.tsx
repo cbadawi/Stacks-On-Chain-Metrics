@@ -4,6 +4,7 @@ import './globals.css';
 import Navbar from './components/navigation/Navbar';
 import Options from './components/navigation/Options';
 import AuthProvider from './AuthProvider';
+import Footer from './components/navigation/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 // TODO improve SEO
@@ -28,6 +29,7 @@ export default function RootLayout({
           <Navbar />
           <Options />
           {children}
+          <Footer />
         </AuthProvider>
       </body>
     </html>

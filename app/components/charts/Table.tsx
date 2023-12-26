@@ -11,7 +11,7 @@ const Table = ({ data }: TableProps) => {
   return (
     <div className='max-h-[90vh] max-w-[90%] overflow-x-scroll'>
       <table className='h-auto w-auto'>
-        <thead className=' bg-[#1e2023]'>
+        <thead className=' bg-[#0d0d0c]'>
           <tr>
             <th key={'#'} className='p-2 text-center text-lg'>
               #

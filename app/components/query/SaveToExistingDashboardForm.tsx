@@ -4,19 +4,20 @@ import React, { useState } from 'react';
 import { addChartToDashboard } from './actions';
 import { ChartType } from '@prisma/client';
 import { closeModal } from './SaveToDashboardForm';
+import { VariableType } from '../helpers';
 
 type SaveToDashboardProps = {
   dashboardTitles: string[];
   chartType: ChartType;
   query: string;
-  variables?: any;
+  variableDefaults?: VariableType[];
 };
 
 const SaveToExistingDashboardForm = ({
   dashboardTitles,
   chartType,
   query,
-  variables,
+  variableDefaults,
 }: SaveToDashboardProps) => {
   const [dashboardSelector, setDashboardSelector] = useState<string>();
   return (
@@ -60,7 +61,7 @@ const SaveToExistingDashboardForm = ({
           <input value={chartType} name='chartType' hidden readOnly />
           <input value={query} name='query' hidden readOnly />
           <input
-            value={JSON.stringify(variables)}
+            value={JSON.stringify(variableDefaults)}
             name='variables'
             hidden
             readOnly

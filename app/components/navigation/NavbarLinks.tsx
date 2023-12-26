@@ -35,7 +35,7 @@ const NavbarLinks = () => {
           return (
             <div
               key={'bar-' + index}
-              className='btn btn-square btn-ghost w-24 text-lg font-thin text-white hover:underline'
+              className='btn btn-square btn-ghost w-24 text-sm font-thin text-white'
               style={{ textShadow }}
             >
               {link}

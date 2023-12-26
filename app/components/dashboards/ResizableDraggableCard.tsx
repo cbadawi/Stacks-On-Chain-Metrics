@@ -56,7 +56,7 @@ const ResizableDraggableCard = ({
         };
         chartUpdateHandler(newPos);
       }}
-      className='flex items-center justify-center border border-gray-300 bg-gray-900'
+      className='flex items-center justify-center border border-gray-700 bg-[#141414]'
       default={defaultPosition}
       position={defaultPosition}
     >

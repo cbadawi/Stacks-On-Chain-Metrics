@@ -20,6 +20,19 @@ enum ChartType {
   @@schema("dash")
 }
 
+enum Tags {
+  Stacks
+  Babo
+  NFT
+  DEFI
+  sBTC
+  Mempool
+  Ordinals
+  Mining
+
+  @@schema("dash")
+}
+
 model Owner {
   id          Int          @id @default(autoincrement())
   email       String       @unique
@@ -28,24 +41,23 @@ model Owner {
   dashboards  Dashboard[]
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
-  
   @@index([email], map: "USER_EMAIL")
   @@map("owner")
   @@schema("dash")
 }
 
 model Dashboard {
-  id          Int           @id @default(autoincrement())
-  title       String       
-  description String?
-  private     Boolean       @default(false)
-  owner       Owner         @relation(fields: [ownerId], references: [id])
-  ownerId     Int           @map("owner_id")
-  deleted     Boolean       @default(false) 
-  charts      Chart[]
-  tags        Tag[]
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+  id              Int           @id @default(autoincrement())
+  title           String       
+  description     String?
+  private         Boolean       @default(false)
+  owner           Owner         @relation(fields: [ownerId], references: [id])
+  ownerId         Int           @map("owner_id")
+  deleted         Boolean       @default(false) 
+  charts          Chart[]
+  tags            Tag[]
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
 
   @@index([deleted, title], map: "DASH_TITLE")
   @@unique([deleted, title])
@@ -54,28 +66,29 @@ model Dashboard {
 }
 
 model Chart {
-  id          Int          @id @default(autoincrement())
-  title       String
-  query       String
-  variables   String[]
-  type        ChartType
-  x           Int
-  y           Int
-  width       Int
-  height      Int
-  deleted     Boolean      @default(false) 
-  dashboard   Dashboard    @relation(fields: [dashboardId], references: [id])
-  dashboardId Int          @map("dashboard_id")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
+  id              Int             @id @default(autoincrement())
+  title           String
+  query           String
+  type            ChartType
+  x               Int
+  y               Int
+  width           Int
+  height          Int
+  deleted         Boolean         @default(false) 
+  variables       Json[]
+  dashboard       Dashboard       @relation(fields: [dashboardId], references: [id])
+  dashboardId     Int             @map("dashboard_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
   @@index([deleted, dashboardId], map: "CHART_DASHBOARD_ID")
+  
   @@map("charts")
   @@schema("dash")
 }
 
 model Tag {
   id          Int          @id @default(autoincrement())
-  name        String       @unique
+  name        Tags       
   dashboard   Dashboard    @relation(fields: [dashboardId], references: [id])
   dashboardId Int          @map("dashboard_id")
   createdAt   DateTime     @default(now()) @map("created_at")

@@ -4,6 +4,7 @@ export const fetchData = async (
   query: string,
   errorHandler?: (message: string) => void
 ) => {
+  console.log('running query', query);
   const body = JSON.stringify({
     query,
   });
@@ -18,7 +19,11 @@ export const fetchData = async (
     body,
   });
   const json = await response.json();
-  if (!response.ok && errorHandler) errorHandler(json.message);
+
+  if (!response.ok) {
+    if (errorHandler) errorHandler(json.message);
+    return json;
+  }
   return orderData(json);
 };
 

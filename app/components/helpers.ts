@@ -10,6 +10,11 @@ export type Position = {
   y: number;
 };
 
+export type VariableType = {
+  variable: string;
+  value: string | number;
+};
+
 export type Scales = typeof scaleLinear | typeof scaleTime | typeof scaleBand;
 
 export type MarginObject = {

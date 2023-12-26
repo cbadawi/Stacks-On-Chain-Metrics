@@ -8,7 +8,6 @@ import { redirect } from 'next/navigation';
 async function searchDashboards(formData: FormData) {
   'use server';
   const searchQuery = formData.get('search')?.toString();
-
   if (searchQuery) {
     redirect('/dashboards?search=' + searchQuery);
   }
@@ -37,7 +36,7 @@ const AllDashboardsWrapper = async ({
           );
         })}
       </div>
-      <div className='dashboards-sort w-30% bg-slate-900'>
+      <div className='dashboards-search-sort-wrapper w-30% bg-slate-900'>
         <div>Sort Dashboards</div>
         <form action={searchDashboards}>
           <div className='form-control'>

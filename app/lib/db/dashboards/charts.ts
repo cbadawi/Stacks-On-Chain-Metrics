@@ -3,6 +3,7 @@
 import { Chart, ChartType } from '@prisma/client';
 import prisma from '../client';
 import { ChartWithData } from './dashboard';
+import { VariableType } from '@/app/components/helpers';
 
 export async function addChart(
   dashboardId: number,
@@ -13,20 +14,19 @@ export async function addChart(
   y: number,
   width: number,
   height: number,
-  variables?: any[],
-  custommizations?: any
+  variables: VariableType[]
 ) {
   const newChart = await prisma.chart.create({
     data: {
       title,
       query,
-      variables,
       type: chartType,
       x,
       y,
       width,
       height,
       dashboardId,
+      variables,
     },
   });
 
@@ -34,11 +34,11 @@ export async function addChart(
 }
 
 export async function updateChart(chart: Chart | ChartWithData) {
-  const { title, x, y, height, width, query, variables, type } = chart;
+  const { title, x, y, height, width, query, type } = chart;
 
   const updatedChart = await prisma.chart.update({
     where: { id: chart.id },
-    data: { title, x, y, height, width, query, variables, type },
+    data: { title, x, y, height, width, query, type },
   });
   return updatedChart;
 }
