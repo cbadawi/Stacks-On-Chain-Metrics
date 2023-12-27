@@ -44,29 +44,24 @@ export enum LeftRight {
 }
 
 // Functions
-export const isCollidingWithOtherCharts = (
+export const isAvailablePosition = (
   movingChart: Position & { id: number },
   allCharts: Chart[]
 ) => {
-  let isOccupied = false;
-  const BreakLoop = {};
-  try {
-    allCharts.forEach((otherChart) => {
-      if (
-        movingChart.id != otherChart.id &&
-        movingChart.x + movingChart.width >= otherChart.x &&
-        movingChart.x < otherChart.x + otherChart.width &&
-        movingChart.y + movingChart.height >= otherChart.y &&
-        movingChart.y < otherChart.y + otherChart.height
-      ) {
-        isOccupied = true;
-        throw BreakLoop;
-      }
-    });
-  } catch (err) {
-    if (err !== BreakLoop) throw err;
-  }
-  return isOccupied;
+  const positionAvailable = allCharts.every((otherChart) => {
+    if (
+      movingChart.id != otherChart.id &&
+      movingChart.x + movingChart.width >= otherChart.x &&
+      movingChart.x < otherChart.x + otherChart.width &&
+      movingChart.y + movingChart.height >= otherChart.y &&
+      movingChart.y < otherChart.y + otherChart.height
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  return positionAvailable;
 };
 
 export const enumToArray = (e: any) =>

@@ -1,6 +1,3 @@
-import ResizableChart from '@/app/components/dashboards/ResizableChart';
-import { VariableType } from '@/app/components/helpers';
-import Variable from '@/app/components/query/Variable';
 import {
   DashboardWithCharts,
   getDashboard,

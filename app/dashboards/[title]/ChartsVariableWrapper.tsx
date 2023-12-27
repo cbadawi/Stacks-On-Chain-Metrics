@@ -63,7 +63,10 @@ const ChartsVariableWrapper = ({
           </div>
         </form>
       )}
-      <div className='draggables-wrapper h-full border-2 border-solid border-red-900 '>
+      <div
+        id='draggables-wrapper'
+        className='draggables-wrapper h-full border-2 border-solid border-red-900 '
+      >
         {dashboard.charts.map((chart, index) => (
           <ResizableChart
             variables={variableValues}

@@ -4,11 +4,13 @@ import { Position } from '../helpers';
 
 type ResizableDraggableCardProps = {
   title: string;
-  cardProperties: Position;
   titleHeaderHeightRem: number;
   titleHeaderPaddingRem: number;
   childrenHorizontalPaddingRem: number;
-  defaultPosition: Position;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
   chartUpdateHandler: (Position: {
     height: number;
     width: number;
@@ -20,45 +22,40 @@ type ResizableDraggableCardProps = {
 
 const ResizableDraggableCard = ({
   title,
-  cardProperties,
+  x,
+  y,
+  width,
+  height,
   titleHeaderHeightRem,
   titleHeaderPaddingRem,
   childrenHorizontalPaddingRem,
   chartUpdateHandler,
-  defaultPosition,
   children,
 }: ResizableDraggableCardProps) => {
   const titleHeight = `h-[${titleHeaderHeightRem}rem]`;
   const titlePadding = `p-[${titleHeaderPaddingRem}rem]`;
   const childPadding = `px-[${childrenHorizontalPaddingRem}rem]`;
+  if (title == 'var test') console.log('rnd position', { x: x, y: y });
   return (
     <Rnd
       bounds='parent'
       minHeight={150}
       minWidth={150}
       dragGrid={[50, 50]} // increments
+      size={{ width, height }}
+      position={{ x, y }}
+      onDragStop={(e, d) => {
+        chartUpdateHandler({ x: d.x, y: d.y, height, width });
+      }}
       onResizeStop={(e, direction, ref, delta, position) => {
-        const newPos = {
+        chartUpdateHandler({
+          x,
+          y,
           height: parseInt(ref.style.height.replace('px', '')),
           width: parseInt(ref.style.width.replace('px', '')),
-          x: position.x,
-          y: position.y,
-        };
-        chartUpdateHandler(newPos);
-      }}
-      // x & y are realtive to the parent
-      onDragStop={(e, data) => {
-        const newPos = {
-          height: cardProperties.height,
-          width: cardProperties.width,
-          x: data.x,
-          y: data.y,
-        };
-        chartUpdateHandler(newPos);
+        });
       }}
       className='flex items-center justify-center border border-gray-700 bg-[#141414]'
-      default={defaultPosition}
-      position={defaultPosition}
     >
       <div className='h-full w-full'>
         {title && (

@@ -7,17 +7,30 @@ import ChartContainer from '../charts/ChartContainer';
 import { Chart, ChartType } from '@prisma/client';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
-import { Position, VariableType, isCollidingWithOtherCharts } from '../helpers';
+import { Position, VariableType, isAvailablePosition } from '../helpers';
 import { fetchData } from '@/app/lib/fetch';
 import { replaceVariables } from '@/app/lib/db/replaceVariables';
 import QueryErrorContainer from '../QueryErrorContainer';
-import Spinner from '../Spinner';
 import LoadingSkeleton from '@/app/dashboards/loading';
 
 type ResizableChartProps = {
   chart: ChartWithData;
   allCharts: ChartWithData[];
   variables: VariableType[];
+};
+
+const transformPositionBetweenPxAndPerc = (
+  pos: number,
+  xOrY: 'x' | 'y',
+  targetUnit: 'px' | 'perc'
+) => {
+  if (typeof window == 'undefined') return pos;
+  const parent = document?.getElementById('draggables-wrapper');
+  if (!parent) return pos;
+  const parentRect = parent.getBoundingClientRect();
+  const parentDimension = xOrY == 'x' ? parentRect.width : parentRect.height;
+  if (targetUnit == 'perc') return (pos / parentDimension) * 100;
+  else return (pos / 100) * parentDimension;
 };
 
 const ResizableChart = ({
@@ -28,12 +41,15 @@ const ResizableChart = ({
   const [chartData, setChartData] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [cardProperties, setCardProperties] = useState<Position>({
-    height: 400,
-    width: 550,
-    x: 0,
-    y: 0,
-  });
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [width, setWidth] = useState(chart.width);
+  const [height, setHeight] = useState(chart.height);
+  // Must set positions in use effect or else chart will render on the server which has no access to document
+  useEffect(() => {
+    setX(transformPositionBetweenPxAndPerc(chart.x, 'x', 'px'));
+    setY(transformPositionBetweenPxAndPerc(chart.y, 'y', 'px'));
+  }, []);
 
   useEffect(() => {
     if (variables?.length) {
@@ -57,37 +73,58 @@ const ResizableChart = ({
   const titleHeaderHeightRem = 2;
   const childrenHorizontalPaddingRem = 1.5;
   const chartContainerHeight =
-    cardProperties.height -
+    height -
     convertRemToPixels(titleHeaderHeightRem + 2 * titleHeaderPaddingRem);
   const chartContainerWidth =
-    cardProperties.width - convertRemToPixels(childrenHorizontalPaddingRem);
+    width - convertRemToPixels(childrenHorizontalPaddingRem);
 
-  const chartUpdateHandler = ({ height, width, x, y }: Position) => {
-    if (
-      isCollidingWithOtherCharts(
-        { id: chart.id, height, width, x, y },
-        allCharts
-      )
-    )
-      return;
-    setCardProperties({ height, width, x, y });
-    const newChart = chart;
-    newChart.height = height;
-    newChart.width = width;
-    newChart.x = x;
-    newChart.y = y;
+  const allChartsInPx = allCharts.map((c) => {
+    return {
+      ...c,
+      x: transformPositionBetweenPxAndPerc(c.x, 'x', 'px'),
+      y: transformPositionBetweenPxAndPerc(c.y, 'y', 'px'),
+    };
+  });
+
+  const chartUpdateHandler = ({ width, height, x, y }: Position) => {
+    const isAvailable = isAvailablePosition(
+      {
+        id: chart.id,
+        width,
+        height,
+        x,
+        y,
+      },
+      allChartsInPx
+    );
+    if (!isAvailable) return;
+    setX(x);
+    setY(y);
+    setHeight(height);
+    setWidth(width);
+    const xInPerc = transformPositionBetweenPxAndPerc(x, 'x', 'perc');
+    const yInPerc = transformPositionBetweenPxAndPerc(y, 'y', 'perc');
+    const newChart = {
+      ...chart,
+      height,
+      width,
+      x: xInPerc,
+      y: yInPerc,
+    };
     updateChart(newChart);
   };
 
   return (
     <ResizableDraggableCard
       title={chart.title}
-      cardProperties={cardProperties}
+      x={x}
+      y={y}
+      height={height}
+      width={width}
       titleHeaderHeightRem={titleHeaderHeightRem}
       titleHeaderPaddingRem={titleHeaderPaddingRem}
       childrenHorizontalPaddingRem={childrenHorizontalPaddingRem}
       chartUpdateHandler={chartUpdateHandler}
-      defaultPosition={chart}
     >
       {error && <QueryErrorContainer error={error} setError={setError} />}
       {isLoading ? (

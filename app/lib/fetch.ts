@@ -4,7 +4,6 @@ export const fetchData = async (
   query: string,
   errorHandler?: (message: string) => void
 ) => {
-  console.log('running query', query);
   const body = JSON.stringify({
     query,
   });
