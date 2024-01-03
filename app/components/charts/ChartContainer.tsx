@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import {
-  CustomizableChartOptions,
+  CustomizableChartTypes,
   LeftRight,
   accentColorDark,
   createChartConfigs,
@@ -24,8 +24,8 @@ interface ChartContainerProps {
   data: any[];
   height: number;
   width: number;
-  customizableColumnsTypes?: CustomizableChartOptions[];
-  customizableAxesTypes?: LeftRight[];
+  chartColumnsTypes?: CustomizableChartTypes[];
+  chartAxesTypes?: LeftRight[];
   errorHandler?: (msg: string) => void;
 }
 
@@ -40,8 +40,8 @@ const getChartComponent = (
   margin: { top: number; right: number; bottom: number; left: number },
   showTooltip?: any,
   hideTooltip?: () => void,
-  customizableColumnsTypes?: CustomizableChartOptions[],
-  customizableAxesTypes?: LeftRight[],
+  chartColumnsTypes?: CustomizableChartTypes[],
+  chartAxesTypes?: LeftRight[],
   errorHandler?: (msg: string) => void
 ) => {
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
@@ -68,13 +68,9 @@ const getChartComponent = (
     case ChartType.BAR:
       // Bar chart is the customizable chart
       const chartConfigs =
-        customizableColumnsTypes &&
-        customizableAxesTypes &&
-        createChartConfigs(
-          yNames,
-          customizableColumnsTypes,
-          customizableAxesTypes
-        );
+        chartColumnsTypes &&
+        chartAxesTypes &&
+        createChartConfigs(yNames, chartColumnsTypes, chartAxesTypes);
       return (
         <BarChart
           filteredData={filteredData}
@@ -110,8 +106,8 @@ const ChartContainer = ({
   data,
   height,
   width,
-  customizableColumnsTypes,
-  customizableAxesTypes,
+  chartColumnsTypes,
+  chartAxesTypes,
   errorHandler,
 }: ChartContainerProps) => {
   // TODO fix using widow causes Unhandled Runtime Error
@@ -217,8 +213,8 @@ const ChartContainer = ({
                 margin,
                 showTooltip,
                 hideTooltip,
-                customizableColumnsTypes,
-                customizableAxesTypes,
+                chartColumnsTypes,
+                chartAxesTypes,
                 errorHandler
               )}
             {showBrush && brush}

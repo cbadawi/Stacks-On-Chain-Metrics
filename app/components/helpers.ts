@@ -31,17 +31,16 @@ export type ChartConfigs = {
   rightAxisColumnNames: string[];
 };
 
-export const customizableChartOptions = ['bar', 'line'];
+export type CustomizableChartTypes = 'LINE' | 'BAR';
 
-export type CustomizableChartOptions = Exclude<
-  keyof typeof ChartType,
-  'TABLE' | 'PIE' | 'TREEMAP' | 'NUMBER'
->;
+export const CustomizableChartDropdownOptions: CustomizableChartTypes[] = [
+  ChartType.BAR,
+  ChartType.LINE,
+];
 
-export enum LeftRight {
-  'left',
-  'right',
-}
+export type LeftRight = 'LEFT' | 'RIGHT';
+
+export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 
 // Functions
 export const isAvailablePosition = (
@@ -68,7 +67,7 @@ export const enumToArray = (e: any) =>
   Object.keys(e).filter((key) => isNaN(Number(key)));
 
 export const getBarAndLineColNames = (
-  customizableColumnTypes: CustomizableChartOptions[],
+  customizableColumnTypes: CustomizableChartTypes[],
   yNames: string[]
 ) => {
   let barYNames: string[] = [];
@@ -86,14 +85,14 @@ export const getBarAndLineColNames = (
 
 export const createChartConfigs = (
   yNames: string[],
-  customizableColumnsTypes: CustomizableChartOptions[],
+  customizableColumnsTypes: ChartType[],
   customizableAxesTypes: LeftRight[]
 ): ChartConfigs => {
   const leftAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == LeftRight.left
+    (_, index) => customizableAxesTypes[index] == 'LEFT'
   );
   const rightAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == LeftRight.right
+    (_, index) => customizableAxesTypes[index] == 'RIGHT'
   );
 
   const lineColumnNames = yNames.filter(

@@ -272,7 +272,7 @@ export default function BaseChart({
           labelProps={axisLabelProps as any}
         />
       )}
-      {!hideVerticalAxis && (yScale || yScaleLeft) && (
+      {!hideVerticalAxis && yScaleLeft && !yScaleRight && (
         <AxisLeft
           scale={yScaleLeft || yScale}
           numTicks={5}

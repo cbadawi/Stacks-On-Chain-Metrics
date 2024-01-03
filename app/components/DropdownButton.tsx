@@ -3,15 +3,15 @@ import React from 'react';
 interface DropdownButtonProps {
   buttonText: string;
   options: string[];
-  setter: (newType: any, columnIndex: number) => void;
-  dropdownButtonIndex: number;
+  setter: (params: any) => void;
+  label?: string;
 }
 
 const DropdownButton = ({
   buttonText,
   options,
   setter,
-  dropdownButtonIndex,
+  label,
 }: DropdownButtonProps) => {
   return (
     <div className='dropdown'>
@@ -27,7 +27,8 @@ const DropdownButton = ({
             <a
               key={'a-' + index}
               onClick={() => {
-                setter(option, dropdownButtonIndex);
+                console.log('option', option);
+                if (label) setter({ newType: option, columnName: label });
                 if (document.activeElement instanceof HTMLElement) {
                   document.activeElement.blur();
                 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import ChartContainer from '../charts/ChartContainer';
-import { CustomizableChartOptions, LeftRight, VariableType } from '../helpers';
+import { CustomizableChartTypes, LeftRight, VariableType } from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import QueryButtons from './QueryButtons';
 import { ChartType } from '@prisma/client';
@@ -10,12 +10,12 @@ interface QueryVisualizationProps {
   data: any[];
   query: string;
   variableDefaults: VariableType[];
-  customizableColumnsTypes: CustomizableChartOptions[];
-  setCustomizableColumnsTypes: React.Dispatch<
-    React.SetStateAction<CustomizableChartOptions[]>
+  chartColumnsTypes: CustomizableChartTypes[];
+  setChartColumnsTypes: React.Dispatch<
+    React.SetStateAction<CustomizableChartTypes[]>
   >;
-  customizableAxesTypes: LeftRight[];
-  setCustomizableAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
+  chartAxesTypes: LeftRight[];
+  setChartAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
   errorHandler?: (msg: string) => void;
 }
 
@@ -23,10 +23,10 @@ const QueryVisualization = ({
   data,
   query,
   variableDefaults,
-  customizableColumnsTypes,
-  setCustomizableColumnsTypes,
-  customizableAxesTypes,
-  setCustomizableAxesTypes,
+  chartColumnsTypes,
+  setChartColumnsTypes,
+  chartAxesTypes,
+  setChartAxesTypes,
   errorHandler,
 }: QueryVisualizationProps) => {
   // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
@@ -45,10 +45,10 @@ const QueryVisualization = ({
       {chartType == ChartType.BAR && (
         <CustomizeBarChart
           columnNames={Object.keys(data[0]).slice(1)}
-          customizableColumnTypes={customizableColumnsTypes}
-          setCustomizableColumnsTypes={setCustomizableColumnsTypes}
-          customizableAxesTypes={customizableAxesTypes}
-          setCustomizableAxesTypes={setCustomizableAxesTypes}
+          chartColumnTypes={chartColumnsTypes}
+          setChartColumnsTypes={setChartColumnsTypes}
+          chartAxesTypes={chartAxesTypes}
+          setChartAxesTypes={setChartAxesTypes}
         />
       )}
       <ChartContainer
@@ -56,8 +56,8 @@ const QueryVisualization = ({
         chartType={chartType}
         height={700}
         width={900}
-        customizableColumnsTypes={customizableColumnsTypes}
-        customizableAxesTypes={customizableAxesTypes}
+        chartColumnsTypes={chartColumnsTypes}
+        chartAxesTypes={chartAxesTypes}
         errorHandler={errorHandler}
       />
     </div>

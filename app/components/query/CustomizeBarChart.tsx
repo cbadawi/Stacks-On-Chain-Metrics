@@ -1,46 +1,52 @@
 import React from 'react';
-import { CustomizableChartOptions, LeftRight } from '../helpers';
-import SetCustomization from './SetCustomization';
-import { ChartType } from '@prisma/client';
+import { CustomizableChartTypes, LeftRight } from '../helpers';
+import CustomizationProperties from '../CustomizationProperties';
 
 interface CustomizeBarChart {
   columnNames: string[];
-  customizableColumnTypes: CustomizableChartOptions[];
-  setCustomizableColumnsTypes: React.Dispatch<
-    React.SetStateAction<CustomizableChartOptions[]>
+  chartColumnTypes: CustomizableChartTypes[];
+  setChartColumnsTypes: React.Dispatch<
+    React.SetStateAction<CustomizableChartTypes[]>
   >;
-  customizableAxesTypes: LeftRight[];
-  setCustomizableAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
+  chartAxesTypes: LeftRight[];
+  setChartAxesTypes: React.Dispatch<React.SetStateAction<LeftRight[]>>;
 }
 
 const CustomizeBarChart = ({
   columnNames,
-  customizableColumnTypes,
-  setCustomizableColumnsTypes,
-  customizableAxesTypes,
-  setCustomizableAxesTypes,
+  chartColumnTypes,
+  setChartColumnsTypes,
+  chartAxesTypes,
+  setChartAxesTypes,
 }: CustomizeBarChart) => {
   //
-  const setColumnType = (
-    newType: CustomizableChartOptions,
-    columnIndex: number
-  ) => {
-    const types = [...customizableColumnTypes];
-    types[columnIndex] = ChartType[
-      newType
-    ] as unknown as CustomizableChartOptions;
-    setCustomizableColumnsTypes(types);
+  const setColumnType = ({
+    newType,
+    columnName,
+  }: {
+    newType: CustomizableChartTypes;
+    columnName: string;
+  }) => {
+    console.log('setColumnType');
+    const types = [...chartColumnTypes];
+    const columnIndex = columnNames.indexOf(columnName);
+    if (columnIndex == -1) return;
+    types[columnIndex] = newType;
+    setChartColumnsTypes(types);
   };
 
-  const setAxesType = (newType: LeftRight, columnIndex: number) => {
-    const types = [...customizableAxesTypes];
-    types[columnIndex] = LeftRight[newType] as unknown as LeftRight;
-    setCustomizableAxesTypes(types);
-  };
-
-  const BarAndLineChartTypes = {
-    BAR: ChartType.BAR,
-    LINE: ChartType.LINE,
+  const setAxesType = ({
+    newType,
+    columnName,
+  }: {
+    newType: LeftRight;
+    columnName: string;
+  }) => {
+    const types = [...chartAxesTypes];
+    const columnIndex = columnNames.indexOf(columnName);
+    if (columnIndex == -1) return;
+    types[columnIndex] = newType;
+    setChartAxesTypes(types);
   };
 
   return (
@@ -51,21 +57,18 @@ const CustomizeBarChart = ({
           Customize Bar Chart
         </div>
         <form className='collapse-content p-4'>
-          <div className='flex justify-center overflow-y-scroll'>
-            <SetCustomization
-              header='Set Chart Types'
-              columnNames={columnNames}
-              columnTypes={customizableColumnTypes}
-              setter={setColumnType}
-              optionsEnum={BarAndLineChartTypes}
-            />
-            <SetCustomization
-              header='Set Axis Position'
-              columnNames={columnNames}
-              columnTypes={customizableAxesTypes}
-              setter={setAxesType}
-              optionsEnum={LeftRight}
-            />
+          <div className='flex flex-col justify-center overflow-y-scroll'>
+            {columnNames.map((name, index) => (
+              <CustomizationProperties
+                key={`CustomizationProperties-${index}`}
+                name={name}
+                columnIndex={index}
+                chartColumnTypes={chartColumnTypes}
+                chartAxesTypes={chartAxesTypes}
+                setColumnsTypes={setColumnType}
+                setAxesTypes={setAxesType}
+              />
+            ))}
           </div>
         </form>
       </div>

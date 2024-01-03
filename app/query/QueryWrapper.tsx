@@ -6,7 +6,7 @@ import QueryErrorContainer from '../components/QueryErrorContainer';
 import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
 import {
-  CustomizableChartOptions,
+  CustomizableChartTypes,
   LeftRight,
   VariableType,
   getYColNamesFromData,
@@ -25,12 +25,11 @@ const QueryWrapper = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // array containing the type of column. ex ['bar', 'bar', 'line']
-  const [customizableColumnsTypes, setCustomizableColumnsTypes] = useState<
-    CustomizableChartOptions[]
+  const [chartColumnsTypes, setChartColumnsTypes] = useState<
+    CustomizableChartTypes[]
   >([]);
-  const [customizableAxesTypes, setCustomizableAxesTypes] = useState<
-    LeftRight[]
-  >([]);
+  // array containing the position of axis.
+  const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
   const [data, setData] = useState<any[] | undefined | never[]>([]);
   const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
 
@@ -68,12 +67,10 @@ const QueryWrapper = () => {
       setData(data);
       if (data?.length) {
         // default for customizable charts is bar columns, and left axes
-        setCustomizableColumnsTypes(
+        setChartColumnsTypes(
           getYColNamesFromData(data).map((col) => ChartType.BAR)
         );
-        setCustomizableAxesTypes(
-          getYColNamesFromData(data).map((col) => LeftRight.left)
-        );
+        setChartAxesTypes(getYColNamesFromData(data).map((col) => 'LEFT'));
       }
     }
 
@@ -100,10 +97,10 @@ const QueryWrapper = () => {
             <QueryVisualization
               data={data}
               query={query}
-              customizableColumnsTypes={customizableColumnsTypes}
-              setCustomizableColumnsTypes={setCustomizableColumnsTypes}
-              customizableAxesTypes={customizableAxesTypes}
-              setCustomizableAxesTypes={setCustomizableAxesTypes}
+              chartColumnsTypes={chartColumnsTypes}
+              setChartColumnsTypes={setChartColumnsTypes}
+              chartAxesTypes={chartAxesTypes}
+              setChartAxesTypes={setChartAxesTypes}
               errorHandler={setError}
               variableDefaults={variableDefaults}
             />
