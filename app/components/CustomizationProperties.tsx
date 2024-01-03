@@ -38,10 +38,12 @@ const CustomizationProperties = ({
 }: CustomizationPropertiesProps) => {
   return (
     <div>
-      <span>{name}</span>
+      <span className='card-title text-lg font-medium text-orange-400'>
+        {name}
+      </span>
       <div className='flex'>
-        <div>
-          <span>Chart</span>
+        <div className='border border-solid border-gray-700 px-2'>
+          <span className='text-base'>Chart</span>
           <DropdownButton
             key={`column-dropdownbutton-${name}-chart`}
             buttonText={chartColumnTypes[columnIndex]}
@@ -50,7 +52,7 @@ const CustomizationProperties = ({
             label={name}
           />
         </div>
-        <div>
+        <div className='border border-solid border-gray-700 px-2'>
           <span>Axis Position</span>
           <DropdownButton
             key={`column-dropdownbutton-${name}-axis`}

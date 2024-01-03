@@ -2,6 +2,9 @@ import { max, min, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import { Chart, ChartType } from '@prisma/client';
 
+export const CHART_CONTAINER_WIDTH = 900;
+export const CHART_CONTAINER_HEIGHT = 700;
+
 // Types
 export type Position = {
   height: number;

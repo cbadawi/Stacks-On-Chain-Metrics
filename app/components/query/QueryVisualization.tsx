@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 
 import ChartContainer from '../charts/ChartContainer';
-import { CustomizableChartTypes, LeftRight, VariableType } from '../helpers';
+import {
+  CHART_CONTAINER_HEIGHT,
+  CHART_CONTAINER_WIDTH,
+  CustomizableChartTypes,
+  LeftRight,
+  VariableType,
+} from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import QueryButtons from './QueryButtons';
 import { ChartType } from '@prisma/client';
@@ -54,8 +60,8 @@ const QueryVisualization = ({
       <ChartContainer
         data={data}
         chartType={chartType}
-        height={700}
-        width={900}
+        height={CHART_CONTAINER_HEIGHT}
+        width={CHART_CONTAINER_WIDTH}
         chartColumnsTypes={chartColumnsTypes}
         chartAxesTypes={chartAxesTypes}
         errorHandler={errorHandler}

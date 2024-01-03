@@ -1,5 +1,9 @@
 import React from 'react';
-import { CustomizableChartTypes, LeftRight } from '../helpers';
+import {
+  CHART_CONTAINER_WIDTH,
+  CustomizableChartTypes,
+  LeftRight,
+} from '../helpers';
 import CustomizationProperties from '../CustomizationProperties';
 
 interface CustomizeBarChart {
@@ -49,15 +53,19 @@ const CustomizeBarChart = ({
     setChartAxesTypes(types);
   };
 
+  const wrapperWidth = `w-[${CHART_CONTAINER_WIDTH}px]`;
+
   return (
-    <div className='m-7 flex justify-center'>
-      <div className='collapse collapse-arrow w-full rounded-lg bg-base-200 shadow-md sm:w-3/4 lg:w-9/12'>
+    <div className={`my-7 flex w-full items-center justify-center`}>
+      <div
+        className={`collapse collapse-arrow rounded-lg bg-base-200 shadow-md ${wrapperWidth}`}
+      >
         <input type='checkbox' />
-        <div className='collapse-title text-xl font-medium'>
+        <div className='collapse-title flex justify-center text-xl font-medium'>
           Customize Bar Chart
         </div>
         <form className='collapse-content p-4'>
-          <div className='flex flex-col justify-center overflow-y-scroll'>
+          <div className='md flex flex-col justify-center gap-3 overflow-y-scroll'>
             {columnNames.map((name, index) => (
               <CustomizationProperties
                 key={`CustomizationProperties-${index}`}
