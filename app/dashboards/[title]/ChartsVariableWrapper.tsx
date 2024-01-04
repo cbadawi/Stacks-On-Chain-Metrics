@@ -32,7 +32,7 @@ const ChartsVariableWrapper = ({
   const defaultVariableValues = getDefaultVariableValues(dashboard);
 
   return (
-    <div className='draggables-variable-wrapper relative h-[100vh] w-full'>
+    <div className='draggables-variable-wrapper relative h-[100vh] w-full flex-grow overflow-auto'>
       {!!defaultVariableValues?.length && (
         <form
           id={variablesFormId}

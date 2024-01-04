@@ -22,6 +22,7 @@ const RunButton = ({
     const res = Array.from(variablesElements).every((element) => {
       const variable = element.className.split(' ')[1];
       const value = (element as HTMLButtonElement).value;
+      // TODO switch to URL search params
       const queryString = `${variable}=${value}`;
       urlQuery += queryString + '&';
       variableList.push({ variable, value });
@@ -30,9 +31,9 @@ const RunButton = ({
 
     setVariables(variableList);
 
-    if (res && urlQuery) {
-      router.push('/dashboards/variabletest' + '?' + urlQuery);
-    }
+    // if (res && urlQuery) {
+    //   router.push('/dashboards/variabletest' + '?' + urlQuery);
+    // }
   };
 
   return (

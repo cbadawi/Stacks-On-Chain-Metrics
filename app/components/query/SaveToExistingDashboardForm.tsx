@@ -57,11 +57,16 @@ const SaveToExistingDashboardForm = ({
             type='title'
             className='input input-bordered mb-3 w-full'
           />
-          <input hidden name='title' value={dashboardSelector} readOnly />
-          <input value={chartType} name='chartType' hidden readOnly />
-          <input value={query} name='query' hidden readOnly />
           <input
-            value={JSON.stringify(variableDefaults)}
+            hidden
+            name='title'
+            defaultValue={dashboardSelector}
+            readOnly
+          />
+          <input defaultValue={chartType} name='chartType' hidden readOnly />
+          <input defaultValue={query} name='query' hidden readOnly />
+          <input
+            defaultValue={JSON.stringify(variableDefaults)}
             name='variables'
             hidden
             readOnly

@@ -2,11 +2,10 @@ import {
   DashboardWithCharts,
   getDashboard,
 } from '@/app/lib/db/dashboards/dashboard';
-import { Prisma } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import React from 'react';
-import RunButton from './RunButton';
 import ChartsVariableWrapper from './ChartsVariableWrapper';
+import { useSession } from 'next-auth/react';
 
 type DashboardProps = {
   params: { title: string };
@@ -23,7 +22,7 @@ const Dashboard = async ({ params, searchParams }: DashboardProps) => {
   if (!dashboard) redirect('/dashboards');
   // TODO good idea : seems like dune has max-width:1000px sets the width to 100% -- check a dune dashboard
   return (
-    <div className='border-2 border-solid border-red-900 px-4'>
+    <div className='flex h-full flex-col border-2 border-solid border-red-900 px-4'>
       <header className='dahsboard-title flex justify-between py-8'>
         <div>
           <h2>{title} </h2>

@@ -34,6 +34,9 @@ const SaveToDashboardForm = ({
 
   const { data: session, status } = useSession();
 
+  // formData.get('query') removes new lines but does not add whitespaces causing syntax errors
+  const queryWithoutNewLine = query.replace('\n', ' ');
+
   const getDashboardTitles = async () => {
     const res = await fetch(`api/dashboards?email=dummy@`, {
       cache: 'no-cache',
@@ -56,7 +59,7 @@ const SaveToDashboardForm = ({
     <div>
       {dashboardTitles.length > 0 && (
         <SaveToExistingDashboardForm
-          query={query}
+          query={queryWithoutNewLine}
           variableDefaults={variableDefaults}
           chartType={chartType}
           dashboardTitles={dashboardTitles}
@@ -109,10 +112,10 @@ const SaveToDashboardForm = ({
           type='title'
           className='input input-bordered mb-3 w-full'
         />
-        <input value={chartType} name='chartType' type='hidden' />
-        <input value={query} name='query' type='hidden' />
+        <input defaultValue={chartType} name='chartType' type='hidden' />
+        <input defaultValue={queryWithoutNewLine} name='query' type='hidden' />
         <input
-          value={JSON.stringify(variableDefaults)}
+          defaultValue={JSON.stringify(variableDefaults)}
           name='variables'
           type='hidden'
         />

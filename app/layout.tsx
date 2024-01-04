@@ -28,7 +28,7 @@ export default function RootLayout({
         <AuthProvider>
           <Navbar />
           <Options />
-          {children}
+          <main className='min-h-[100vh]'>{children}</main>
           <Footer />
         </AuthProvider>
       </body>
