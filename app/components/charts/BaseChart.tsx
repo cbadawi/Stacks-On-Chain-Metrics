@@ -42,7 +42,7 @@ export const axisRightTickLabelProps = {
 const axisLabelProps = {
   angle: 0.5,
   verticalAnchor: 'start',
-  fill: 'black',
+  fill: 'white',
   fontSize: 20,
   // length: 50,
   textAnchor: 'middle', // Set label text anchor to the middle
@@ -119,30 +119,33 @@ const renderData = (
             >
               {(barStacks) => {
                 return barStacks.map((barStack, index) =>
-                  barStack.bars.map((bar, barIndex) => (
-                    <rect
-                      key={`bar-${index}-${barIndex}`}
-                      x={bar.x}
-                      y={bar.y}
-                      height={bar.height}
-                      width={bar.width}
-                      fill={bar.color}
-                      onMouseMove={(
-                        event:
-                          | React.TouchEvent<SVGRectElement | SVGPathElement>
-                          | React.MouseEvent<SVGRectElement | SVGPathElement>
-                      ) => {
-                        const eventSvgCoords = localPoint(event);
-                        const left = bar.x;
-                        showTooltip({
-                          tooltipData: bar.bar.data,
-                          tooltipTop: eventSvgCoords?.y,
-                          tooltipLeft: left + bar.width,
-                        });
-                      }}
-                      onMouseLeave={() => hideTooltip && hideTooltip()}
-                    />
-                  ))
+                  barStack.bars.map((bar, barIndex) => {
+                    console.log(bar);
+                    return (
+                      <rect
+                        key={`bar-${index}-${barIndex}`}
+                        x={bar.x}
+                        y={bar.y}
+                        height={bar.height}
+                        width={bar.width}
+                        fill={bar.color}
+                        onMouseMove={(
+                          event:
+                            | React.TouchEvent<SVGRectElement | SVGPathElement>
+                            | React.MouseEvent<SVGRectElement | SVGPathElement>
+                        ) => {
+                          const eventSvgCoords = localPoint(event);
+                          const left = bar.x;
+                          showTooltip({
+                            tooltipData: bar.bar.data,
+                            tooltipTop: eventSvgCoords?.y,
+                            tooltipLeft: left + bar.width,
+                          });
+                        }}
+                        onMouseLeave={() => hideTooltip && hideTooltip()}
+                      />
+                    );
+                  })
                 );
               }}
             </BarStack>
@@ -225,13 +228,6 @@ export default function BaseChart({
   hideVerticalAxis = hideVerticalAxis; //|| yNames?.length == 0;
   return (
     <Group left={margin.left} top={top || margin.top}>
-      <LinearGradient
-        id='gradient'
-        from={gradientColor}
-        fromOpacity={1}
-        to={gradientColor}
-        toOpacity={0.2}
-      />
       {showGrid && (
         <GridColumns
           top={margin.top}

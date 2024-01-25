@@ -33,7 +33,7 @@ type BrushProps = {
   xName: string;
   yName: string;
   bottomChartHeight: number;
-  topChartHeight: number;
+  mainChartHeight: number;
   topChartBottomMargin: number;
   background2: string;
   setFilteredData: React.Dispatch<React.SetStateAction<any[]>>;
@@ -46,7 +46,7 @@ const getBrush = ({
   yName,
   height,
   width,
-  topChartHeight,
+  mainChartHeight,
   topChartBottomMargin,
   mainChartMargin,
   setFilteredData,
@@ -155,7 +155,7 @@ const getBrush = ({
         xScale={brushXScale}
         yScale={brushYScale}
         margin={brushMargin}
-        top={topChartHeight + topChartBottomMargin + (brushMargin?.top || 0)}
+        top={mainChartHeight + topChartBottomMargin + (brushMargin?.top || 0)}
         gradientColor={background2}
         hideBottomAxis={true}
         hideVerticalAxis={true}

@@ -36,7 +36,7 @@ const getChartComponent = (
   yNames: string[],
   height: number | string,
   width: number | string,
-  topChartHeight: number,
+  mainChartHeight: number,
   margin: { top: number; right: number; bottom: number; left: number },
   showTooltip?: any,
   hideTooltip?: () => void,
@@ -45,7 +45,7 @@ const getChartComponent = (
   errorHandler?: (msg: string) => void
 ) => {
   const xMax = Math.max(Number(width) - margin.left - margin.right, 0);
-  const yMax = Math.max(topChartHeight, 0);
+  const yMax = Math.max(mainChartHeight, 0);
 
   switch (chartType) {
     case ChartType.LINE:
@@ -137,35 +137,37 @@ const ChartContainer = ({
   });
 
   // Styles
-  const GRADIENT_ID = 'brush_gradient';
-  const background = '#584153';
   const background2 = '#af8baf';
 
   const margin = {
     top: 20,
-    left: 30,
+    left: 60,
     bottom: 0,
     right: 30,
   };
-
-  // seperation from brush
-  const chartSeparation = 30;
-  const innerHeight = height - margin.top - margin.bottom;
-  const topChartBottomMargin = chartSeparation + 20; // need seperation to make room for the x-axis title
-  const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
-  const bottomChartHeight = innerHeight - topChartHeight - topChartBottomMargin;
-
-  const columns = Object.keys(data[0]);
-  const xName = columns[0];
-  const yNames = columns.slice(1);
 
   const showTooltipData =
     chartType == ChartType.LINE || chartType == ChartType.BAR;
   const showTooltipLine = chartType == ChartType.LINE;
   const showBrush = chartType == ChartType.LINE;
+
+  // seperation from brush
+  const chartSeparation = 30;
+  const innerHeight = height - margin.top - margin.bottom;
+  const topChartBottomMargin = showBrush ? chartSeparation + 20 : 0; // need seperation to make room for the x-axis title
+  const mainChartHeight = 0.8 * innerHeight - topChartBottomMargin;
+  const bottomChartHeight =
+    innerHeight - mainChartHeight - topChartBottomMargin;
+
+  const columns = Object.keys(data[0]);
+  const xName = columns[0];
+  const yNames = columns.slice(1);
+
   const resetScaleHeightPx = 24;
   if (showBrush) height = height - resetScaleHeightPx;
   // data
+
+  console.log('height', height);
 
   const { handleResetClick, brush } = getBrush({
     showBrush,
@@ -174,7 +176,7 @@ const ChartContainer = ({
     yName: yNames[0],
     height,
     width,
-    topChartHeight,
+    mainChartHeight,
     topChartBottomMargin,
     mainChartMargin: margin,
     setFilteredData,
@@ -186,49 +188,41 @@ const ChartContainer = ({
     <div className='chart-container relative flex max-w-full items-center justify-center'>
       {chartType != ChartType.TABLE && chartType != ChartType.NUMBER && (
         <div className='relative'>
-          <svg width={width} height={height}>
-            <LinearGradient
-              id={GRADIENT_ID}
-              from={background}
-              to={background2}
-              rotate={25}
-            />
-            <rect
-              x={0}
-              y={0}
+          <div className='bg-blac'>
+            <svg
               width={width}
               height={height}
-              fill={`url(#${GRADIENT_ID})`}
-              rx={14}
-            />
-            {filteredData?.length &&
-              getChartComponent(
-                chartType,
-                filteredData,
-                xName,
-                yNames,
-                height,
-                width,
-                topChartHeight,
-                margin,
-                showTooltip,
-                hideTooltip,
-                chartColumnsTypes,
-                chartAxesTypes,
-                errorHandler
+              className='flex items-center justify-center bg-black'
+            >
+              {filteredData?.length &&
+                getChartComponent(
+                  chartType,
+                  filteredData,
+                  xName,
+                  yNames,
+                  height,
+                  width,
+                  mainChartHeight,
+                  margin,
+                  showTooltip,
+                  hideTooltip,
+                  chartColumnsTypes,
+                  chartAxesTypes,
+                  errorHandler
+                )}
+              {showBrush && brush}
+              {tooltipData && showTooltipLine && (
+                <TooltipLine
+                  tooltipLeft={tooltipLeft}
+                  tooltipTop={tooltipTop}
+                  circleFill={accentColorDark}
+                  lineStroke={accentColorDark}
+                  marginTop={margin.top}
+                  marginLeft={margin.left}
+                />
               )}
-            {showBrush && brush}
-            {tooltipData && showTooltipLine && (
-              <TooltipLine
-                tooltipLeft={tooltipLeft}
-                tooltipTop={tooltipTop}
-                circleFill={accentColorDark}
-                lineStroke={accentColorDark}
-                marginTop={margin.top}
-                marginLeft={margin.left}
-              />
-            )}
-          </svg>
+            </svg>
+          </div>
           {tooltipData && showTooltipData && (
             <TooltipData
               TooltipInPortal={TooltipInPortal}

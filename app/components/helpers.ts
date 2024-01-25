@@ -1,8 +1,9 @@
 import { max, min, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
 import { Chart, ChartType } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
-export const CHART_CONTAINER_WIDTH = 900;
+export const CHART_CONTAINER_WIDTH = 1100;
 export const CHART_CONTAINER_HEIGHT = 700;
 
 // Types

@@ -53,18 +53,17 @@ const CustomizeBarChart = ({
     setChartAxesTypes(types);
   };
 
-  const wrapperWidth = `w-[${CHART_CONTAINER_WIDTH}px]`;
-
   return (
-    <div className={`my-7 flex w-full items-center justify-center`}>
+    <div className={`my-7 flex items-center justify-center`}>
       <div
-        className={`collapse collapse-arrow rounded-lg bg-base-200 shadow-md ${wrapperWidth}`}
+        className={`collapse collapse-arrow rounded-lg bg-base-200 shadow-md`}
+        style={{ width: `${CHART_CONTAINER_WIDTH}px` }}
       >
         <input type='checkbox' />
         <div className='collapse-title flex justify-center text-xl font-medium'>
           Customize Bar Chart
         </div>
-        <form className='collapse-content p-4'>
+        <form className='collapse-content'>
           <div className='md flex flex-col justify-center gap-3 overflow-y-scroll'>
             {columnNames.map((name, index) => (
               <CustomizationProperties

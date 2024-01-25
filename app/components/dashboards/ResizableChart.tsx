@@ -8,10 +8,11 @@ import { Chart, ChartType } from '@prisma/client';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
 import { Position, VariableType, isAvailablePosition } from '../helpers';
-import { fetchData } from '@/app/lib/fetch';
+import { fetchData, getCookie } from '@/app/lib/fetch';
 import { replaceVariables } from '@/app/lib/db/replaceVariables';
 import QueryErrorContainer from '../QueryErrorContainer';
 import LoadingSkeleton from '@/app/dashboards/loading';
+import { useSession } from 'next-auth/react';
 
 type ResizableChartProps = {
   chart: ChartWithData;

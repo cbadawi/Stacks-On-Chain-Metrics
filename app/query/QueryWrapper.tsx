@@ -11,8 +11,9 @@ import {
   VariableType,
   getYColNamesFromData,
 } from '../components/helpers';
-import { fetchData } from '../lib/fetch';
+import { fetchData, getCookie } from '../lib/fetch';
 import { ChartType } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
 -- Press Ctrl+Enter to run
@@ -32,7 +33,7 @@ const QueryWrapper = () => {
   const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
   const [data, setData] = useState<any[] | undefined | never[]>([]);
   const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
-
+  const { status, data: session } = useSession();
   const parseVariables = (
     query: string,
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
@@ -90,7 +91,7 @@ const QueryWrapper = () => {
       </div>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <div className='relative my-12 w-full rounded-t-3xl bg-[#101011] px-5 py-4 md:px-0'>
+        <div className='relative my-12 w-full rounded-t-3xl bg-[#081115] px-5 py-4 md:px-0'>
           {!data?.length ? (
             <StarterPlaceholderMessage />
           ) : (
