@@ -20,7 +20,7 @@ export const fetchData = async (
     response = await fetch(url, {
       credentials: 'include',
       method: 'POST',
-      next: { revalidate: 0 },
+      next: { revalidate: 90 },
       headers,
       body,
     });
