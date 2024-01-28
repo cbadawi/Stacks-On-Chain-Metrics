@@ -5,20 +5,16 @@ import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import {
-  CustomizableChartTypes,
-  LeftRight,
-  VariableType,
-  getYColNamesFromData,
-} from '../components/helpers';
+import { VariableType, getYColNamesFromData } from '../components/helpers';
 import { fetchData, getCookie } from '../lib/fetch';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
 -- Press Ctrl+Enter to run
 -- You can use variables by wrapping words in double brackets {{}}
-select * from accounts limit 2`;
+select 1 aaa, 3 sa, 8 da, 5 ads
+union select 7,5,3,1`;
 // TODO change default query to something more recent
 
 const QueryWrapper = () => {

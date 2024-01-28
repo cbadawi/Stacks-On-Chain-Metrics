@@ -1,6 +1,11 @@
 'use server';
 
-import { Chart, ChartType } from '@prisma/client';
+import {
+  Chart,
+  ChartType,
+  CustomizableChartTypes,
+  LeftRight,
+} from '@prisma/client';
 import prisma from '../client';
 import { ChartWithData } from './dashboard';
 import { VariableType } from '@/app/components/helpers';
@@ -14,7 +19,9 @@ export async function addChart(
   y: number,
   width: number,
   height: number,
-  variables: VariableType[]
+  variables: VariableType[],
+  axesTypes: LeftRight[],
+  columnTypes: CustomizableChartTypes[]
 ) {
   const newChart = await prisma.chart.create({
     data: {
@@ -27,6 +34,8 @@ export async function addChart(
       height,
       dashboardId,
       variables,
+      columnTypes,
+      axesTypes,
     },
   });
 

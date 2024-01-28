@@ -6,7 +6,6 @@ import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import React, { useState } from 'react';
 import RunButton from './RunButton';
 import { VariableType } from '@/app/components/helpers';
-import Modal from '@/app/components/Modal';
 
 const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
   const vars = dashboard.charts

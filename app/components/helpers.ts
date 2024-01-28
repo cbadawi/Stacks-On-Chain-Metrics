@@ -1,6 +1,11 @@
 import { max, min, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
-import { Chart, ChartType } from '@prisma/client';
+import {
+  Chart,
+  ChartType,
+  CustomizableChartTypes,
+  LeftRight,
+} from '@prisma/client';
 import { useSession } from 'next-auth/react';
 
 export const CHART_CONTAINER_WIDTH = 1100;
@@ -35,14 +40,10 @@ export type ChartConfigs = {
   rightAxisColumnNames: string[];
 };
 
-export type CustomizableChartTypes = 'LINE' | 'BAR';
-
 export const CustomizableChartDropdownOptions: CustomizableChartTypes[] = [
   ChartType.BAR,
   ChartType.LINE,
 ];
-
-export type LeftRight = 'LEFT' | 'RIGHT';
 
 export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 

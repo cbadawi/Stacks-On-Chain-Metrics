@@ -1,10 +1,7 @@
 import React from 'react';
-import {
-  CHART_CONTAINER_WIDTH,
-  CustomizableChartTypes,
-  LeftRight,
-} from '../helpers';
+import { CHART_CONTAINER_WIDTH } from '../helpers';
 import CustomizationProperties from '../CustomizationProperties';
+import { CustomizableChartTypes, LeftRight } from '@prisma/client';
 
 interface CustomizeBarChart {
   columnNames: string[];

@@ -3,12 +3,7 @@
 import React, { useState } from 'react';
 import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import {
-  CustomizableChartTypes,
-  LeftRight,
-  accentColorDark,
-  createChartConfigs,
-} from '../helpers';
+import { accentColorDark, createChartConfigs } from '../helpers';
 import Table from './Table';
 import Pie from './Pie';
 import getBrush from './getBrush';
@@ -16,7 +11,7 @@ import TooltipLine from './TooltipLine';
 import TooltipData from './TooltipData';
 import LineChart from './LineChart';
 import BarChart from './BarChart';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import Stats from './Stats';
 
 interface ChartContainerProps {
@@ -67,6 +62,7 @@ const getChartComponent = (
       );
     case ChartType.BAR:
       // Bar chart is the customizable chart
+      console.log(chartColumnsTypes, chartAxesTypes);
       const chartConfigs =
         chartColumnsTypes &&
         chartAxesTypes &&

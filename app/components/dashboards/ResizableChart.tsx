@@ -120,7 +120,6 @@ const ResizableChart = ({
     };
     updateChart(newChart);
   };
-
   return (
     <ResizableDraggableCard
       title={chart.title}
@@ -146,6 +145,8 @@ const ResizableChart = ({
             chartType={chart.type}
             height={chartContainerHeight}
             width={chartContainerWidth}
+            chartAxesTypes={chart.axesTypes}
+            chartColumnsTypes={chart.columnTypes}
           />
         )
       )}

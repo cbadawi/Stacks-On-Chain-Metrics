@@ -4,13 +4,11 @@ import ChartContainer from '../charts/ChartContainer';
 import {
   CHART_CONTAINER_HEIGHT,
   CHART_CONTAINER_WIDTH,
-  CustomizableChartTypes,
-  LeftRight,
   VariableType,
 } from '../helpers';
 import CustomizeBarChart from './CustomizeBarChart';
 import QueryButtons from './QueryButtons';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 
 interface QueryVisualizationProps {
   data: any[];
@@ -47,6 +45,8 @@ const QueryVisualization = ({
         query={query}
         errorHandler={errorHandler}
         variableDefaults={variableDefaults}
+        chartAxesTypes={chartAxesTypes}
+        chartColumnsTypes={chartColumnsTypes}
       />
       {chartType == ChartType.BAR && (
         <CustomizeBarChart

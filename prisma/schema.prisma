@@ -20,6 +20,20 @@ enum ChartType {
   @@schema("dash")
 }
 
+enum LeftRight {
+  LEFT
+  RIGHT
+
+  @@schema("dash")
+}
+
+enum CustomizableChartTypes {
+  LINE
+  BAR
+
+  @@schema("dash")
+}
+
 enum Tags {
   Stacks
   Babo
@@ -74,12 +88,14 @@ model Chart {
   y               Int
   width           Int
   height          Int
-  deleted         Boolean         @default(false) 
+  deleted         Boolean                   @default(false) 
   variables       Json[]
-  dashboard       Dashboard       @relation(fields: [dashboardId], references: [id])
-  dashboardId     Int             @map("dashboard_id")
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  dashboard       Dashboard                 @relation(fields: [dashboardId], references: [id])
+  dashboardId     Int                       @map("dashboard_id")
+  axesTypes       LeftRight[]               @map("axes_types")
+  columnTypes     CustomizableChartTypes[]  @map("column_types")
+  createdAt       DateTime                  @default(now()) @map("created_at")
+  updatedAt       DateTime                  @updatedAt @map("updated_at")
   @@index([deleted, dashboardId], map: "CHART_DASHBOARD_ID")
   
   @@map("charts")

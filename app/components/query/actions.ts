@@ -2,7 +2,12 @@
 
 import { addDashboard, getDashboard } from '@/app/lib/db/dashboards/dashboard';
 import { addChart } from '@/app/lib/db/dashboards/charts';
-import { ChartType, Dashboard, Prisma } from '@prisma/client';
+import {
+  ChartType,
+  LeftRight,
+  Prisma,
+  CustomizableChartTypes,
+} from '@prisma/client';
 import { VariableType } from '../helpers';
 import prisma from '@/app/lib/db/client';
 
@@ -16,8 +21,23 @@ function parseFormData(formData: FormData) {
   const privateDashboard = Boolean(formData.get('private'));
   const description = formData.get('description')?.toString();
   const chartTitle = formData.get('chartTitle')?.toString() || '';
+  const chartAxesTypesStr = (
+    formData.get('chartAxesTypes')?.toString() || ''
+  ).split(',');
+  const chartAxesTypes = chartAxesTypesStr.map(
+    (t) => LeftRight[t as keyof typeof LeftRight]
+  );
+  const chartColumnsTypesStr = (
+    formData.get('chartColumnsTypes')?.toString() || ''
+  ).split(',');
+
+  const chartColumnsTypes = chartColumnsTypesStr.map(
+    (t) => CustomizableChartTypes[t as keyof typeof CustomizableChartTypes]
+  );
+
   const chartType =
     ChartType[formData.get('chartType')?.toString() as keyof typeof ChartType];
+
   const query = formData
     .get('query')
     ?.toString()
@@ -34,14 +54,23 @@ function parseFormData(formData: FormData) {
     chartType,
     query,
     variables,
+    chartAxesTypes,
+    chartColumnsTypes,
   };
 }
 
 export async function addChartToDashboard(formData: FormData) {
   // let the client handle the error https://nextjs.org/learn/dashboard-app/error-handling
   // try {
-  const { title, chartType, query, chartTitle, variables } =
-    parseFormData(formData);
+  const {
+    title,
+    chartType,
+    query,
+    chartTitle,
+    variables,
+    chartAxesTypes,
+    chartColumnsTypes,
+  } = parseFormData(formData);
 
   if (!title || !chartType || !query) return null;
 
@@ -60,7 +89,9 @@ export async function addChartToDashboard(formData: FormData) {
       DEFAULT_CHART_Y,
       DEFAULT_CHART_WIDTH,
       DEFAULT_CHART_HEIGHT,
-      variables
+      variables,
+      chartAxesTypes,
+      chartColumnsTypes
     );
 
     return {
@@ -82,6 +113,8 @@ export async function createNewDashboardAndChart(formData: FormData) {
     chartType,
     query,
     variables,
+    chartAxesTypes,
+    chartColumnsTypes,
   } = parseFormData(formData);
 
   console.log('server query', query);
@@ -103,7 +136,9 @@ export async function createNewDashboardAndChart(formData: FormData) {
         DEFAULT_CHART_Y,
         DEFAULT_CHART_WIDTH,
         DEFAULT_CHART_HEIGHT,
-        variables
+        variables,
+        chartAxesTypes,
+        chartColumnsTypes
       );
       return {
         message: 'Added Dashboard & Chart',

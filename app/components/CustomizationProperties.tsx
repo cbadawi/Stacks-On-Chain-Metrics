@@ -1,11 +1,10 @@
 import React from 'react';
 import DropdownButton from './DropdownButton';
 import {
-  LeftRight,
-  CustomizableChartTypes,
   CustomizableChartDropdownOptions,
   CustomizableAxesDropdownOptions,
 } from './helpers';
+import { CustomizableChartTypes, LeftRight } from '@prisma/client';
 
 interface CustomizationPropertiesProps {
   name: string;

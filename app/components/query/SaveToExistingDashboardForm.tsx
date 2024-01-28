@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { addChartToDashboard } from './actions';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { VariableType } from '../helpers';
 
 type SaveToDashboardProps = {
@@ -11,6 +11,8 @@ type SaveToDashboardProps = {
   query: string;
   closeModal: () => void;
   variableDefaults?: VariableType[];
+  chartColumnsTypes: CustomizableChartTypes[];
+  chartAxesTypes: LeftRight[];
 };
 
 const SaveToExistingDashboardForm = ({
@@ -19,6 +21,8 @@ const SaveToExistingDashboardForm = ({
   closeModal,
   query,
   variableDefaults,
+  chartColumnsTypes,
+  chartAxesTypes,
 }: SaveToDashboardProps) => {
   const [dashboardSelector, setDashboardSelector] = useState<string>();
   console.log('input query ', query);
@@ -68,6 +72,18 @@ const SaveToExistingDashboardForm = ({
           />
           {/* defaultValue={chartType} insteaf of value returns always TABLE. remove the hidden to check with defaultValue */}
           <input value={chartType} name='chartType' readOnly hidden />
+          <input
+            defaultValue={chartAxesTypes}
+            name='chartAxesTypes'
+            hidden
+            readOnly
+          />
+          <input
+            defaultValue={chartColumnsTypes}
+            name='chartColumnsTypes'
+            hidden
+            readOnly
+          />
           <input defaultValue={query} name='query' hidden readOnly />
           <input
             defaultValue={JSON.stringify(variableDefaults)}

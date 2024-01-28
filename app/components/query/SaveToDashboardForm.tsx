@@ -3,10 +3,17 @@
 import React, { useState, ChangeEvent, useEffect, useMemo } from 'react';
 import { createNewDashboardAndChart, addChartToDashboard } from './actions';
 import Button from '../filter/Button';
-import { ChartType, Dashboard, Prisma } from '@prisma/client';
+import {
+  ChartType,
+  CustomizableChartTypes,
+  Dashboard,
+  LeftRight,
+  Prisma,
+} from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import SaveToExistingDashboardForm from './SaveToExistingDashboardForm';
 import { VariableType } from '../helpers';
+import { NEWLINE_PLACEHOLDER } from '@/app/lib/constants';
 
 type SaveToDashboardFormProps = {
   query: string;
@@ -14,6 +21,8 @@ type SaveToDashboardFormProps = {
   variableDefaults?: VariableType[];
   chartType: ChartType;
   saveToDashCounter: number;
+  chartColumnsTypes: CustomizableChartTypes[];
+  chartAxesTypes: LeftRight[];
 };
 
 const SaveToDashboardForm = ({
@@ -22,6 +31,8 @@ const SaveToDashboardForm = ({
   chartType,
   variableDefaults,
   saveToDashCounter,
+  chartColumnsTypes,
+  chartAxesTypes,
 }: SaveToDashboardFormProps) => {
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [dashboardTitles, setDashboardTitles] = useState<string[]>([]);
@@ -37,7 +48,7 @@ const SaveToDashboardForm = ({
 
   // formData.get('query') removes new lines but does not add whitespaces causing syntax errors
   // TODO find out why html or formdata removes new lines
-  const formattedQuery = query.replace(/\n/g, ' $newline ');
+  const formattedQuery = query.replace(/\n/g, ` ${NEWLINE_PLACEHOLDER} `);
 
   const getDashboardTitles = async () => {
     const res = await fetch(`api/dashboards?email=dummy@`, {
@@ -66,6 +77,8 @@ const SaveToDashboardForm = ({
           variableDefaults={variableDefaults}
           chartType={chartType}
           dashboardTitles={dashboardTitles}
+          chartAxesTypes={chartAxesTypes}
+          chartColumnsTypes={chartColumnsTypes}
         />
       )}
       <form
@@ -115,7 +128,20 @@ const SaveToDashboardForm = ({
           type='title'
           className='input input-bordered mb-3 w-full'
         />
-        <input defaultValue={chartType} name='chartType' type='hidden' />
+        {/* defaultValue={chartType} instead of value returns always TABLE. remove the hidden to check with defaultValue */}
+        <input value={chartType} name='chartType' readOnly hidden />
+        <input
+          defaultValue={chartAxesTypes}
+          name='chartAxesTypes'
+          hidden
+          readOnly
+        />
+        <input
+          defaultValue={chartColumnsTypes}
+          name='chartColumnsTypes'
+          hidden
+          readOnly
+        />
         <input defaultValue={formattedQuery} name='query' type='hidden' />
         <input
           defaultValue={JSON.stringify(variableDefaults)}

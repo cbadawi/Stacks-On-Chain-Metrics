@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import Modal from '../Modal';
 import SaveToDashboardForm from './SaveToDashboardForm';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { VariableType } from '../helpers';
 
 type ModalProps = {
@@ -11,6 +11,8 @@ type ModalProps = {
   query: string;
   chartType: ChartType;
   variableDefaults: VariableType[];
+  chartColumnsTypes: CustomizableChartTypes[];
+  chartAxesTypes: LeftRight[];
 };
 
 const SaveToDashBtn = ({
@@ -20,6 +22,8 @@ const SaveToDashBtn = ({
   query,
   chartType,
   variableDefaults,
+  chartColumnsTypes,
+  chartAxesTypes,
 }: ModalProps) => {
   const modalId = 'save-to-dash-modal';
   return (
@@ -42,6 +46,8 @@ const SaveToDashBtn = ({
             chartType={chartType}
             saveToDashCounter={saveToDashCounter}
             variableDefaults={variableDefaults}
+            chartAxesTypes={chartAxesTypes}
+            chartColumnsTypes={chartColumnsTypes}
           />
         }
       />

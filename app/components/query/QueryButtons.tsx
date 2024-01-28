@@ -6,7 +6,7 @@ import { FiDownload, FiSave } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
 import SaveToDashBtn from './SaveToDashBtn';
 import SaveToDashboardForm from './SaveToDashboardForm';
-import { ChartType } from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { VariableType } from '../helpers';
 
 const chartIcons = [
@@ -24,6 +24,8 @@ type QueryButtonsProps = {
   setChart: React.Dispatch<React.SetStateAction<ChartType>>;
   errorHandler?: (msg: string) => void;
   variableDefaults: VariableType[];
+  chartColumnsTypes: CustomizableChartTypes[];
+  chartAxesTypes: LeftRight[];
 };
 
 const QueryButtons = ({
@@ -31,6 +33,8 @@ const QueryButtons = ({
   chartType,
   query,
   errorHandler,
+  chartColumnsTypes,
+  chartAxesTypes,
   variableDefaults,
 }: QueryButtonsProps) => {
   // needed to trigger the use effect hook in the form & fetch dashboards
@@ -46,6 +50,8 @@ const QueryButtons = ({
             query={query}
             variableDefaults={variableDefaults}
             chartType={chartType}
+            chartAxesTypes={chartAxesTypes}
+            chartColumnsTypes={chartColumnsTypes}
           />
         </div>
         <div className='tooltip tooltip-primary' data-tip='Download to CSV'>

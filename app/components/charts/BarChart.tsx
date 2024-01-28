@@ -107,6 +107,18 @@ const BarChart = ({
       ChartType.LINE
     )!;
 
+  console.log(
+    'chartData',
+    filteredData,
+    'xScale',
+    xScale,
+    'yScale',
+    yScale,
+    'yScaleLeft',
+    yScaleLeft,
+    'chartConfigs?.leftAxisColumnNames?.length',
+    chartConfigs?.leftAxisColumnNames?.length
+  );
   return (
     <BaseChart
       xName={xName}
