@@ -62,7 +62,6 @@ const getChartComponent = (
       );
     case ChartType.BAR:
       // Bar chart is the customizable chart
-      console.log(chartColumnsTypes, chartAxesTypes);
       const chartConfigs =
         chartColumnsTypes &&
         chartAxesTypes &&
@@ -139,7 +138,7 @@ const ChartContainer = ({
     top: 20,
     left: 60,
     bottom: 0,
-    right: 30,
+    right: 60,
   };
 
   const showTooltipData =
