@@ -26,7 +26,6 @@ const SaveToDashboardForm = ({
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [dashboardTitles, setDashboardTitles] = useState<string[]>([]);
   const [createDashboardError, setCreateDashboardError] = useState<string>('');
-
   useEffect(() => {
     getDashboardTitles();
   }, [saveToDashCounter]);

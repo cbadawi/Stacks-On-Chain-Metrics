@@ -66,8 +66,8 @@ const SaveToExistingDashboardForm = ({
             defaultValue={dashboardSelector}
             readOnly
           />
-          <input defaultValue={chartType} name='chartType' hidden readOnly />
-          {query}
+          {/* defaultValue={chartType} insteaf of value returns always TABLE. remove the hidden to check with defaultValue */}
+          <input value={chartType} name='chartType' readOnly hidden />
           <input defaultValue={query} name='query' hidden readOnly />
           <input
             defaultValue={JSON.stringify(variableDefaults)}

@@ -73,16 +73,15 @@ const ChartsVariableWrapper = ({
       >
         {dashboard.charts.map((chart, index) => {
           return (
-            <div key={'chart' + index} className='h-full w-full'>
-              <ResizableChart
-                variables={variableValues}
-                baseModalId={baseModalId}
-                key={'chart-' + index}
-                chart={chart}
-                allCharts={dashboard.charts}
-              />
-              ;
-            </div>
+            // <div key={'chart' + index} className='h-full w-full'>
+            <ResizableChart
+              variables={variableValues}
+              baseModalId={baseModalId}
+              key={'chart-' + index}
+              chart={chart}
+              allCharts={dashboard.charts}
+            />
+            // </div>
           );
         })}
       </div>
