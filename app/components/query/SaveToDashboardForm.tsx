@@ -36,13 +36,9 @@ const SaveToDashboardForm = ({
   const closeModal = () =>
     (document.getElementById(modalId) as HTMLDialogElement)?.close();
 
-  // removing comments. easiest option to handle
-  // const queryWithoutComments = query.replace(/--.*?\n/g, ' ');
   // formData.get('query') removes new lines but does not add whitespaces causing syntax errors
   // TODO find out why html or formdata removes new lines
   const formattedQuery = query.replace(/\n/g, ' $newline ');
-
-  // console.log('formattedQueryformattedQuery', formattedQuery);
 
   const getDashboardTitles = async () => {
     const res = await fetch(`api/dashboards?email=dummy@`, {

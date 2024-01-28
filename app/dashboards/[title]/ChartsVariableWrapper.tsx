@@ -42,7 +42,7 @@ const ChartsVariableWrapper = ({
           className='variable-wrapper flex justify-between gap-4 pb-8'
         >
           <div
-            className=' grid  max-w-[90%] gap-4'
+            className='grid max-w-[90%] gap-4'
             style={{
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
             }}
@@ -73,7 +73,7 @@ const ChartsVariableWrapper = ({
       >
         {dashboard.charts.map((chart, index) => {
           return (
-            <div key={'chart' + index}>
+            <div key={'chart' + index} className='h-full w-full'>
               <ResizableChart
                 variables={variableValues}
                 baseModalId={baseModalId}
