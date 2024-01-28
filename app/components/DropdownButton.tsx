@@ -27,7 +27,6 @@ const DropdownButton = ({
             <a
               key={'a-' + index}
               onClick={() => {
-                console.log('option', option);
                 if (label) setter({ newType: option, columnName: label });
                 if (document.activeElement instanceof HTMLElement) {
                   document.activeElement.blur();

@@ -18,11 +18,14 @@ function parseFormData(formData: FormData) {
   const chartTitle = formData.get('chartTitle')?.toString() || '';
   const chartType =
     ChartType[formData.get('chartType')?.toString() as keyof typeof ChartType];
-  const query = formData.get('query')?.toString();
+  const query = formData
+    .get('query')
+    ?.toString()
+    .replace(/\$newline/g, `\n`);
+
   const variables = (JSON.parse(
     formData.get('variables')?.toString() || 'null'
   ) || []) as VariableType[];
-
   return {
     title,
     privateDashboard,
@@ -41,6 +44,8 @@ export async function addChartToDashboard(formData: FormData) {
     parseFormData(formData);
 
   if (!title || !chartType || !query) return null;
+
+  console.log('server query', query);
 
   const dashboard = await getDashboard(title);
   if (!dashboard) return;
@@ -78,6 +83,8 @@ export async function createNewDashboardAndChart(formData: FormData) {
     query,
     variables,
   } = parseFormData(formData);
+
+  console.log('server query', query);
 
   if (!title || !chartType || !query) throw new Error('Missing user input');
   try {

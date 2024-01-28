@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/ChartContainer';
-import { Chart, ChartType } from '@prisma/client';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
 import { Position, VariableType, isAvailablePosition } from '../helpers';
@@ -12,12 +11,18 @@ import { fetchData, getCookie } from '@/app/lib/fetch';
 import { replaceVariables } from '@/app/lib/db/replaceVariables';
 import QueryErrorContainer from '../QueryErrorContainer';
 import LoadingSkeleton from '@/app/dashboards/loading';
-import { useSession } from 'next-auth/react';
+import Modal from '../Modal';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import sql from 'react-syntax-highlighter/dist/esm/languages/hljs/sql';
+import { darcula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+SyntaxHighlighter.registerLanguage('sql', sql);
 
 type ResizableChartProps = {
   chart: ChartWithData;
   allCharts: ChartWithData[];
   variables: VariableType[];
+  baseModalId: string;
 };
 
 const transformPositionBetweenPxAndPerc = (
@@ -38,6 +43,7 @@ const ResizableChart = ({
   chart,
   allCharts,
   variables,
+  baseModalId,
 }: ResizableChartProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [error, setError] = useState('');
@@ -118,6 +124,8 @@ const ResizableChart = ({
   return (
     <ResizableDraggableCard
       title={chart.title}
+      query={chart.query}
+      baseModalId={baseModalId}
       x={x}
       y={y}
       height={height}
@@ -141,6 +149,18 @@ const ResizableChart = ({
           />
         )
       )}
+      <Modal
+        key={'modal' + '-' + chart.title}
+        modalId={baseModalId + chart.title}
+        modalChildren={
+          <div key={'chart-info-' + chart.title}>
+            <div>{chart.title}</div>
+            <SyntaxHighlighter language='sql' style={darcula}>
+              {chart.query}
+            </SyntaxHighlighter>
+          </div>
+        }
+      />
     </ResizableDraggableCard>
   );
 };

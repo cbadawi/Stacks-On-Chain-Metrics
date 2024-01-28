@@ -167,8 +167,6 @@ const ChartContainer = ({
   if (showBrush) height = height - resetScaleHeightPx;
   // data
 
-  console.log('height', height);
-
   const { handleResetClick, brush } = getBrush({
     showBrush,
     data,

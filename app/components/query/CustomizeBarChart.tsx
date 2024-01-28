@@ -31,7 +31,6 @@ const CustomizeBarChart = ({
     newType: CustomizableChartTypes;
     columnName: string;
   }) => {
-    console.log('setColumnType');
     const types = [...chartColumnTypes];
     const columnIndex = columnNames.indexOf(columnName);
     if (columnIndex == -1) return;

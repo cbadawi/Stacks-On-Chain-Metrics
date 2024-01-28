@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect, useMemo } from 'react';
 import { createNewDashboardAndChart, addChartToDashboard } from './actions';
 import Button from '../filter/Button';
 import { ChartType, Dashboard, Prisma } from '@prisma/client';
@@ -10,16 +10,15 @@ import { VariableType } from '../helpers';
 
 type SaveToDashboardFormProps = {
   query: string;
+  modalId: string;
   variableDefaults?: VariableType[];
   chartType: ChartType;
   saveToDashCounter: number;
 };
 
-export const closeModal = () =>
-  (document.getElementById('modal') as HTMLDialogElement).close();
-
 const SaveToDashboardForm = ({
   query,
+  modalId,
   chartType,
   variableDefaults,
   saveToDashCounter,
@@ -34,8 +33,16 @@ const SaveToDashboardForm = ({
 
   const { data: session, status } = useSession();
 
+  const closeModal = () =>
+    (document.getElementById(modalId) as HTMLDialogElement)?.close();
+
+  // removing comments. easiest option to handle
+  // const queryWithoutComments = query.replace(/--.*?\n/g, ' ');
   // formData.get('query') removes new lines but does not add whitespaces causing syntax errors
-  const queryWithoutNewLine = query.replace('\n', ' ');
+  // TODO find out why html or formdata removes new lines
+  const formattedQuery = query.replace(/\n/g, ' $newline ');
+
+  // console.log('formattedQueryformattedQuery', formattedQuery);
 
   const getDashboardTitles = async () => {
     const res = await fetch(`api/dashboards?email=dummy@`, {
@@ -59,7 +66,8 @@ const SaveToDashboardForm = ({
     <div>
       {dashboardTitles.length > 0 && (
         <SaveToExistingDashboardForm
-          query={queryWithoutNewLine}
+          closeModal={closeModal}
+          query={formattedQuery}
           variableDefaults={variableDefaults}
           chartType={chartType}
           dashboardTitles={dashboardTitles}
@@ -113,7 +121,7 @@ const SaveToDashboardForm = ({
           className='input input-bordered mb-3 w-full'
         />
         <input defaultValue={chartType} name='chartType' type='hidden' />
-        <input defaultValue={queryWithoutNewLine} name='query' type='hidden' />
+        <input defaultValue={formattedQuery} name='query' type='hidden' />
         <input
           defaultValue={JSON.stringify(variableDefaults)}
           name='variables'

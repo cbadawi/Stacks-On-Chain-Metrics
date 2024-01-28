@@ -4,7 +4,7 @@ import { BsTable } from 'react-icons/bs';
 import { FcBarChart, FcLineChart, FcPieChart } from 'react-icons/fc';
 import { FiDownload, FiSave } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
-import Modal from '../Modal';
+import SaveToDashBtn from './SaveToDashBtn';
 import SaveToDashboardForm from './SaveToDashboardForm';
 import { ChartType } from '@prisma/client';
 import { VariableType } from '../helpers';
@@ -39,18 +39,13 @@ const QueryButtons = ({
     <div className='icons-flex-container relative m-0 flex min-h-[4rem] flex-row items-center justify-between gap-2 pl-12 pr-12'>
       <div className='flex items-center justify-center gap-2'>
         <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
-          <Modal
+          <SaveToDashBtn
             saveToDashCounter={saveToDashCounter}
             setSaveToDashCounter={setSaveToDashCounter}
             OpenButtonChilden={<FiSave color='#6543FC' size={20} />}
-            ModalChildren={
-              <SaveToDashboardForm
-                query={query}
-                chartType={chartType}
-                saveToDashCounter={saveToDashCounter}
-                variableDefaults={variableDefaults}
-              />
-            }
+            query={query}
+            variableDefaults={variableDefaults}
+            chartType={chartType}
           />
         </div>
         <div className='tooltip tooltip-primary' data-tip='Download to CSV'>

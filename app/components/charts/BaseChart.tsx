@@ -120,7 +120,6 @@ const renderData = (
               {(barStacks) => {
                 return barStacks.map((barStack, index) =>
                   barStack.bars.map((bar, barIndex) => {
-                    console.log(bar);
                     return (
                       <rect
                         key={`bar-${index}-${barIndex}`}

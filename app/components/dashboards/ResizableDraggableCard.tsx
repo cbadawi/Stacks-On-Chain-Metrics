@@ -1,9 +1,13 @@
 import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Position } from '../helpers';
+import { FaInfoCircle } from 'react-icons/fa';
+import Modal from '../Modal';
 
 type ResizableDraggableCardProps = {
   title: string;
+  query: string;
+  baseModalId: string;
   titleHeaderHeightRem: number;
   titleHeaderPaddingRem: number;
   childrenHorizontalPaddingRem: number;
@@ -22,6 +26,7 @@ type ResizableDraggableCardProps = {
 
 const ResizableDraggableCard = ({
   title,
+  baseModalId,
   x,
   y,
   width,
@@ -35,7 +40,8 @@ const ResizableDraggableCard = ({
   const titleHeight = `h-[${titleHeaderHeightRem}rem]`;
   const titlePadding = `p-[${titleHeaderPaddingRem}rem]`;
   const childPadding = `px-[${childrenHorizontalPaddingRem}rem]`;
-  if (title == 'var test') console.log('rnd position', { x: x, y: y });
+  // if (title == 'var test') console.log('rnd position', { x: x, y: y });
+
   return (
     <Rnd
       bounds='parent'
@@ -58,13 +64,26 @@ const ResizableDraggableCard = ({
       className='flex items-center justify-center border border-gray-700 bg-[#141414]'
     >
       <div className='h-full w-full'>
-        {title && (
-          <div
-            className={`card-title ${titleHeight} ${titlePadding} text-lg font-normal`}
-          >
-            {title}
-          </div>
-        )}
+        <div className='mx-2 flex items-center justify-between'>
+          {title && (
+            <div
+              className={`card-title ${titleHeight} ${titlePadding} text-lg font-normal`}
+            >
+              {title}
+            </div>
+          )}
+          <FaInfoCircle
+            size={16}
+            color='rgb(255,255,255, 0.7)'
+            onClick={() => {
+              (
+                document.getElementById(
+                  baseModalId + title
+                ) as HTMLDialogElement
+              )?.showModal();
+            }}
+          />
+        </div>
         <div className={`card-children ${childPadding}`}>{children}</div>
       </div>
     </Rnd>

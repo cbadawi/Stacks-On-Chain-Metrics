@@ -6,6 +6,7 @@ import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import React, { useState } from 'react';
 import RunButton from './RunButton';
 import { VariableType } from '@/app/components/helpers';
+import Modal from '@/app/components/Modal';
 
 const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
   const vars = dashboard.charts
@@ -20,6 +21,8 @@ const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
 
   return uniqueVariables;
 };
+
+const baseModalId = 'modal-id-';
 
 const ChartsVariableWrapper = ({
   dashboard,
@@ -63,18 +66,25 @@ const ChartsVariableWrapper = ({
           </div>
         </form>
       )}
+
       <div
         id='draggables-wrapper'
         className='draggables-wrapper h-full border-2 border-solid border-red-900 '
       >
-        {dashboard.charts.map((chart, index) => (
-          <ResizableChart
-            variables={variableValues}
-            key={'chart-' + index}
-            chart={chart}
-            allCharts={dashboard.charts}
-          />
-        ))}
+        {dashboard.charts.map((chart, index) => {
+          return (
+            <div key={'chart' + index}>
+              <ResizableChart
+                variables={variableValues}
+                baseModalId={baseModalId}
+                key={'chart-' + index}
+                chart={chart}
+                allCharts={dashboard.charts}
+              />
+              ;
+            </div>
+          );
+        })}
       </div>
     </div>
   );
