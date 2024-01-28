@@ -40,7 +40,7 @@ const BarChart = ({
   hideTooltip,
 }: BarChartProps) => {
   const background2 = '#af8baf';
-
+  console.log(JSON.stringify({ chartConfigs }));
   const xScaleCallback = getScaleCallback(filteredData, xName, 'x', chartType)!;
   // Getting the scale for just the first Y col, for simplicity
 
@@ -107,18 +107,6 @@ const BarChart = ({
       ChartType.LINE
     )!;
 
-  console.log(
-    'chartData',
-    filteredData,
-    'xScale',
-    xScale,
-    'yScale',
-    yScale,
-    'yScaleLeft',
-    yScaleLeft,
-    'chartConfigs?.leftAxisColumnNames?.length',
-    chartConfigs?.leftAxisColumnNames?.length
-  );
   return (
     <BaseChart
       xName={xName}
@@ -129,7 +117,6 @@ const BarChart = ({
       height={Number(height)}
       width={Number(width)}
       margin={margin}
-      xMax={xMax}
       yMax={yMax}
       xScale={xScale!}
       yScale={yScale!}
@@ -137,7 +124,6 @@ const BarChart = ({
       yScaleRight={yScaleRight}
       localPoint={localPoint}
       showTooltip={showTooltip}
-      gradientColor={background2}
       hideTooltip={hideTooltip}
       showGrid={true}
     />

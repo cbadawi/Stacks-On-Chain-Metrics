@@ -176,14 +176,12 @@ interface BaseChartProps {
   yNames?: string[];
   chartConfigs?: ChartConfigs;
   data: any[];
-  gradientColor: string;
   xScale: AxisScale<number> | ScaleBand<number>;
   yScale: AxisScale<number>;
   yScaleLeft?: AxisScale<number>;
   yScaleRight?: AxisScale<number>;
   height: number;
   width: number;
-  xMax?: number;
   yMax: number;
   margin: MarginObject;
   top?: number;
@@ -203,10 +201,8 @@ export default function BaseChart({
   yNames, // column names that contain the y-values
   chartConfigs,
   data,
-  gradientColor,
   height,
   width,
-  xMax,
   yMax,
   margin,
   xScale,
@@ -267,7 +263,7 @@ export default function BaseChart({
           labelProps={axisLabelProps as any}
         />
       )}
-      {!hideVerticalAxis && yScaleLeft && !yScaleRight && (
+      {!hideVerticalAxis && yScaleLeft && (
         <AxisLeft
           scale={yScaleLeft || yScale}
           numTicks={5}
