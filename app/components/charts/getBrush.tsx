@@ -51,7 +51,6 @@ const getBrush = ({
   mainChartMargin,
   setFilteredData,
   bottomChartHeight,
-  background2,
 }: BrushProps) => {
   const brushRef = useRef<BaseBrush | null>(null);
 
@@ -156,7 +155,6 @@ const getBrush = ({
         yScale={brushYScale}
         margin={brushMargin}
         top={mainChartHeight + topChartBottomMargin + (brushMargin?.top || 0)}
-        gradientColor={background2}
         hideBottomAxis={true}
         hideVerticalAxis={true}
       >

@@ -65,6 +65,12 @@ export const isAvailablePosition = (
     const width1 = card1.width;
     const height1 = card1.height;
 
+    const isRightEdgeBeforeChart1 = x0 + width0 < x1;
+    const isLeftEdgeAfterChart1 = x0 > x1 + width1;
+
+    const isTopEdgeAfterChart1 = y0 > y1 + height1;
+    const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
+
     console.log(
       JSON.stringify({
         card0,
@@ -78,14 +84,16 @@ export const isAvailablePosition = (
       x0 + width0 < x1,
       x1 + width1 < x0,
       y0 > y1 + height1,
-      y0 + height0 < y1
+      y0 + height0 < y1,
+      JSON.stringify({
+        isLeftEdgeAfterChart1,
+        isRightEdgeBeforeChart1,
+        isTopEdgeAfterChart1,
+        isBottomEdgeBeforeChart1,
+      })
     );
 
-    const isRightEdgeBeforeChart1 = x0 + width0 < x1;
-    const isLeftEdgeAfterChart1 = x0 > x1 + width1;
     if (isRightEdgeBeforeChart1 || isLeftEdgeAfterChart1) return true;
-    const isTopEdgeAfterChart1 = y0 > y1 + height1;
-    const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
     if (isTopEdgeAfterChart1 || isBottomEdgeBeforeChart1) return true;
 
     return false;

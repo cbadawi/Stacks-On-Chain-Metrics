@@ -73,10 +73,10 @@ export async function getDashboard(
 
 export async function getDashboards({
   email,
-  privateDashboard,
+  isPrivate,
 }: {
   email?: string;
-  privateDashboard?: boolean;
+  isPrivate?: boolean;
 }) {
   let whereClause: {
     deleted: boolean;

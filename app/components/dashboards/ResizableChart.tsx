@@ -93,6 +93,8 @@ const ResizableChart = ({
     };
   });
 
+  // TODO : fix allChartsInPx is not updating after resizing
+  // isAvailable function is doing calculation on initial size
   const chartUpdateHandler = ({ width, height, x, y }: Position) => {
     const isAvailable = isAvailablePosition(
       {
@@ -104,6 +106,7 @@ const ResizableChart = ({
       },
       allChartsInPx
     );
+    console.log('isAvailable', isAvailable);
     if (!isAvailable) return;
     setX(x);
     setY(y);

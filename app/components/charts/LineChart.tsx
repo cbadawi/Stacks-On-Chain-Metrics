@@ -44,10 +44,6 @@ const LineChart = ({
   hideTooltip,
   errorHandler,
 }: LineChartProps) => {
-  // chart margin between the chart and the svg
-  // Styles
-  const background2 = '#af8baf';
-
   const firstYName = yNames[0];
   const bisectData = bisector<any, any>((d) => parseValue(d[xName])).left;
   const xScaleCallback = getScaleCallback(data, xName, 'x', chartType)!;
@@ -103,7 +99,6 @@ const LineChart = ({
       yScale={yScale}
       localPoint={localPoint}
       showTooltip={showTooltip}
-      gradientColor={background2}
       handleTooltip={handleTooltip}
       hideTooltip={hideTooltip}
       showGrid={true}

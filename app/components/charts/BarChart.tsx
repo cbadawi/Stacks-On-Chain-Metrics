@@ -39,8 +39,6 @@ const BarChart = ({
   showTooltip,
   hideTooltip,
 }: BarChartProps) => {
-  const background2 = '#af8baf';
-  console.log(JSON.stringify({ chartConfigs }));
   const xScaleCallback = getScaleCallback(filteredData, xName, 'x', chartType)!;
   // Getting the scale for just the first Y col, for simplicity
 
