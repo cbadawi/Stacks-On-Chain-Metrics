@@ -49,20 +49,46 @@ export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 
 // Functions
 export const isAvailablePosition = (
-  movingChart: Position & { id: number },
+  card0: Position & { id: number },
   allCharts: Chart[]
 ) => {
-  const positionAvailable = allCharts.every((otherChart) => {
-    if (
-      movingChart.id != otherChart.id &&
-      movingChart.x + movingChart.width >= otherChart.x &&
-      movingChart.x < otherChart.x + otherChart.width &&
-      movingChart.y + movingChart.height >= otherChart.y &&
-      movingChart.y < otherChart.y + otherChart.height
-    ) {
-      return false;
-    }
-    return true;
+  const positionAvailable = allCharts.every((card1) => {
+    if (card0.id == card1.id) return true;
+    const x0 = card0.x;
+    const y0 = card0.y;
+    const width0 = card0.width;
+    const height0 = card0.height;
+
+    // Extracting the properties of the second card
+    const x1 = card1.x;
+    const y1 = card1.y;
+    const width1 = card1.width;
+    const height1 = card1.height;
+
+    console.log(
+      JSON.stringify({
+        card0,
+        card1: {
+          x: card1.x,
+          y: card1.y,
+          width: card1.width,
+          height: card1.height,
+        },
+      }),
+      x0 + width0 < x1,
+      x1 + width1 < x0,
+      y0 > y1 + height1,
+      y0 + height0 < y1
+    );
+
+    const isRightEdgeBeforeChart1 = x0 + width0 < x1;
+    const isLeftEdgeAfterChart1 = x0 > x1 + width1;
+    if (isRightEdgeBeforeChart1 || isLeftEdgeAfterChart1) return true;
+    const isTopEdgeAfterChart1 = y0 > y1 + height1;
+    const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
+    if (isTopEdgeAfterChart1 || isBottomEdgeBeforeChart1) return true;
+
+    return false;
   });
 
   return positionAvailable;
