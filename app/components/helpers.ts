@@ -19,6 +19,8 @@ export type Position = {
   y: number;
 };
 
+export type PositionWithID = Position & { id: number };
+
 export type VariableType = {
   variable: string;
   value: string | number;
@@ -48,9 +50,24 @@ export const CustomizableChartDropdownOptions: CustomizableChartTypes[] = [
 export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 
 // Functions
+
+export const transformPositionBetweenPxAndPerc = (
+  pos: number,
+  xOrY: 'x' | 'y',
+  targetUnit: 'px' | 'perc'
+) => {
+  if (typeof window == 'undefined') return pos;
+  const parent = document?.getElementById('draggables-wrapper');
+  if (!parent) return pos;
+  const parentRect = parent.getBoundingClientRect();
+  const parentDimension = xOrY == 'x' ? parentRect.width : parentRect.height;
+  if (targetUnit == 'perc') return (pos / parentDimension) * 100;
+  else return (pos / 100) * parentDimension;
+};
+
 export const isAvailablePosition = (
-  card0: Position & { id: number },
-  allCharts: Chart[]
+  card0: PositionWithID,
+  allCharts: PositionWithID[]
 ) => {
   const positionAvailable = allCharts.every((card1) => {
     if (card0.id == card1.id) return true;
@@ -71,27 +88,27 @@ export const isAvailablePosition = (
     const isTopEdgeAfterChart1 = y0 > y1 + height1;
     const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
 
-    console.log(
-      JSON.stringify({
-        card0,
-        card1: {
-          x: card1.x,
-          y: card1.y,
-          width: card1.width,
-          height: card1.height,
-        },
-      }),
-      x0 + width0 < x1,
-      x1 + width1 < x0,
-      y0 > y1 + height1,
-      y0 + height0 < y1,
-      JSON.stringify({
-        isLeftEdgeAfterChart1,
-        isRightEdgeBeforeChart1,
-        isTopEdgeAfterChart1,
-        isBottomEdgeBeforeChart1,
-      })
-    );
+    // console.log(
+    //   JSON.stringify({
+    //     card0,
+    //     card1: {
+    //       x: card1.x,
+    //       y: card1.y,
+    //       width: card1.width,
+    //       height: card1.height,
+    //     },
+    //   }),
+    //   x0 + width0 < x1,
+    //   x1 + width1 < x0,
+    //   y0 > y1 + height1,
+    //   y0 + height0 < y1,
+    //   JSON.stringify({
+    //     isLeftEdgeAfterChart1,
+    //     isRightEdgeBeforeChart1,
+    //     isTopEdgeAfterChart1,
+    //     isBottomEdgeBeforeChart1,
+    //   })
+    // );
 
     if (isRightEdgeBeforeChart1 || isLeftEdgeAfterChart1) return true;
     if (isTopEdgeAfterChart1 || isBottomEdgeBeforeChart1) return true;

@@ -6,7 +6,13 @@ import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/ChartContainer';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
-import { Position, VariableType, isAvailablePosition } from '../helpers';
+import {
+  Position,
+  PositionWithID,
+  VariableType,
+  isAvailablePosition,
+  transformPositionBetweenPxAndPerc,
+} from '../helpers';
 import { fetchData, getCookie } from '@/app/lib/fetch';
 import { replaceVariables } from '@/app/lib/db/replaceVariables';
 import QueryErrorContainer from '../QueryErrorContainer';
@@ -15,48 +21,33 @@ import Modal from '../Modal';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import sql from 'react-syntax-highlighter/dist/esm/languages/hljs/sql';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Chart } from '@prisma/client';
 
 SyntaxHighlighter.registerLanguage('sql', sql);
 
 type ResizableChartProps = {
   chart: ChartWithData;
-  allCharts: ChartWithData[];
+  chartPositions: PositionWithID[];
+  setChartPositions: React.Dispatch<
+    React.SetStateAction<PositionWithID[] | undefined>
+  >;
   variables: VariableType[];
   baseModalId: string;
 };
 
-const transformPositionBetweenPxAndPerc = (
-  pos: number,
-  xOrY: 'x' | 'y',
-  targetUnit: 'px' | 'perc'
-) => {
-  if (typeof window == 'undefined') return pos;
-  const parent = document?.getElementById('draggables-wrapper');
-  if (!parent) return pos;
-  const parentRect = parent.getBoundingClientRect();
-  const parentDimension = xOrY == 'x' ? parentRect.width : parentRect.height;
-  if (targetUnit == 'perc') return (pos / parentDimension) * 100;
-  else return (pos / 100) * parentDimension;
-};
-
 const ResizableChart = ({
   chart,
-  allCharts,
+  chartPositions,
+  setChartPositions,
   variables,
   baseModalId,
 }: ResizableChartProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-  const [width, setWidth] = useState(chart.width);
-  const [height, setHeight] = useState(chart.height);
-  // Must set positions in use effect or else chart will render on the server which has no access to document
-  useEffect(() => {
-    setX(transformPositionBetweenPxAndPerc(chart.x, 'x', 'px'));
-    setY(transformPositionBetweenPxAndPerc(chart.y, 'y', 'px'));
-  }, []);
+  const pos = chartPositions.find((p) => p.id == chart.id);
+  if (!pos) return;
+  const { x, y, height, width } = pos;
 
   useEffect(() => {
     if (variables?.length) {
@@ -85,17 +76,11 @@ const ResizableChart = ({
   const chartContainerWidth =
     width - convertRemToPixels(childrenHorizontalPaddingRem);
 
-  const allChartsInPx = allCharts.map((c) => {
-    return {
-      ...c,
-      x: transformPositionBetweenPxAndPerc(c.x, 'x', 'px'),
-      y: transformPositionBetweenPxAndPerc(c.y, 'y', 'px'),
-    };
-  });
-
-  // TODO : fix allChartsInPx is not updating after resizing
-  // isAvailable function is doing calculation on initial size
-  const chartUpdateHandler = ({ width, height, x, y }: Position) => {
+  const chartUpdateHandler = (
+    newPos: Position,
+    allCharts: PositionWithID[]
+  ) => {
+    const { x, y, height, width } = newPos;
     const isAvailable = isAvailablePosition(
       {
         id: chart.id,
@@ -104,14 +89,23 @@ const ResizableChart = ({
         x,
         y,
       },
-      allChartsInPx
+      allCharts
     );
+
     console.log('isAvailable', isAvailable);
     if (!isAvailable) return;
-    setX(x);
-    setY(y);
-    setHeight(height);
-    setWidth(width);
+    const newChartPositions = chartPositions?.map((c) =>
+      c.id == chart.id
+        ? {
+            ...c,
+            width,
+            height,
+            x,
+            y,
+          }
+        : c
+    );
+    setChartPositions(newChartPositions);
     const xInPerc = transformPositionBetweenPxAndPerc(x, 'x', 'perc');
     const yInPerc = transformPositionBetweenPxAndPerc(y, 'y', 'perc');
     const newChart = {
@@ -123,26 +117,26 @@ const ResizableChart = ({
     };
     updateChart(newChart);
   };
+
   return (
     <ResizableDraggableCard
+      chartId={chart.id}
       title={chart.title}
-      query={chart.query}
+      allCharts={chartPositions}
       baseModalId={baseModalId}
-      x={x}
-      y={y}
-      height={height}
-      width={width}
       titleHeaderHeightRem={titleHeaderHeightRem}
       titleHeaderPaddingRem={titleHeaderPaddingRem}
       childrenHorizontalPaddingRem={childrenHorizontalPaddingRem}
       chartUpdateHandler={chartUpdateHandler}
     >
+      {/* {JSON.stringify({ chartPositions })} */}
       {error && <QueryErrorContainer error={error} setError={setError} />}
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
         !!chartData?.length && (
           <ChartContainer
+            // TODO, why stringify(chartData)? would a key={chart.id} work instead?
             key={JSON.stringify(chartData)}
             data={chartData}
             chartType={chart.type}

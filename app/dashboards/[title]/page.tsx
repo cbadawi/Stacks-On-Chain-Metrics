@@ -4,8 +4,7 @@ import {
 } from '@/app/lib/db/dashboards/dashboard';
 import { redirect } from 'next/navigation';
 import React from 'react';
-import ChartsVariableWrapper from './ChartsVariableWrapper';
-import { useSession } from 'next-auth/react';
+import ChartsAndVariablesContainer from './ChartsAndVariablesContainer';
 
 type DashboardProps = {
   params: { title: string };
@@ -31,7 +30,7 @@ const Dashboard = async ({ params, searchParams }: DashboardProps) => {
           )}
         </div>
       </header>
-      <ChartsVariableWrapper
+      <ChartsAndVariablesContainer
         dashboard={dashboard}
         variablesFormId={variablesFormId}
       />

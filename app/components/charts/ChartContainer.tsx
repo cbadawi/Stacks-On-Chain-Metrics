@@ -178,44 +178,42 @@ const ChartContainer = ({
   });
 
   return (
-    <div className='chart-container relative flex max-w-full items-center justify-center'>
+    <div className='chart-container relative max-w-full flex-1 items-center justify-center'>
       {chartType != ChartType.TABLE && chartType != ChartType.NUMBER && (
         <div className='relative'>
-          <div className='bg-blac'>
-            <svg
-              width={width}
-              height={height}
-              className='flex items-center justify-center bg-black'
-            >
-              {filteredData?.length &&
-                getChartComponent(
-                  chartType,
-                  filteredData,
-                  xName,
-                  yNames,
-                  height,
-                  width,
-                  mainChartHeight,
-                  margin,
-                  showTooltip,
-                  hideTooltip,
-                  chartColumnsTypes,
-                  chartAxesTypes,
-                  errorHandler
-                )}
-              {showBrush && brush}
-              {tooltipData && showTooltipLine && (
-                <TooltipLine
-                  tooltipLeft={tooltipLeft}
-                  tooltipTop={tooltipTop}
-                  circleFill={accentColorDark}
-                  lineStroke={accentColorDark}
-                  marginTop={margin.top}
-                  marginLeft={margin.left}
-                />
+          <svg
+            width={width}
+            height={height}
+            className='flex items-center justify-center bg-black'
+          >
+            {filteredData?.length &&
+              getChartComponent(
+                chartType,
+                filteredData,
+                xName,
+                yNames,
+                height,
+                width,
+                mainChartHeight,
+                margin,
+                showTooltip,
+                hideTooltip,
+                chartColumnsTypes,
+                chartAxesTypes,
+                errorHandler
               )}
-            </svg>
-          </div>
+            {showBrush && brush}
+            {tooltipData && showTooltipLine && (
+              <TooltipLine
+                tooltipLeft={tooltipLeft}
+                tooltipTop={tooltipTop}
+                circleFill={accentColorDark}
+                lineStroke={accentColorDark}
+                marginTop={margin.top}
+                marginLeft={margin.left}
+              />
+            )}
+          </svg>
           {tooltipData && showTooltipData && (
             <TooltipData
               TooltipInPortal={TooltipInPortal}

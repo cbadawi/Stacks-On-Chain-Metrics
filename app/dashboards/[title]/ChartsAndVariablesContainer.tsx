@@ -6,7 +6,7 @@ import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import React, { useState } from 'react';
 import RunButton from './RunButton';
 import { VariableType } from '@/app/components/helpers';
-import { error } from 'console';
+import DashboardChartsContainer from './DashboardChartsContainer';
 
 const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
   const vars = dashboard.charts
@@ -26,7 +26,7 @@ const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
 
 const baseModalId = 'modal-id-';
 
-const ChartsVariableWrapper = ({
+const ChartsAndVariablesContainer = ({
   dashboard,
   variablesFormId,
 }: {
@@ -35,7 +35,7 @@ const ChartsVariableWrapper = ({
 }) => {
   const [variableValues, setVariableValues] = useState<VariableType[]>([]);
   const defaultVariableValues = getDefaultVariableValues(dashboard);
-
+  // TODO move variables to their own container
   return (
     <div className='draggables-variable-wrapper relative h-[100vh] w-full flex-grow overflow-auto'>
       {!!defaultVariableValues?.length && (
@@ -68,24 +68,12 @@ const ChartsVariableWrapper = ({
           </div>
         </form>
       )}
-      <div
-        id='draggables-wrapper'
-        className='draggables-wrapper h-full border-2 border-solid border-red-900 '
-      >
-        {dashboard.charts?.map((chart, index) => {
-          return (
-            <ResizableChart
-              variables={variableValues}
-              baseModalId={baseModalId}
-              key={'chart-' + index}
-              chart={chart}
-              allCharts={dashboard.charts}
-            />
-          );
-        })}
-      </div>
+      <DashboardChartsContainer
+        charts={dashboard.charts}
+        variableValues={variableValues}
+      />
     </div>
   );
 };
 
-export default ChartsVariableWrapper;
+export default ChartsAndVariablesContainer;
