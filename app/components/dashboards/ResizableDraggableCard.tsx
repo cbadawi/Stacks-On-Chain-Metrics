@@ -56,7 +56,7 @@ const ResizableDraggableCard = ({
         }}
         className='flex items-center justify-center border border-gray-700 bg-[#141414]'
       >
-        <div className='r-n-d mx-2 flex-1 items-center justify-between'>
+        <div className='r-n-d mx-2 flex items-center justify-between'>
           {title && (
             <div
               className={`card-title ${titleHeight} ${titlePadding} text-lg font-normal`}
