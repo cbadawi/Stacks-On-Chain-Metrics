@@ -1,5 +1,9 @@
 import { NODE_QUERY_API } from './constants';
 
+const isLocalhost = () => {
+  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+};
+
 export const fetchData = async (
   query: string,
   errorHandler?: (message: string) => void,
@@ -20,22 +24,21 @@ export const fetchData = async (
     response = await fetch(url, {
       credentials: 'include',
       method: 'POST',
-      next: { revalidate: 90 },
+      next: { revalidate: isLocalhost() ? 0 : 90 },
       headers,
       body,
     });
     jsonResponse = await response.json();
+    console.log(JSON.stringify({ jsonResponse }), 'errh', errorHandler);
   } catch (err) {
-    if (errorHandler) {
-      if (jsonResponse?.message) {
-        errorHandler(jsonResponse?.message);
-      } else if (err instanceof Error) {
-        errorHandler(err.message);
-      }
+    if (err instanceof Error) {
+      if (errorHandler) errorHandler(err.message);
+      console.error(err.message);
     }
-    if (jsonResponse?.message) console.error(jsonResponse?.message);
-    else if (err instanceof Error) console.error(err.message);
-    return null;
+  }
+  if (jsonResponse?.message) {
+    if (errorHandler) errorHandler(jsonResponse?.message);
+    console.error(jsonResponse?.message);
   }
   if (response) {
     if (!response?.ok) {

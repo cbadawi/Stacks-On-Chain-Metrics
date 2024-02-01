@@ -54,7 +54,7 @@ const ResizableDraggableCard = ({
           };
           chartUpdateHandler(newPos, allCharts);
         }}
-        className='flex items-center justify-center border border-gray-700 bg-[#141414]'
+        className='draggable-chart flex items-center justify-center border border-gray-700 bg-[#141414]'
       >
         <div className='r-n-d mx-2 flex items-center justify-between'>
           {title && (
