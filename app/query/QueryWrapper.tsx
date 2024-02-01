@@ -5,7 +5,11 @@ import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import { VariableType, getYColNamesFromData } from '../components/helpers';
+import {
+  VariableType,
+  getYColNamesFromData,
+  replaceVariable,
+} from '../components/helpers';
 import { fetchData, getCookie } from '../lib/fetch';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { useSession } from 'next-auth/react';
@@ -29,8 +33,8 @@ const QueryWrapper = () => {
   const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
   const [data, setData] = useState<any[] | undefined | never[]>([]);
   const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
-  const { status, data: session } = useSession();
-  const parseVariables = (
+
+  const replaceVariables = (
     query: string,
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -43,8 +47,7 @@ const QueryWrapper = () => {
         errorHandler && errorHandler(`Variable "${variable}" not set.`);
         return false;
       }
-      const regex = new RegExp(`{{${variable}}}`, 'g');
-      query = query.replace(regex, value);
+      query = replaceVariable(query, variable, value);
       variablesList.push({ variable, value });
       return true;
     });
@@ -57,7 +60,7 @@ const QueryWrapper = () => {
     setData([]);
     setVariableDefaults([]);
     setError('');
-    const queryWithVariables = parseVariables(query, setError);
+    const queryWithVariables = replaceVariables(query, setError);
 
     if (queryWithVariables) {
       const data = await fetchData(queryWithVariables, setError);

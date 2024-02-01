@@ -1,12 +1,15 @@
-import { VariableType } from '@/app/components/helpers';
+import { VariableType, replaceVariable } from '@/app/components/helpers';
 
 export function replaceVariables(
   query: string,
   variablesList: VariableType[] = []
 ) {
   variablesList.forEach((variableObj) => {
-    const regex = new RegExp(`{{${variableObj.variable}}}`, 'g');
-    query = query.replace(regex, variableObj.value.toString());
+    query = replaceVariable(
+      query,
+      variableObj.variable,
+      variableObj.value.toString()
+    );
   });
   return query;
 }
