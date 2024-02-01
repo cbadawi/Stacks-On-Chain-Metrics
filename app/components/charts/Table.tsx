@@ -3,6 +3,12 @@ import React from 'react';
 interface TableProps {
   data: any;
 }
+
+const parseTableData = (tableData: any) => {
+  if (typeof tableData === 'boolean') return JSON.stringify(tableData);
+  return tableData;
+};
+
 // TODO add pagination button
 const Table = ({ data }: TableProps) => {
   if (!data?.length) return null;
@@ -36,7 +42,7 @@ const Table = ({ data }: TableProps) => {
                 {colNames.map((col: any) => {
                   return (
                     <td key={col} className='p-2 text-center'>
-                      {data[index][col]}
+                      {parseTableData(data[index][col])}
                     </td>
                   );
                 })}
