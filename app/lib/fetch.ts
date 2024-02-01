@@ -1,8 +1,6 @@
 import { NODE_QUERY_API } from './constants';
 
-const isLocalhost = () => {
-  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-};
+export const isProd = process.env.NODE_ENV === 'production';
 
 export const fetchData = async (
   query: string,
@@ -24,12 +22,11 @@ export const fetchData = async (
     response = await fetch(url, {
       credentials: 'include',
       method: 'POST',
-      next: { revalidate: isLocalhost() ? 0 : 90 },
+      next: { revalidate: isProd ? 90 : 0 },
       headers,
       body,
     });
     jsonResponse = await response.json();
-    console.log(JSON.stringify({ jsonResponse }), 'errh', errorHandler);
   } catch (err) {
     if (err instanceof Error) {
       if (errorHandler) errorHandler(err.message);
@@ -49,12 +46,12 @@ export const fetchData = async (
 };
 
 const orderData = (response: { data: any[]; order: string[] }) => {
-  const data = response.data?.map((row: any, index: number) => {
+  const data = response?.data?.map((row: any, index: number) => {
     const orderedRow: any = {};
     response.order.forEach((col: string) => (orderedRow[col] = row[col]));
     return orderedRow;
   });
-  return data;
+  return data ?? [];
 };
 
 export const getCookie = (sessionToken?: string) =>
