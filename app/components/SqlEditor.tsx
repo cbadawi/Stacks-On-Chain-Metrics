@@ -1,9 +1,13 @@
 'use client';
 import { FaPlayCircle } from 'react-icons/fa';
 import React, { useState } from 'react';
-import Editor, { Monaco } from '@monaco-editor/react';
 import Spinner from './Spinner';
 import QueryVariablesForm from './query/QueryVariablesForm';
+
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-mysql';
+import 'ace-builds/src-noconflict/theme-terminal';
+import { Button } from '@/components/ui/button';
 
 interface SqlEditorProps {
   query: string;
@@ -20,45 +24,54 @@ const SqlEditor = ({
   runQuery,
   setError,
 }: SqlEditorProps) => {
-  // TODO support variables & filters in queries
-  // TODO add autocompletion https://stackoverflow.com/questions/69780709/how-can-i-add-auto-completion-to-a-browser-based-editor-using-monaco
-  // TODO the Monaco Editor is using useState, hence we cant use SSR here. See if its worth it to switch to SSR / Look for new editors. It also has no name method, can't use the formData method.
-  // nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations#displaying-loading-state
-
-  // @ts-ignore
-  const editorDidMount = (editor, monaco) => {
-    editor.updateOptions({
-      fontSize: 18,
-      scrollbar: {
-        alwaysConsumeMouseWheel: false,
-      },
-    });
-  };
-
   return (
     <div className='relative grid w-full'>
-      <div className='mb-8 flex h-full w-full flex-col items-center justify-between lg:mx-auto lg:flex-row'>
-        <Editor
-          height='30rem'
+      <div className='mb-8 flex w-full flex-row items-center justify-between lg:mx-auto lg:flex-row'>
+        <AceEditor
+          placeholder={query}
           width='100%'
+          height='30rem'
+          mode='mysql'
+          theme='terminal'
+          name='sqlEditor'
+          onLoad={(editor) =>
+            console.log('set loading and <Spinner /> to false')
+          }
           onChange={(newValue) => setQuery(newValue as string)}
-          loading={<Spinner />}
-          theme='vs-dark'
-          defaultLanguage='sql'
+          fontSize={14}
+          lineHeight={19}
+          showPrintMargin={true}
+          showGutter={true}
+          highlightActiveLine={true}
           value={query}
-          onMount={editorDidMount}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: false,
+            enableSnippets: true,
+            enableMobileMenu: true,
+            showLineNumbers: true,
+            theme: 'ace/theme/tomorrow_night',
+            mode: 'ace/mode/javascript',
+            tabSize: 2,
+          }}
         />
-        <div className='flex h-[3rem]  w-full items-center justify-center hover:h-full lg:ml-4 lg:mt-0 lg:w-1/12 lg:justify-start '>
-          <button
-            className='btn w-full bg-[#563BD9] hover:bg-[#452AA5] lg:h-full lg:w-full lg:hover:h-[30rem]'
+        <div className='flex h-[30rem] w-[5rem] items-center justify-center'>
+          <Button
+            className='h-[75%] w-[75%]  bg-[#1c0916] text-white hover:h-[95%] hover:bg-[#8e2e2e]'
+            variant='outline'
+            size='icon'
+            color='red'
             disabled={isLoading}
             onClick={() => {
-              // setQuery(query);
               runQuery(query);
             }}
           >
-            {isLoading ? <Spinner /> : <FaPlayCircle size={40} />}
-          </button>
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <FaPlayCircle style={{ width: '2.2rem', height: '2.2rem' }} />
+            )}
+          </Button>
         </div>
       </div>
       <QueryVariablesForm query={query} />

@@ -1,15 +1,12 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
-import AuthButton from './AuthButton';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 
 const NavbarLinks = () => {
   const [navbarMenu, setNavbarMenu] = useState(false);
-  const { data: session, status } = useSession();
 
   const handleNavbarMenu = () => {
     setNavbarMenu(!navbarMenu);
@@ -43,9 +40,7 @@ const NavbarLinks = () => {
           );
         })}
       </div>
-      <div className='ml-auto hidden md:flex'>
-        <AuthButton />
-      </div>
+      <div className='ml-auto hidden md:flex'></div>
       <div
         className='btn btn-square btn-ghost ml-auto flex md:hidden'
         onClick={handleNavbarMenu}
@@ -79,7 +74,7 @@ const NavbarLinks = () => {
               onClick={handleNavbarMenu}
               className='cursor-pointer py-5 hover:text-[#747FFF]'
             >
-              <AuthButton />
+              wallet connect
             </li>
           </ul>
         </div>

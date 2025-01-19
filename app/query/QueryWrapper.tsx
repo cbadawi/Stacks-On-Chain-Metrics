@@ -3,16 +3,12 @@
 import React, { useState } from 'react';
 import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
-import QueryVisualization from '../components/query/QueryVisualization';
+// import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import {
-  VariableType,
-  getYColNamesFromData,
-  replaceVariable,
-} from '../components/helpers';
-import { fetchData, getCookie } from '../lib/fetch';
+import { VariableType, replaceVariable } from '../components/helpers';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import QueryVisualization from '../components/query/QueryVisualization';
+import { fetchData } from './actions';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
 -- Press Ctrl+Enter to run
@@ -63,23 +59,22 @@ const QueryWrapper = () => {
     const queryWithVariables = replaceVariables(query, setError);
 
     if (queryWithVariables) {
-      const data = await fetchData(queryWithVariables, setError);
-      setData(data);
-      if (data?.length) {
-        // default for customizable charts is bar columns, and left axes
-        setChartColumnsTypes(
-          getYColNamesFromData(data).map((col) => ChartType.BAR)
-        );
-        setChartAxesTypes(getYColNamesFromData(data).map((col) => 'LEFT'));
-      }
-    }
+      // const response = await fetchData(queryWithVariables, setError);
+      try {
+        const response = await fetchData(queryWithVariables);
 
-    setIsLoading(false);
+        console.log('runquery', { response });
+        setData(response.data);
+      } catch (err) {
+        if (err instanceof Error) setError(err.message);
+      }
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className='query-wrapper'>
-      <div className='editor-wrapper relative mx-auto mb-4 mt-10 flex min-h-[350px] w-[95%] items-center justify-center'>
+      <div className='editor-wrapper relative mx-auto mb-4 mt-10 flex w-[95%] items-center justify-center'>
         <SqlEditor
           query={query}
           setQuery={setQuery}
@@ -88,22 +83,26 @@ const QueryWrapper = () => {
           runQuery={runQuery}
         />
       </div>
+      <>{JSON.stringify({ data })}</>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <div className='relative my-12 w-full rounded-t-3xl bg-[#081115] px-5 py-4 md:px-0'>
+        <div className='relative my-12 h-auto rounded-t-3xl bg-[#081115]  px-0 py-4 '>
           {!data?.length ? (
             <StarterPlaceholderMessage />
           ) : (
-            <QueryVisualization
-              data={data}
-              query={query}
-              chartColumnsTypes={chartColumnsTypes}
-              setChartColumnsTypes={setChartColumnsTypes}
-              chartAxesTypes={chartAxesTypes}
-              setChartAxesTypes={setChartAxesTypes}
-              errorHandler={setError}
-              variableDefaults={variableDefaults}
-            />
+            <>
+              <QueryVisualization
+                data={data}
+                query={query}
+                chartColumnsTypes={chartColumnsTypes}
+                setChartColumnsTypes={setChartColumnsTypes}
+                chartAxesTypes={chartAxesTypes}
+                setChartAxesTypes={setChartAxesTypes}
+                errorHandler={setError}
+                error={error}
+                variableDefaults={variableDefaults}
+              />
+            </>
           )}
         </div>
       </div>

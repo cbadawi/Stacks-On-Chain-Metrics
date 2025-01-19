@@ -1,4 +1,5 @@
-import { NODE_QUERY_API } from './constants';
+import { resolve } from 'path/win32';
+import { baseUrl } from '../components/helpers';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
@@ -7,51 +8,43 @@ export const fetchData = async (
   errorHandler?: (message: string) => void,
   cookies?: string
 ) => {
-  const body = JSON.stringify({
-    query,
-  });
-  const url = NODE_QUERY_API + '/v1/query';
-  let headers: HeadersInit = {
+  const body = JSON.stringify({ query });
+  const url = baseUrl;
+  const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    ...(cookies && { Cookie: cookies }),
   };
-  if (cookies) headers = { ...headers, Cookie: cookies };
 
   let response: Response | null = null;
   let jsonResponse: any;
+  console.log({ url });
+
   try {
-    response = await fetch(url, {
+    response = await fetch('/api/query', {
       credentials: 'include',
       method: 'POST',
       next: { revalidate: isProd ? 90 : 0 },
       headers,
       body,
     });
-    jsonResponse = await response.json();
+    console.log('fetchData', { response, status: response.status });
+    if (response.ok) {
+      jsonResponse = await response.json();
+    }
   } catch (err) {
     if (err instanceof Error) {
-      if (errorHandler) errorHandler(err.message);
+      errorHandler?.(err.message);
       console.error(err.message);
     }
   }
   if (jsonResponse?.message) {
-    if (errorHandler) errorHandler(jsonResponse?.message);
-    console.error(jsonResponse?.message);
+    errorHandler?.(jsonResponse.message);
+    console.error(jsonResponse.message);
   }
-  if (response) {
-    if (!response?.ok) {
-      return jsonResponse;
-    }
-  }
-  return orderData(jsonResponse);
-};
 
-const orderData = (response: { data: any[]; order: string[] }) => {
-  const data = response?.data?.map((row: any, index: number) => {
-    const orderedRow: any = {};
-    response.order.forEach((col: string) => (orderedRow[col] = row[col]));
-    return orderedRow;
-  });
-  return data ?? [];
+  if (response && response.ok) {
+    return jsonResponse;
+  }
 };
 
 export const getCookie = (sessionToken?: string) =>

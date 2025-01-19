@@ -3,8 +3,9 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from './components/navigation/Navbar';
 import Options from './components/navigation/Options';
-import AuthProvider from './AuthProvider';
 import Footer from './components/navigation/Footer';
+import { Toaster } from '@/components/ui/sonner';
+// import { UserProvider } from './contexts/UserProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 // TODO improve SEO
@@ -25,12 +26,13 @@ export default function RootLayout({
         <link rel='icon' href='/favicon.ico' />
       </head>
       <body className={inter.className}>
-        <AuthProvider>
-          <Navbar />
-          <Options />
-          <main className='min-h-[100vh]'>{children}</main>
-          <Footer />
-        </AuthProvider>
+        {/* <UserProvider> */}
+        <Navbar />
+        <Options />
+        <Toaster />
+        <main className='min-h-[100vh]'>{children}</main>
+        <Footer />
+        {/* </UserProvider> */}
       </body>
     </html>
   );

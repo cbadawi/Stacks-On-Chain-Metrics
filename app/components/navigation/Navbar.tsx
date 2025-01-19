@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import NavbarLinks from './NavbarLinks';
+import ConnectWallet from './ConnectWallet';
 
 const Navbar = () => {
   return (
@@ -10,6 +11,7 @@ const Navbar = () => {
         Stacks Metrics
       </Link>
       <NavbarLinks />
+      {/* <ConnectWallet /> */}
     </div>
   );
 };

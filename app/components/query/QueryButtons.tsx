@@ -5,9 +5,10 @@ import { FcBarChart, FcLineChart, FcPieChart } from 'react-icons/fc';
 import { FiDownload, FiSave } from 'react-icons/fi';
 import { MdOutlineNumbers } from 'react-icons/md';
 import SaveToDashBtn from './SaveToDashBtn';
-import SaveToDashboardForm from './SaveToDashboardForm';
+// import SaveToDashboardForm from './SaveToDashboardForm';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { VariableType } from '../helpers';
+import { Button } from '@/components/ui/button';
 
 const chartIcons = [
   <BsTable color='#6543FC' size={20} key={ChartType.TABLE} />,
@@ -40,24 +41,19 @@ const QueryButtons = ({
   // needed to trigger the use effect hook in the form & fetch dashboards
   let [saveToDashCounter, setSaveToDashCounter] = useState(0);
   return (
-    <div className='icons-flex-container relative m-0 flex min-h-[4rem] flex-row items-center justify-between gap-2 pl-12 pr-12'>
-      <div className='flex items-center justify-center gap-2'>
+    <div className='icons-flex-container relative flex w-full flex-row items-center justify-between gap-4 rounded-md px-12 pt-0 shadow-sm'>
+      <div className='flex items-center gap-3'>
         <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
           <SaveToDashBtn
-            saveToDashCounter={saveToDashCounter}
-            setSaveToDashCounter={setSaveToDashCounter}
-            OpenButtonChilden={<FiSave color='#6543FC' size={20} />}
             query={query}
             variableDefaults={variableDefaults}
             chartType={chartType}
-            chartAxesTypes={chartAxesTypes}
-            chartColumnsTypes={chartColumnsTypes}
           />
         </div>
         <div className='tooltip tooltip-primary' data-tip='Download to CSV'>
-          <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
+          <Button className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
             <FiDownload color='#6543FC' size={20} />
-          </div>
+          </Button>
         </div>
         <div
           className='tooltip tooltip-primary hidden'
@@ -68,23 +64,25 @@ const QueryButtons = ({
           </div>
         </div>
       </div>
-      <div className='flex items-center justify-center gap-2'>
+
+      {/* Chart icon buttons */}
+      <div className='flex h-16 items-center gap-2 overflow-x-auto'>
         {chartIcons.map((icon, index) => {
           return (
             <div
-              className='chart-icons-container flex h-16 flex-row items-center gap-2 overflow-x-auto'
+              className='chart-icons-container flex flex-row items-center gap-2'
               key={index}
               onClick={() => {
                 setChart(icon.key! as unknown as ChartType);
                 if (errorHandler) errorHandler('');
               }}
             >
-              <button
+              <Button
                 className='btn hover:relative hover:bottom-1 hover:overflow-visible'
                 key={index}
               >
                 {icon}
-              </button>
+              </Button>
             </div>
           );
         })}

@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 
-import ChartContainer from '../charts/ChartContainer';
-import {
-  CHART_CONTAINER_HEIGHT,
-  CHART_CONTAINER_WIDTH,
-  VariableType,
-} from '../helpers';
-import CustomizeBarChart from './CustomizeBarChart';
+import { VariableType } from '../helpers';
 import QueryButtons from './QueryButtons';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
+import CardContainer from '../charts/CardContainer';
 
 interface QueryVisualizationProps {
   data: any[];
   query: string;
+  error: string;
   variableDefaults: VariableType[];
   chartColumnsTypes: CustomizableChartTypes[];
   setChartColumnsTypes: React.Dispatch<
@@ -25,20 +21,19 @@ interface QueryVisualizationProps {
 
 const QueryVisualization = ({
   data,
+  error,
   query,
   variableDefaults,
   chartColumnsTypes,
-  setChartColumnsTypes,
   chartAxesTypes,
-  setChartAxesTypes,
   errorHandler,
 }: QueryVisualizationProps) => {
-  // Note: the diff of linechart vs barchart is that line chart has a brush and only lines
-  // whereas the barchart will have a combination of lines and chart but no brush
   const [chartType, setChartType] = useState<ChartType>(ChartType.TABLE);
 
+  // Need to show QueryButtons even if there are errors since the error can be set using invalid chart choice.
+  // if (error) return;
   return (
-    <div className='visualization-container relative flex  flex-col justify-center'>
+    <div className='visualization-container relative flex h-auto flex-col items-center justify-center shadow-md'>
       <QueryButtons
         setChart={setChartType}
         chartType={chartType}
@@ -48,22 +43,9 @@ const QueryVisualization = ({
         chartAxesTypes={chartAxesTypes}
         chartColumnsTypes={chartColumnsTypes}
       />
-      {chartType == ChartType.BAR && (
-        <CustomizeBarChart
-          columnNames={Object.keys(data[0]).slice(1)}
-          chartColumnTypes={chartColumnsTypes}
-          setChartColumnsTypes={setChartColumnsTypes}
-          chartAxesTypes={chartAxesTypes}
-          setChartAxesTypes={setChartAxesTypes}
-        />
-      )}
-      <ChartContainer
+      <CardContainer
         data={data}
         chartType={chartType}
-        height={CHART_CONTAINER_HEIGHT}
-        width={CHART_CONTAINER_WIDTH}
-        chartColumnsTypes={chartColumnsTypes}
-        chartAxesTypes={chartAxesTypes}
         errorHandler={errorHandler}
       />
     </div>

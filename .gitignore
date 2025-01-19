@@ -48,3 +48,4 @@ next-env.d.ts
 !.yarn/versions
 
 notes.md
+notes/

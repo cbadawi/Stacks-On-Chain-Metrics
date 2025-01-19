@@ -1,0 +1,90 @@
+'use client';
+
+import * as React from 'react';
+import { Label, Pie, PieChart } from 'recharts';
+
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import validatePieChartData from '@/app/lib/validateChartData/validatePieChartData';
+import { colors, generateChartConfig } from '../helpers';
+
+function PieChartComponenet({
+  data,
+  errorHandler = undefined,
+}: {
+  data: any[];
+  errorHandler?: (msg: string) => void;
+}) {
+  const coloredData = data.map((d, i) => ({ ...d, fill: colors[i] }));
+  const keys = Object.keys(data[0]);
+  const config = generateChartConfig(data);
+  const validation = validatePieChartData(data);
+
+  if (!validation.isValid && errorHandler) {
+    errorHandler(validation.message);
+    return;
+  }
+
+  const totalVisitors = React.useMemo(() => {
+    return data.reduce((acc, curr) => acc + curr[keys[1]], 0);
+  }, []);
+
+  console.log({ data, keys });
+  return (
+    <ChartContainer
+      config={config}
+      className='mx-auto aspect-square max-h-[250px]'
+    >
+      <PieChart>
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel />}
+        />
+        <Pie
+          data={coloredData}
+          dataKey={keys[1]}
+          nameKey={keys[0]}
+          innerRadius={60}
+          strokeWidth={5}
+        >
+          <Label
+            content={({ viewBox }) => {
+              if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                return (
+                  <text
+                    x={viewBox.cx}
+                    y={viewBox.cy}
+                    textAnchor='middle'
+                    dominantBaseline='middle'
+                  >
+                    <tspan
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      className='text-3xl font-bold'
+                      fill='white'
+                    >
+                      {totalVisitors.toLocaleString()}
+                    </tspan>
+                    <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) + 24}
+                      className='fill-muted-foreground'
+                    >
+                      Visitors
+                    </tspan>
+                  </text>
+                );
+              }
+            }}
+          />
+        </Pie>
+      </PieChart>
+    </ChartContainer>
+  );
+}
+
+export default PieChartComponenet;

@@ -2,14 +2,11 @@
 
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';
 import { Dashboard } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 const UserDashboardsWrapper = () => {
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
-  const { status, data: session } = useSession();
-  const email = session?.user?.email;
 
   const fetchDashboards = async (email: string | null | undefined) => {
     if (!email) return;
@@ -17,9 +14,10 @@ const UserDashboardsWrapper = () => {
     setDashboards(dashboards);
   };
 
+  // todo use wallet connect
   useEffect(() => {
-    fetchDashboards(email);
-  }, [email]);
+    fetchDashboards('');
+  }, []);
 
   return (
     <div>

@@ -1,12 +1,17 @@
-import { max, min, extent } from '@visx/vendor/d3-array';
-import { scaleTime, scaleLinear, scaleBand } from '@visx/scale';
+import { ChartConfig } from '@/components/ui/chart';
 import {
   Chart,
   ChartType,
   CustomizableChartTypes,
   LeftRight,
 } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+
+export const baseUrl =
+  process.env.NODE_ENV === 'production'
+    ? 'https://api.example.com'
+    : 'http://localhost:8000';
+
+console.log('NODE_ENV', process.env.NODE_ENV);
 
 export const CHART_CONTAINER_WIDTH = 1100;
 export const CHART_CONTAINER_HEIGHT = 700;
@@ -25,8 +30,6 @@ export type VariableType = {
   variable: string;
   value: string | number;
 };
-
-export type Scales = typeof scaleLinear | typeof scaleTime | typeof scaleBand;
 
 export type MarginObject = {
   top: number;
@@ -199,101 +202,17 @@ export function formatAxisValue(value: any) {
   return value;
 }
 
-// Scales
-export function getScaleCallback(
-  data: any[],
-  colName: string,
-  axes: 'x' | 'y',
-  chartType?: ChartType
-) {
-  if (chartType == ChartType.BAR && axes == 'x') return scaleBand;
-  const value = data[0][colName];
-  if (isNum(value)) return scaleLinear;
-  else if (isDate(value)) return scaleTime;
-  // throw new Error(
-  //   `Scale callback not defined for value ${value} in column ${colName}`
-  // );
-}
-
-export function getXScale(
-  data: any[],
-  xName: string,
-  xMax: number,
-  scale: Scales,
-  axis: 'x' | 'y',
-  chartType?: ChartType
-) {
-  if (!scale) return;
-  // TODO wrap scales in useMemo [xMax, data]
-  if (chartType == ChartType.BAR && axis == 'x')
-    return scaleBand<string>({
-      range: [0, xMax],
-      round: true,
-      domain: data.map((d) => d[xName]),
-      padding: 0.2,
-    });
-  if (scale.name == 'createLinearScale')
-    return scaleLinear<number>({
-      range: [0, xMax],
-      domain: [
-        min(data, (d: any) => d[xName]) || 0,
-        max(data, (d: any) => d[xName]) || 0,
-      ],
-      nice: true,
-    });
-  else if (scale.name == 'createTimeScale') {
-    return scaleTime<number>({
-      range: [0, xMax],
-      domain: extent(data, (d: any) => new Date(d[xName])) as [Date, Date],
-    });
-  }
-  // throw new Error(`X scale not defined for ${xName}`);
-}
-
-export function getYScale(
-  data: any[],
-  yNames: string[],
-  yMax: number,
-  scale: typeof scaleLinear | typeof scaleTime,
-  chartType?: ChartType
-) {
-  if (!scale) return;
-  // TODO wrap scale in useMemo [yMax, data]), these are probably high cost since its looping through all points several times
-  // https://react.dev/reference/react/useMemo#caveats
-  if (scale.name == 'createLinearScale') {
-    // in case of bar chart, the bars will stack on top of each other
-    // hence, we add(stack) all the y values before finding their max.
-    const maxY =
-      chartType == ChartType.BAR
-        ? Math.max(
-            ...data.map((d) =>
-              [...yNames.map((key) => Number(d[key]))].reduce(
-                (acc, curr) => acc + curr
-              )
-            )
-          )
-        : Math.max(
-            ...data.map((d) => Math.max(...yNames.map((key) => Number(d[key]))))
-          );
-    return scale<number>({
-      range: [yMax, 0],
-      domain: [0, maxY || 0],
-      nice: true,
-    });
-  }
-  // throw new Error(`Y scale not defined for ${yName}`);
-}
-
-export function getYColNamesFromData(data: any[]) {
-  return data?.length ? Object.keys(data[0]).slice(1) : [];
-}
-
 // Colors
 export const background = '#3b6978';
 export const background2 = '#204051';
 export const accentColor = '#edffea';
 export const accentColorDark = '#75daad';
 export const colors = [
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
   '#634bde',
   '#0033ad',
   '#00ffbd',
@@ -327,3 +246,26 @@ export const colors = [
   'peachpuff',
   'whitesmoke',
 ];
+
+export function generateChartConfig(
+  chartData: Array<Record<string, any>>
+): ChartConfig {
+  if (!chartData.length) {
+    throw new Error('Invalid chartData or colors array.');
+  }
+
+  const keys = Object.keys(chartData[0]);
+
+  const config: ChartConfig = keys.reduce((acc, key, index) => {
+    if (index === 0) return acc;
+
+    acc[key] = {
+      label: key.charAt(0).toUpperCase() + key.slice(1),
+      color: colors[index - 1],
+    };
+
+    return acc;
+  }, {} as ChartConfig);
+
+  return config;
+}

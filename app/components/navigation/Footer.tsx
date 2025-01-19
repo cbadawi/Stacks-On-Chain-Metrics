@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Footer = () => {
-  return <div>© 2024 Stacks On Chain Metrics</div>;
+  return <div>© 2025 Stacks On Chain</div>;
 };
 
 export default Footer;

@@ -9,46 +9,44 @@ const parseTableData = (tableData: any) => {
   return tableData;
 };
 
-// TODO add pagination button
 const Table = ({ data }: TableProps) => {
   if (!data?.length) return null;
   const colNames = Object.keys(data[0]);
-  // TODO if styling fails, build a table with divs similar to gamma's
+
   return (
-    <div className='max-h-[90vh] max-w-[90%] overflow-x-scroll'>
-      <table className='h-auto w-auto'>
-        <thead className=' bg-[#0d0d0c]'>
+    // Give the container both horizontal AND vertical scroll if desired:
+    <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px] sm:max-h-[40vh] lg:max-h-[45vh]'>
+      <table className='h-auto w-full bg-[#0d0d0c] text-white'>
+        {/* 
+          Make the thead sticky with top-0 and a background so that 
+          it remains visible on scroll 
+        */}
+        <thead className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-[#0d0d0c]'>
           <tr>
-            <th key={'#'} className='p-2 text-center text-lg'>
+            <th key={'#'} className='w-4 p-2 text-center text-lg'>
               #
             </th>
-            {colNames.map((col: string, index: number) => {
-              return (
-                <th key={'th-' + index} className='p-2 text-center text-lg'>
-                  {col}
-                </th>
-              );
-            })}
+            {colNames.map((col: string, index: number) => (
+              <th key={'th-' + index} className='p-2 text-center text-lg'>
+                {col}
+              </th>
+            ))}
           </tr>
         </thead>
-        <tbody className='divide-y divide-gray-400  divide-opacity-40  text-lg'>
-          {data.map((row: any, index: any) => {
-            return (
-              <tr
-                key={index}
-                className='border-b border-solid border-gray-400 border-opacity-40  text-lg hover:bg-gray-800'
-              >
-                <td className='p-2 text-center'>{index}</td>
-                {colNames.map((col: any) => {
-                  return (
-                    <td key={col} className='p-2 text-center'>
-                      {parseTableData(data[index][col])}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+        <tbody className='divide-y divide-gray-400 divide-opacity-40 text-lg'>
+          {data.map((row: any, index: number) => (
+            <tr
+              key={index}
+              className='border-b border-solid border-gray-400 border-opacity-40 text-lg hover:bg-gray-800'
+            >
+              <td className='p-2 text-center'>{index}</td>
+              {colNames.map((col: any) => (
+                <td key={col} className='p-2 text-center'>
+                  {parseTableData(row[col])}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

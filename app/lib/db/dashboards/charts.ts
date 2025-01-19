@@ -10,19 +10,31 @@ import prisma from '../client';
 import { ChartWithData } from './dashboard';
 import { VariableType } from '@/app/components/helpers';
 
-export async function addChart(
-  dashboardId: number,
-  title: string,
-  query: string,
-  chartType: ChartType,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  variables: VariableType[],
-  axesTypes: LeftRight[],
-  columnTypes: CustomizableChartTypes[]
-) {
+export async function addChart({
+  dashboardId,
+  title,
+  query,
+  chartType,
+  x,
+  y,
+  width,
+  height,
+  variables,
+  axesTypes,
+  columnTypes,
+}: {
+  dashboardId: number;
+  title: string;
+  query: string;
+  chartType: ChartType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  variables: VariableType[];
+  axesTypes?: LeftRight[] | undefined;
+  columnTypes?: CustomizableChartTypes[] | undefined;
+}) {
   const newChart = await prisma.chart.create({
     data: {
       title,

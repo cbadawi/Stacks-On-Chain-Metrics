@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
-import ChartContainer from '../charts/ChartContainer';
+import ChartContainer from '../charts/CardContainer';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
 import {

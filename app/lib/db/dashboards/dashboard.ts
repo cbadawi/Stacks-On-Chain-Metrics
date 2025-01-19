@@ -1,37 +1,40 @@
 'use server';
 
-import prisma from '@/app/lib/db/client';
-import { Dashboard, Chart } from '@prisma/client';
 import { fetchData } from '../../fetch';
-import { addOwner, getOwner } from '../users';
+import { addOwner, getOwner } from '../owner';
 import { replaceVariables } from '../replaceVariables';
 import { VariableType } from '@/app/components/helpers';
+import { Chart, Dashboard, Owner } from '@prisma/client';
+import prisma from '../client';
 
 export type ChartWithData = { data: any[] } & Chart;
 
 export type DashboardWithCharts = Dashboard & { charts: ChartWithData[] };
 
-export async function addDashboard(
-  title: string,
-  privateDashboard: boolean,
-  description: string = ''
-) {
-  // TODO get user from session
-  const email = 'dummy@';
-  let owner = await getOwner(email);
-  if (!owner) owner = await addOwner(email, 'hash');
+export async function addDashboard({
+  title,
+  privateDashboard,
+  password,
+  address,
+}: {
+  title: string;
+  address: string;
+  privateDashboard?: boolean | undefined;
+  password?: string | undefined;
+}) {
+  let owner = await getOwner(address);
+  if (!owner) owner = await addOwner(address);
   const newDashboard = await prisma.dashboard.create({
     data: {
       title,
       private: privateDashboard,
-      description,
       ownerId: owner.id,
     },
   });
   return newDashboard;
 }
 
-export async function getDashboard(
+export async function getDashboardAndCharts(
   title: string,
   searchParams?: any,
   includeCharts: Boolean = true
@@ -72,22 +75,54 @@ export async function getDashboard(
 }
 
 export async function getDashboards({
-  email,
-  isPrivate,
+  address,
+  id,
+  title,
 }: {
-  email?: string;
-  isPrivate?: boolean;
-}) {
+  address?: string;
+  id?: number;
+  title?: string;
+  includePrivate?: boolean;
+}): Promise<Dashboard[]> {
+  const whereClause = await buildDashboardWhereClause(address, id, title);
+  return await prisma.dashboard.findMany({
+    where: { ...whereClause },
+  });
+}
+
+export async function getDashboard({
+  address,
+  id,
+  title,
+}: {
+  address?: string;
+  id?: number;
+  title?: string;
+  includePrivate?: boolean;
+}): Promise<Dashboard | null> {
+  const whereClause = await buildDashboardWhereClause(address, id, title);
+  return await prisma.dashboard.findFirst({
+    where: { ...whereClause },
+  });
+}
+
+async function buildDashboardWhereClause(
+  address?: string,
+  id?: number,
+  title?: string
+) {
   let whereClause: {
     deleted: boolean;
-    owner?: {
-      email: string;
-    };
+    owner?: Owner;
+    id?: number;
+    title?: string;
   } = { deleted: false };
-  if (email) {
-    whereClause = { ...whereClause, owner: { email } };
+
+  if (address) {
+    const owner = await getOwner(address);
+    if (owner) whereClause = { ...whereClause, owner };
   }
-  return await prisma.dashboard.findMany({
-    where: whereClause,
-  });
+  if (id) whereClause = { ...whereClause, id };
+  if (title) whereClause = { ...whereClause, title };
+  return whereClause;
 }
