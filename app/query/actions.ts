@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export async function fetchData(query: string) {
   'use server';
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 1500));
 
   return {
     data: [

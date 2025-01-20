@@ -37,7 +37,7 @@ const ChartsAndVariablesContainer = ({
   const defaultVariableValues = getDefaultVariableValues(dashboard);
   // TODO move variables to their own container
   return (
-    <div className='draggables-variable-wrapper relative h-[100vh] w-full flex-grow overflow-auto'>
+    <div className='draggables-variable-wrapper absolute w-full flex-grow overflow-visible'>
       {!!defaultVariableValues?.length && (
         <form
           id={variablesFormId}

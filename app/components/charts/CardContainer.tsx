@@ -13,6 +13,8 @@ import PieChart from './PieChartComponenet';
 interface ChartContainerProps {
   chartType: ChartType;
   data: any[];
+  height?: number;
+  width?: number;
   errorHandler?: (msg: string) => void;
 }
 
@@ -43,6 +45,7 @@ const getChartComponent = (
 const CardContainer = ({
   chartType,
   data,
+  height,
   errorHandler,
 }: ChartContainerProps) => {
   return (

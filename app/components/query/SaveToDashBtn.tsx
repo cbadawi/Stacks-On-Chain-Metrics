@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Reactfrom from 'react';
 import { useForm } from 'react-hook-form';
 import { FiSave } from 'react-icons/fi';
 import { z } from 'zod';
@@ -60,8 +59,8 @@ const SaveToDashBtn = ({
   variableDefaults: VariableType[];
   query: string;
 }) => {
-  const NEWLINE_PLACEHOLDER = '$newline';
-  const formattedQuery = query.replace(/\n/g, ` ${NEWLINE_PLACEHOLDER} `);
+  // const NEWLINE_PLACEHOLDER = '$newline';
+  // const formattedQuery = query.replace(/\n/g, ` ${NEWLINE_PLACEHOLDER} `);
 
   const form = useForm<z.infer<typeof saveToDashboardSchema>>({
     resolver: zodResolver(saveToDashboardSchema),

@@ -5,7 +5,7 @@ import { convertRemToPixels } from '@/app/lib/convertRemToPixels';
 import ResizableDraggableCard from './ResizableDraggableCard';
 import ChartContainer from '../charts/CardContainer';
 import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
-import { updateChart } from '@/app/lib/db/dashboards/charts';
+import { persistChartUpdate } from '@/app/lib/db/dashboards/charts';
 import {
   Position,
   PositionWithID,
@@ -27,25 +27,25 @@ SyntaxHighlighter.registerLanguage('sql', sql);
 
 type ResizableChartProps = {
   chart: ChartWithData;
-  chartPositions: PositionWithID[];
-  setChartPositions: React.Dispatch<
-    React.SetStateAction<PositionWithID[] | undefined>
-  >;
+  chartsPositions: PositionWithID[];
+  updateChartPosition: (id: number, newPos: PositionWithID) => void;
+  updateContainerHeight: (positions: PositionWithID[]) => void;
   variables: VariableType[];
   baseModalId: string;
 };
 
 const ResizableChart = ({
   chart,
-  chartPositions,
-  setChartPositions,
+  chartsPositions,
+  updateChartPosition,
+  updateContainerHeight,
   variables,
   baseModalId,
 }: ResizableChartProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const pos = chartPositions.find((p) => p.id == chart.id);
+  const pos = chartsPositions.find((p) => p.id == chart.id);
   if (!pos) return;
   const { x, y, height, width } = pos;
 
@@ -76,10 +76,7 @@ const ResizableChart = ({
   const chartContainerWidth =
     width - convertRemToPixels(childrenHorizontalPaddingRem);
 
-  const chartUpdateHandler = (
-    newPos: Position,
-    allCharts: PositionWithID[]
-  ) => {
+  const onStopHandler = (newPos: Position, allCharts: PositionWithID[]) => {
     const { x, y, height, width } = newPos;
     const isAvailable = isAvailablePosition(
       {
@@ -94,42 +91,43 @@ const ResizableChart = ({
 
     console.log('isAvailable', isAvailable);
     if (!isAvailable) return;
-    const newChartPositions = chartPositions?.map((c) =>
-      c.id == chart.id
-        ? {
-            ...c,
-            width,
-            height,
-            x,
-            y,
-          }
-        : c
-    );
-    setChartPositions(newChartPositions);
+    const oldChart = chartsPositions.find((c) => c.id == chart.id);
+    if (!oldChart) return;
+    const newChartPosition = { ...oldChart, width, height, x, y };
+    updateChartPosition(chart.id, newChartPosition);
+    updateContainerHeight([...allCharts, newChartPosition]);
     const xInPerc = transformPositionBetweenPxAndPerc(x, 'x', 'perc');
     const yInPerc = transformPositionBetweenPxAndPerc(y, 'y', 'perc');
-    const newChart = {
+    console.log('position change : ', { x, xInPerc, y, yInPerc });
+    const newChartInPercent = {
       ...chart,
       height,
       width,
       x: xInPerc,
       y: yInPerc,
     };
-    updateChart(newChart);
+    persistChartUpdate(newChartInPercent);
+  };
+
+  const onMovementHandler = (
+    resizedPos: PositionWithID,
+    allCharts: PositionWithID[]
+  ) => {
+    updateContainerHeight([...allCharts, resizedPos]);
   };
 
   return (
     <ResizableDraggableCard
       chartId={chart.id}
       title={chart.title}
-      allCharts={chartPositions}
+      allCharts={chartsPositions}
       baseModalId={baseModalId}
       titleHeaderHeightRem={titleHeaderHeightRem}
       titleHeaderPaddingRem={titleHeaderPaddingRem}
       childrenHorizontalPaddingRem={childrenHorizontalPaddingRem}
-      chartUpdateHandler={chartUpdateHandler}
+      onStopHandler={onStopHandler}
+      onMovementHandler={onMovementHandler}
     >
-      {/* {JSON.stringify({ chartPositions })} */}
       {error && <QueryErrorContainer error={error} setError={setError} />}
       {isLoading ? (
         <LoadingSkeleton />
@@ -137,13 +135,13 @@ const ResizableChart = ({
         !!chartData?.length && (
           <ChartContainer
             // TODO, why stringify(chartData)? would a key={chart.id} work instead?
-            key={JSON.stringify(chartData)}
+            key={chart.id}
             data={chartData}
             chartType={chart.type}
             height={chartContainerHeight}
             width={chartContainerWidth}
-            chartAxesTypes={chart.axesTypes}
-            chartColumnsTypes={chart.columnTypes}
+            // chartAxesTypes={chart.axesTypes}
+            // chartColumnsTypes={chart.columnTypes}
           />
         )
       )}

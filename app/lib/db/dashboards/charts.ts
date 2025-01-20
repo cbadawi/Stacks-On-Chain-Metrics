@@ -54,7 +54,7 @@ export async function addChart({
   return newChart;
 }
 
-export async function updateChart(chart: Chart | ChartWithData) {
+export async function persistChartUpdate(chart: Chart | ChartWithData) {
   const { title, x, y, height, width, query, type } = chart;
 
   const updatedChart = await prisma.chart.update({

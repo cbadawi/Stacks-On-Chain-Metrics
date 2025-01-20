@@ -1,11 +1,11 @@
 'use server';
 
-import { fetchData } from '../../fetch';
 import { addOwner, getOwner } from '../owner';
 import { replaceVariables } from '../replaceVariables';
 import { VariableType } from '@/app/components/helpers';
 import { Chart, Dashboard, Owner } from '@prisma/client';
 import prisma from '../client';
+import { fetchData } from '@/app/query/actions';
 
 export type ChartWithData = { data: any[] } & Chart;
 
@@ -34,20 +34,25 @@ export async function addDashboard({
   return newDashboard;
 }
 
-export async function getDashboardAndCharts(
-  title: string,
-  searchParams?: any,
-  includeCharts: Boolean = true
-): Promise<Dashboard | DashboardWithCharts | null> {
+export async function getDashboardAndCharts({
+  title,
+  searchParams,
+  id,
+  includeCharts = true,
+}: {
+  title?: string;
+  id?: number;
+  searchParams?: any;
+  includeCharts?: boolean;
+}): Promise<Dashboard | DashboardWithCharts | null> {
   const include = includeCharts
     ? { charts: { where: { deleted: false } } }
     : {};
-  const dashboard = await prisma.dashboard.findUnique({
+  const dashboard = await prisma.dashboard.findFirst({
     where: {
-      deleted_title: {
-        title,
-        deleted: false,
-      },
+      title,
+      deleted: false,
+      id,
     },
     include,
   });
@@ -66,8 +71,8 @@ export async function getDashboardAndCharts(
         const queryWithDefaultVariables = defaultVariables?.length
           ? replaceVariables(chart.query, defaultVariables)
           : chart.query;
-        const data = await fetchData(queryWithDefaultVariables);
-        return { ...chart, data };
+        const dataResponse = await fetchData(queryWithDefaultVariables);
+        return { ...chart, data: dataResponse.data };
       })
     );
   }
