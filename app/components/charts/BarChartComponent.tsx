@@ -21,12 +21,16 @@ export function BarChartComponent({
   data,
   errorHandler,
   height = '70vh',
+  width = '70vh',
 }: {
   data: any[];
   height?: string | number | undefined;
+  width?: string | number | undefined;
   errorHandler?: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  if (!data?.length) return null;
   const keys = Object.keys(data[0]);
+  if (!keys.length) return null;
   const xLabel = keys[0];
   const config = generateChartConfig(data);
   return (

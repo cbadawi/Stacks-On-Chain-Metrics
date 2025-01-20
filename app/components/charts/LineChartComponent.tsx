@@ -14,10 +14,13 @@ import { generateChartConfig } from '../helpers';
 function LineChartComponent({
   data,
   height = '70vh',
+  width = '70vh',
 }: {
   data: any[];
   height?: string | number | undefined;
+  width?: string | number | undefined;
 }) {
+  if (!data?.length) return null;
   const keys = Object.keys(data[0]);
   const xLabel = keys[0];
   const config = generateChartConfig(data);

@@ -21,42 +21,65 @@ interface ChartContainerProps {
 const getChartComponent = (
   chartType: ChartType,
   data: any[],
+  height?: number,
+  width?: number,
   errorHandler?: (msg: string) => void
 ): ReactNode & ReactElement<any, string | JSXElementConstructor<any>> => {
   try {
     switch (chartType) {
       case ChartType.LINE:
-        return <LineChart data={data} />;
+        return <LineChart data={data} height={height} width={width} />;
       case ChartType.BAR:
-        return <BarChart data={data} />;
+        return <BarChart data={data} height={height} width={width} />;
       case ChartType.PIE:
-        return <PieChart data={data} errorHandler={errorHandler} />;
+        return (
+          <PieChart
+            data={data}
+            errorHandler={errorHandler}
+            height={Math.min(height ?? Infinity, width ?? Infinity)}
+          />
+        );
       case ChartType.NUMBER:
         return <Stats data={data} />;
       default:
-        return <Table data={data} />;
+        return (
+          <div
+            style={{
+              width: '100%',
+              height: height ?? '100%',
+              overflow: 'scroll',
+            }}
+          >
+            <Table data={data} />;
+          </div>
+        );
     }
   } catch (e) {
     console.error('error loading chart', e);
-    return <Table data={data} />;
+    return (
+      <div style={{ height, overflow: 'scroll' }}>
+        <Table data={data} />;
+      </div>
+    );
   }
 };
 
-const CardContainer = ({
+const ChartContainer = ({
   chartType,
   data,
   height,
+  width,
   errorHandler,
 }: ChartContainerProps) => {
   return (
-    <div className='w-full bg-transparent '>
-      <Card className='w-full border-none bg-transparent shadow-none'>
-        <CardContent>
-          {getChartComponent(chartType, data, errorHandler)}
+    <div className='chart-container h-full w-full bg-transparent '>
+      <Card className='card h-full w-full border-none bg-transparent shadow-none'>
+        <CardContent className='card-content flex w-full items-center justify-center'>
+          {getChartComponent(chartType, data, height, width, errorHandler)}
         </CardContent>
       </Card>
     </div>
   );
 };
 
-export default CardContainer;
+export default ChartContainer;

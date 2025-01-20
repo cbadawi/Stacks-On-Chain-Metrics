@@ -14,13 +14,8 @@ const Table = ({ data }: TableProps) => {
   const colNames = Object.keys(data[0]);
 
   return (
-    // Give the container both horizontal AND vertical scroll if desired:
     <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px] sm:max-h-[40vh] lg:max-h-[45vh]'>
       <table className='h-auto w-full bg-[#0d0d0c] text-white'>
-        {/* 
-          Make the thead sticky with top-0 and a background so that 
-          it remains visible on scroll 
-        */}
         <thead className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-[#0d0d0c]'>
           <tr>
             <th key={'#'} className='w-4 p-2 text-center text-lg'>

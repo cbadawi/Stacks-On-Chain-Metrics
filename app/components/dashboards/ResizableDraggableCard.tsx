@@ -93,7 +93,11 @@ const ResizableDraggableCard = ({
             }}
           />
         </div>
-        <div className={`card-children flex ${childPadding}`}>{children}</div>
+        <div
+          className={`card-children flex items-center justify-center ${childPadding}`}
+        >
+          {children}
+        </div>
       </Rnd>
     )
   );

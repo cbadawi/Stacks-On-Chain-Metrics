@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { VariableType } from '../helpers';
 import QueryButtons from './QueryButtons';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
-import CardContainer from '../charts/CardContainer';
+import ChartContainer from '../charts/ChartContainer';
 
 interface QueryVisualizationProps {
   data: any[];
@@ -43,7 +43,7 @@ const QueryVisualization = ({
         chartAxesTypes={chartAxesTypes}
         chartColumnsTypes={chartColumnsTypes}
       />
-      <CardContainer
+      <ChartContainer
         data={data}
         chartType={chartType}
         errorHandler={errorHandler}

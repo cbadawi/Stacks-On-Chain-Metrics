@@ -1,6 +1,7 @@
 import React from 'react';
 
 const Stats = ({ data }: { data: any[] }) => {
+  if (!data?.length) return null;
   const firstRow = data[0];
   const keys = Object.keys(firstRow);
   return (
