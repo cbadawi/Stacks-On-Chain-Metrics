@@ -86,6 +86,7 @@ model Chart {
   title       String
   query       String
   type        ChartType
+  description String?
   x           Int
   y           Int
   width       Int
