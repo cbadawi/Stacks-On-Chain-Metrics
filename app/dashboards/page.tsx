@@ -17,7 +17,7 @@ const Dashboards = async ({ searchParams }: DashPageProps) => {
           <div className='scrollbar-thin grid auto-cols-[minmax(160px,1fr)] grid-flow-col grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 overflow-x-auto pt-4 '>
             {dashboards.map((d, index) => (
               <Link
-                href={'/dashboards/' + d.title}
+                href={'/dashboards/' + d.id}
                 className='dash-element flex cursor-pointer flex-col items-center justify-between rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-lg'
                 key={'dash-elem' + index}
               >

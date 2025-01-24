@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/chart';
 import validatePieChartData from '@/app/lib/validateChartData/validatePieChartData';
 import { colors, generateChartConfig } from '../helpers';
+import { useTheme } from 'next-themes';
 
 function PieChartComponent({
   data,
@@ -21,6 +22,7 @@ function PieChartComponent({
   height?: number;
   errorHandler?: (msg: string) => void;
 }) {
+  const { theme } = useTheme();
   if (!data?.length) return null;
   const coloredData = data.map((d, i) => ({ ...d, fill: colors[i] }));
   const keys = Object.keys(data[0]);
@@ -70,7 +72,7 @@ function PieChartComponent({
                         x={viewBox.cx}
                         y={viewBox.cy}
                         className='text-3xl font-bold'
-                        fill='white'
+                        fill={theme === 'dark' ? 'white' : 'black'}
                       >
                         {totalVisitors.toLocaleString()}
                       </tspan>

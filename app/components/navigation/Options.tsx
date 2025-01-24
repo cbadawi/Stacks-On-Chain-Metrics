@@ -1,34 +1,55 @@
+'use client';
+
 import React from 'react';
-import { CiMenuKebab } from 'react-icons/ci';
-import { MdOutlineHealthAndSafety } from 'react-icons/md';
-import { FaGithub } from 'react-icons/fa';
+import { Github, HeartPulse, EllipsisVertical, GithubIcon } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Options = () => {
   return (
-    <div className='dropdown dropdown-end dropdown-top dropdown-hover fixed bottom-2 right-2 z-50 flex'>
-      <div tabIndex={0} role='button' className='btn m-1'>
-        <CiMenuKebab colot='white' size={25} />
-      </div>
-      <ul
-        tabIndex={0}
-        className='menu dropdown-content z-[1] w-52 rounded-box bg-base-100 p-2 shadow'
-      >
-        <li>
-          <a
-            href='https://github.com/cbadawi/stacksmetrics/issues/new'
-            target='_blank'
-            className='flex items-center justify-between'
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant='secondary'
+          className='fixed bottom-2 right-2 z-50 m-5 h-16 w-16 p-2'
+        >
+          <EllipsisVertical className='h-full w-full' />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className='w-56'>
+        <DropdownMenuLabel>Stacks on chain</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() =>
+              window.open('https://github.com/cbadawi/stacksmetrics/issues/new')
+            }
           >
-            Report an issue, idea or feedback <FaGithub size={25} />
-          </a>
-        </li>
-        <li>
-          <a className='flex items-center justify-between'>
-            Health checks <MdOutlineHealthAndSafety color='red' size={25} />
-          </a>
-        </li>
-      </ul>
-    </div>
+            Report an issue
+            <DropdownMenuShortcut>
+              <GithubIcon size={25} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            Health check
+            <DropdownMenuShortcut>
+              <HeartPulse color='red' size={25} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

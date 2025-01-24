@@ -1,22 +1,51 @@
 import React, { useState } from 'react';
-import { BiSolidBellRing } from 'react-icons/bi';
-import { BsTable } from 'react-icons/bs';
-import { FcBarChart, FcLineChart, FcPieChart } from 'react-icons/fc';
-import { FiDownload, FiSave } from 'react-icons/fi';
-import { MdOutlineNumbers } from 'react-icons/md';
+import {
+  Sheet,
+  LineChart,
+  BarChart,
+  PieChart,
+  Hash,
+  Bell,
+  Download,
+  Sparkles,
+} from 'lucide-react';
 import SaveToDashBtn from './SaveToDashBtn';
-// import SaveToDashboardForm from './SaveToDashboardForm';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import { VariableType } from '../helpers';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const chartIcons = [
-  <BsTable color='#6543FC' size={20} key={ChartType.TABLE} />,
-  <FcLineChart size={25} key={ChartType.LINE} />,
-  <FcPieChart size={25} key={ChartType.PIE} />,
-  <FcBarChart size={25} key={ChartType.BAR} />,
-  // <FcFrame size={20} key={ChartType.TREEMAP} />,
-  <MdOutlineNumbers color='#6543FC' size={25} key={ChartType.NUMBER} />,
+  {
+    icon: <Sheet color='#6543FC' size={20} />,
+    tooltip: 'Table',
+    key: ChartType.TABLE,
+  },
+  {
+    icon: <LineChart color='#6543FC' size={25} />,
+    tooltip: 'Line Chart',
+    key: ChartType.LINE,
+  },
+  {
+    icon: <PieChart color='#6543FC' size={25} />,
+    tooltip: 'Pie Chart',
+    key: ChartType.PIE,
+  },
+  {
+    icon: <BarChart color='#6543FC' size={25} />,
+    tooltip: 'Bar Chart',
+    key: ChartType.BAR,
+  },
+  {
+    icon: <Hash color='#6543FC' size={25} />,
+    tooltip: 'Stats',
+    key: ChartType.NUMBER,
+  },
 ];
 
 type QueryButtonsProps = {
@@ -25,8 +54,19 @@ type QueryButtonsProps = {
   setChart: React.Dispatch<React.SetStateAction<ChartType>>;
   errorHandler?: (msg: string) => void;
   variableDefaults: VariableType[];
-  chartColumnsTypes: CustomizableChartTypes[];
-  chartAxesTypes: LeftRight[];
+  handleExplainQuery: () => Promise<void>;
+  setQueryExplanations: React.Dispatch<
+    React.SetStateAction<
+      | {
+          section: string;
+          explanation: string;
+        }[]
+      | null
+      | undefined
+    >
+  >;
+  // chartColumnsTypes: CustomizableChartTypes[];
+  // chartAxesTypes: LeftRight[];
 };
 
 const QueryButtons = ({
@@ -34,59 +74,106 @@ const QueryButtons = ({
   chartType,
   query,
   errorHandler,
-  chartColumnsTypes,
-  chartAxesTypes,
+  handleExplainQuery,
+  setQueryExplanations,
   variableDefaults,
 }: QueryButtonsProps) => {
-  // needed to trigger the use effect hook in the form & fetch dashboards
-  let [saveToDashCounter, setSaveToDashCounter] = useState(0);
   return (
     <div className='icons-flex-container relative flex w-full flex-row items-center justify-between gap-4 rounded-md px-12 pt-0 shadow-sm'>
-      <div className='flex items-center gap-3'>
-        <div className='tooltip tooltip-primary' data-tip='Save to Dashboard'>
-          <SaveToDashBtn
-            query={query}
-            variableDefaults={variableDefaults}
-            chartType={chartType}
-          />
-        </div>
-        <div className='tooltip tooltip-primary' data-tip='Download to CSV'>
-          <Button className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
-            <FiDownload color='#6543FC' size={20} />
-          </Button>
-        </div>
-        <div
-          className='tooltip tooltip-primary hidden'
-          data-tip='Create Alerts (SOON)'
-        >
-          <div className='btn hover:relative hover:bottom-1 hover:overflow-visible'>
-            <BiSolidBellRing />
-          </div>
-        </div>
-      </div>
+      <TooltipProvider>
+        <div className='flex items-center gap-3'>
+          {/* Save to Dashboard */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SaveToDashBtn
+                query={query}
+                variableDefaults={variableDefaults}
+                chartType={chartType}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Save to Dashboard</p>
+            </TooltipContent>
+          </Tooltip>
 
-      {/* Chart icon buttons */}
-      <div className='flex h-16 items-center gap-2 overflow-x-auto'>
-        {chartIcons.map((icon, index) => {
-          return (
-            <div
-              className='chart-icons-container flex flex-row items-center gap-2'
-              key={index}
-              onClick={() => {
-                setChart(icon.key! as unknown as ChartType);
-                if (errorHandler) errorHandler('');
-              }}
-            >
+          {/* AI Explain */}
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button
+                size={'lg'}
                 className='btn hover:relative hover:bottom-1 hover:overflow-visible'
-                key={index}
+                variant='secondary'
+                onClick={() => {
+                  handleExplainQuery();
+                  if (errorHandler) errorHandler('');
+                }}
               >
-                {icon}
+                <Sparkles color='#6543FC' size={20} />
               </Button>
-            </div>
-          );
-        })}
-      </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>AI Explain</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Download */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='hover:cursor-not-allowed'>
+                <Button size={'lg'} variant='outline' disabled>
+                  <Download size={20} className='hover:cursor-not-allowed' />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Download</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Alerts (SOON) */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='hover:cursor-not-allowed'>
+                <Button size={'lg'} variant='outline' disabled>
+                  <Bell />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create Alerts (SOON)</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        {/* Chart Icon Buttons */}
+        <div className='flex h-16 items-center gap-2 overflow-x-auto'>
+          {chartIcons.map((iconData, index) => (
+            <Tooltip key={index}>
+              <TooltipTrigger asChild>
+                <div
+                  className='chart-icons-container flex flex-row items-center gap-2'
+                  onClick={() => {
+                    setChart(iconData.key as ChartType);
+                    setQueryExplanations(null);
+                    if (errorHandler) errorHandler('');
+                  }}
+                >
+                  <Button
+                    size={'lg'}
+                    variant='secondary'
+                    className='btn hover:relative hover:bottom-1 hover:overflow-visible'
+                  >
+                    {iconData.icon}
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{iconData.tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </TooltipProvider>
     </div>
   );
 };

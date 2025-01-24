@@ -6,15 +6,19 @@ import QueryErrorContainer from '../components/QueryErrorContainer';
 // import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
 import { VariableType, replaceVariable } from '../components/helpers';
-import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
+import { CustomizableChartTypes, LeftRight } from '@prisma/client';
 import QueryVisualization from '../components/query/QueryVisualization';
-import { fetchData } from './actions';
+import { explainQuery, fetchData, generateQuery } from './actions';
+import { Card } from '@/components/ui/card';
+import Spinner from '../components/Spinner';
+import { QueryExplanation } from '../lib/types';
+import { seperatePromptFromSql } from './seperatePromptFromSql';
+import { findIsAIPrompt } from './isAIPrompt';
 
 const DEFAULT_QUERY = `-- PostgreSQL 15
 -- Press Ctrl+Enter to run
 -- You can use variables by wrapping words in double brackets {{}}
-select 1 aaa, 3 sa, 8 da, 5 ads
-union select 7,5,3,1`;
+select * from stacks_blockchain_api.blocks limit 1;`;
 // TODO change default query to something more recent
 
 const QueryWrapper = () => {
@@ -22,13 +26,16 @@ const QueryWrapper = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // array containing the type of column. ex ['bar', 'bar', 'line']
-  const [chartColumnsTypes, setChartColumnsTypes] = useState<
-    CustomizableChartTypes[]
-  >([]);
+  // const [chartColumnsTypes, setChartColumnsTypes] = useState<
+  //   CustomizableChartTypes[]
+  // >([]);
   // array containing the position of axis.
-  const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
+  // const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
   const [data, setData] = useState<any[] | undefined | never[]>([]);
   const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
+  const [queryExplanations, setQueryExplanations] = useState<
+    QueryExplanation[] | null
+  >();
 
   const replaceVariables = (
     query: string,
@@ -59,17 +66,34 @@ const QueryWrapper = () => {
     const queryWithVariables = replaceVariables(query, setError);
 
     if (queryWithVariables) {
-      // const response = await fetchData(queryWithVariables, setError);
-      try {
-        const response = await fetchData(queryWithVariables);
+      const isAiPrompt = findIsAIPrompt(queryWithVariables);
+      const finalQuery = isAiPrompt
+        ? await generateQuery(queryWithVariables)
+        : queryWithVariables;
 
-        console.log('runquery', { response });
-        setData(response.data);
+      if (isAiPrompt) {
+        const { prompt } = seperatePromptFromSql(query);
+        setQuery('-- ' + prompt + '\n' + finalQuery);
+      }
+      try {
+        const response = await fetchData(finalQuery);
+        setData(response);
+        setQueryExplanations(null);
       } catch (err) {
         if (err instanceof Error) setError(err.message);
       }
       setIsLoading(false);
     }
+  };
+
+  const handleExplainQuery = async () => {
+    setQueryExplanations(null);
+    setIsLoading(true);
+    const { prompt, sql } = seperatePromptFromSql(query);
+    const { explanations } = await explainQuery(prompt, query);
+    console.log({ explanations });
+    setQueryExplanations(explanations);
+    setIsLoading(false);
   };
 
   return (
@@ -86,25 +110,23 @@ const QueryWrapper = () => {
       <>{JSON.stringify({ data })}</>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <div className='relative my-12 h-auto rounded-t-3xl bg-[#081115]  px-0 py-4 '>
+        {isLoading && <Spinner />}
+        <Card className='relative my-12 h-auto rounded-t-3xl  px-0 py-4 '>
           {!data?.length ? (
             <StarterPlaceholderMessage />
           ) : (
-            <>
-              <QueryVisualization
-                data={data}
-                query={query}
-                chartColumnsTypes={chartColumnsTypes}
-                setChartColumnsTypes={setChartColumnsTypes}
-                chartAxesTypes={chartAxesTypes}
-                setChartAxesTypes={setChartAxesTypes}
-                errorHandler={setError}
-                error={error}
-                variableDefaults={variableDefaults}
-              />
-            </>
+            <QueryVisualization
+              data={data}
+              query={query}
+              errorHandler={setError}
+              queryExplanations={queryExplanations}
+              handleExplainQuery={handleExplainQuery}
+              setQueryExplanations={setQueryExplanations}
+              error={error}
+              variableDefaults={variableDefaults}
+            />
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

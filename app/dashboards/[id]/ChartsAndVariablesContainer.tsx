@@ -1,6 +1,5 @@
 'use client';
 
-import ResizableChart from '@/app/components/dashboards/ResizableChart';
 import Variable from '@/app/components/query/Variable';
 import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import React, { useState } from 'react';

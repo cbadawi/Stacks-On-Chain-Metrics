@@ -20,7 +20,7 @@ import Modal from '../Modal';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import sql from 'react-syntax-highlighter/dist/esm/languages/hljs/sql';
 import { darcula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { Chart } from '@prisma/client';
+import { Chart, ChartType } from '@prisma/client';
 import { fetchData } from '@/app/query/actions';
 
 SyntaxHighlighter.registerLanguage('sql', sql);
@@ -32,6 +32,46 @@ type ResizableChartProps = {
   updateContainerHeight: (positions: PositionWithID[]) => void;
   variables: VariableType[];
   baseModalId: string;
+  editMode: boolean;
+};
+
+const validateDimensions = (
+  chartType: ChartType,
+  height: number,
+  width: number
+) => {
+  switch (chartType) {
+    case 'BAR':
+      return {
+        height: Math.max(height, 400),
+        width: Math.max(width, 600),
+      };
+    case 'LINE':
+      return {
+        height: Math.max(height, 300),
+        width: Math.max(width, 500),
+      };
+    case 'PIE':
+      return {
+        height: Math.max(height, 350),
+        width: Math.max(width, 350),
+      };
+    case 'NUMBER':
+      return {
+        height: Math.max(height, 200),
+        width: Math.max(width, 550),
+      };
+    case 'TABLE':
+      return {
+        height: Math.max(height, 350),
+        width: Math.max(width, 350),
+      };
+    default:
+      return {
+        height: Math.max(height, 300),
+        width: Math.max(width, 400),
+      };
+  }
 };
 
 const ResizableChart = ({
@@ -40,6 +80,7 @@ const ResizableChart = ({
   updateChartPosition,
   updateContainerHeight,
   variables,
+  editMode,
   baseModalId,
 }: ResizableChartProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -67,8 +108,8 @@ const ResizableChart = ({
     setIsLoading(false);
   };
 
-  const titleHeaderPaddingRem = 0.5;
-  const titleHeaderHeightRem = 2;
+  const titleHeaderPaddingRem = 1;
+  const titleHeaderHeightRem = 3.5;
   const childrenHorizontalPaddingRem = 1.5;
   const chartContainerHeight =
     height -
@@ -77,7 +118,12 @@ const ResizableChart = ({
     width - convertRemToPixels(childrenHorizontalPaddingRem);
 
   const onStopHandler = (newPos: Position, allCharts: PositionWithID[]) => {
-    const { x, y, height, width } = newPos;
+    const { x, y, height: unvalidatedHeight, width: unvalidatedWidth } = newPos;
+    const { height, width } = validateDimensions(
+      chart.type,
+      unvalidatedHeight,
+      unvalidatedWidth
+    );
     const isAvailable = isAvailablePosition(
       {
         id: chart.id,
@@ -88,8 +134,6 @@ const ResizableChart = ({
       },
       allCharts
     );
-
-    console.log('isAvailable', isAvailable);
     if (!isAvailable) return;
     const oldChart = chartsPositions.find((c) => c.id == chart.id);
     if (!oldChart) return;
@@ -98,11 +142,13 @@ const ResizableChart = ({
     updateContainerHeight([...allCharts, newChartPosition]);
     const xInPerc = transformPositionBetweenPxAndPerc(x, 'x', 'perc');
     const yInPerc = transformPositionBetweenPxAndPerc(y, 'y', 'perc');
-    console.log('position change : ', { x, xInPerc, y, yInPerc });
+    const wInPerc = transformPositionBetweenPxAndPerc(width, 'x', 'perc');
+    const hInPerc = transformPositionBetweenPxAndPerc(height, 'y', 'perc');
+    console.log('persisting position change : ', { x, xInPerc, y, yInPerc });
     const newChartInPercent = {
       ...chart,
-      height,
-      width,
+      height: hInPerc,
+      width: wInPerc,
       x: xInPerc,
       y: yInPerc,
     };
@@ -128,14 +174,33 @@ const ResizableChart = ({
       onStopHandler={onStopHandler}
       onMovementHandler={onMovementHandler}
     >
-      <ChartContainer
-        key={chart.id}
-        data={chartData}
-        chartType={chart.type}
-        height={chartContainerHeight}
-        width={chartContainerWidth}
-        // chartAxesTypes={chart.axesTypes}
-        // chartColumnsTypes={chart.columnTypes}
+      {error && <QueryErrorContainer error={error} setError={setError} />}
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        !!chartData?.length && (
+          <ChartContainer
+            key={chart.id}
+            data={chartData}
+            chartType={chart.type}
+            height={chartContainerHeight}
+            width={chartContainerWidth}
+            // chartAxesTypes={chart.axesTypes}
+            // chartColumnsTypes={chart.columnTypes}
+          />
+        )
+      )}
+      <Modal
+        key={'modal' + '-' + chart.title}
+        modalId={baseModalId + chart.title}
+        modalChildren={
+          <div key={'chart-info-' + chart.title}>
+            <div>{chart.title}</div>
+            <SyntaxHighlighter language='sql' style={darcula}>
+              {chart.query}
+            </SyntaxHighlighter>
+          </div>
+        }
       />
     </ResizableDraggableCard>
   );

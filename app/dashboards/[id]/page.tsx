@@ -6,6 +6,14 @@ import {
 import { redirect } from 'next/navigation';
 import React from 'react';
 import ChartsAndVariablesContainer from './ChartsAndVariablesContainer';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import DashboardOptions from './DashboardOptions';
+import { EditModeProvider } from './EditModeContext';
 
 type DashboardProps = {
   params: { id: string };
@@ -22,20 +30,25 @@ const Dashboards = async ({ params }: DashboardProps) => {
   if (!dashboard) redirect('/dashboards');
   return (
     <div className='flex h-full flex-col'>
-      <header className='dahsboard-title mx-4 my-6 flex justify-between border-2 bg-gray-900 py-8'>
+      <EditModeProvider>
+        <Card className='mx-4 my-6 h-auto w-auto border px-6'>
+          <CardHeader>
+            <div className='flex items-center justify-between'>
+              <CardTitle className='text-3xl font-normal'>
+                {dashboard.title}
+              </CardTitle>
+              <DashboardOptions />
+            </div>
+            <CardDescription>{dashboard.description}</CardDescription>
+          </CardHeader>
+        </Card>
         <div>
-          <h2>{dashboard.title} </h2>
-          {dashboard?.description && (
-            <h4 className='dahsboard-title py-4'> {dashboard?.description} </h4>
-          )}
+          <ChartsAndVariablesContainer
+            dashboard={dashboard}
+            variablesFormId={variablesFormId}
+          />
         </div>
-      </header>
-      <div>
-        <ChartsAndVariablesContainer
-          dashboard={dashboard}
-          variablesFormId={variablesFormId}
-        />
-      </div>
+      </EditModeProvider>
     </div>
   );
 };

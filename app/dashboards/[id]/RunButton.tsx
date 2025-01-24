@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import { FaPlayCircle } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { VariableType } from '@/app/components/helpers';
+import { Play, PlayCircle } from 'lucide-react';
 
 const RunButton = ({
   formId,
@@ -43,7 +43,7 @@ const RunButton = ({
       type='submit'
       onClick={onClickHandler}
     >
-      <FaPlayCircle size={20} />
+      <PlayCircle size={20} />
     </button>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AiOutlineClose } from 'react-icons/ai';
+import { X } from 'lucide-react';
 
 interface QueryErrorContainerProps {
   error: string;
@@ -8,9 +8,9 @@ interface QueryErrorContainerProps {
 
 const QueryErrorContainer = ({ error, setError }: QueryErrorContainerProps) => {
   return (
-    <div className='text-white-70 z-9999 animate-moveright flex w-full items-center justify-between bg-rose-900 px-16 py-4 text-lg tracking-wide transition-all duration-500 ease-in'>
+    <div className='z-9999 flex w-full animate-moveright items-center justify-between bg-rose-900 px-16 py-4 text-lg tracking-wide transition-all duration-500 ease-in'>
       {error}
-      <AiOutlineClose onClick={() => setError('')} />
+      <X onClick={() => setError('')} />
     </div>
   );
 };

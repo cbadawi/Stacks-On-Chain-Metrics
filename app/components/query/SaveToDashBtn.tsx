@@ -13,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { FiSave } from 'react-icons/fi';
 import { z } from 'zod';
 import { VariableType } from '../helpers';
 import {
@@ -28,6 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChartType } from '@prisma/client';
 import { SelectDashboardInput } from '../SelectDashboardInput';
 import { addChartToDashboard } from './actions';
+import { Save } from 'lucide-react';
 
 const saveToDashboardSchema = z
   .object({
@@ -99,11 +99,11 @@ const SaveToDashBtn = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='outline'>
-          <FiSave color='#6543FC' size={20} />
+        <Button variant='outline' size={'lg'}>
+          <Save color='#6543FC' size={20} />
         </Button>
       </DialogTrigger>
-      <DialogContent className='bg-[#09080a] text-white sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Save Chart</DialogTitle>
           <DialogDescription>
@@ -163,7 +163,6 @@ const SaveToDashBtn = ({
                   <div className='flex h-12 items-center gap-4'>
                     <FormControl>
                       <Checkbox
-                        className='bg-white'
                         disabled={true}
                         checked={field.value}
                         onCheckedChange={field.onChange}

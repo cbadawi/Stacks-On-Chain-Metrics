@@ -5,6 +5,7 @@ import Navbar from './components/navigation/Navbar';
 import Options from './components/navigation/Options';
 import Footer from './components/navigation/Footer';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 // import { UserProvider } from './contexts/UserProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,13 +27,20 @@ export default function RootLayout({
         <link rel='icon' href='/favicon.ico' />
       </head>
       <body className={inter.className}>
-        {/* <UserProvider> */}
-        <Navbar />
-        <Options />
-        <Toaster />
-        <main className='min-h-[100vh]'>{children}</main>
-        <Footer />
-        {/* </UserProvider> */}
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          {/* <UserProvider> */}
+          <Navbar />
+          <Options />
+          <Toaster />
+          <main className='min-h-[100vh]'>{children}</main>
+          {/* <Footer /> */}
+          {/* </UserProvider> */}
+        </ThemeProvider>
       </body>
     </html>
   );

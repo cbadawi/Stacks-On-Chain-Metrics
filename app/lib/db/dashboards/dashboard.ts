@@ -72,7 +72,7 @@ export async function getDashboardAndCharts({
           ? replaceVariables(chart.query, defaultVariables)
           : chart.query;
         const dataResponse = await fetchData(queryWithDefaultVariables);
-        return { ...chart, data: dataResponse.data };
+        return { ...chart, data: dataResponse };
       })
     );
   }

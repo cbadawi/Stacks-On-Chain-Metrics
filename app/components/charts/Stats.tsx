@@ -10,7 +10,7 @@ const Stats = ({ data }: { data: any[] }) => {
         return (
           <div
             key={'div-' + index}
-            className='m-8 flex-col items-center justify-center'
+            className='mx-8 my-4 flex-col items-center justify-center'
           >
             <h2
               key={'h2-' + index}

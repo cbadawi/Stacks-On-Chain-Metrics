@@ -5,8 +5,8 @@ const Query = async () => {
   // TODO Error message container
   return (
     <div>
-      <h1 className='text-xl font-light text-white'>
-        stacks blockchain data analytics
+      <h1 className='text-xl font-light'>
+        Stacks on chain AI Data Analytics & Oracle
       </h1>
 
       <QueryWrapper />
