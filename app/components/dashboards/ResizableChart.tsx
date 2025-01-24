@@ -38,7 +38,8 @@ type ResizableChartProps = {
 const validateDimensions = (
   chartType: ChartType,
   height: number,
-  width: number
+  width: number,
+  keysLength: number
 ) => {
   switch (chartType) {
     case 'BAR':
@@ -59,7 +60,7 @@ const validateDimensions = (
     case 'NUMBER':
       return {
         height: Math.max(height, 200),
-        width: Math.max(width, 550),
+        width: Math.max(width, 200 + 100 * keysLength),
       };
     case 'TABLE':
       return {
@@ -89,7 +90,7 @@ const ResizableChart = ({
   const pos = chartsPositions.find((p) => p.id == chart.id);
   if (!pos) return;
   const { x, y, height, width } = pos;
-
+  const keys = Object.keys(chart.data[0] || {});
   useEffect(() => {
     if (variables?.length) {
       fetchChartData(chart, variables);
@@ -104,7 +105,7 @@ const ResizableChart = ({
     setIsLoading(true);
     const queryWithVariables = replaceVariables(chart.query, variables);
     const response = await fetchData(queryWithVariables);
-    setChartData(response.data);
+    setChartData(response);
     setIsLoading(false);
   };
 
@@ -119,10 +120,12 @@ const ResizableChart = ({
 
   const onStopHandler = (newPos: Position, allCharts: PositionWithID[]) => {
     const { x, y, height: unvalidatedHeight, width: unvalidatedWidth } = newPos;
+
     const { height, width } = validateDimensions(
       chart.type,
       unvalidatedHeight,
-      unvalidatedWidth
+      unvalidatedWidth,
+      keys.length
     );
     const isAvailable = isAvailablePosition(
       {

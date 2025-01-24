@@ -2,11 +2,10 @@ import React from 'react';
 import QueryWrapper from './QueryWrapper';
 
 const Query = async () => {
-  // TODO Error message container
   return (
     <div>
-      <h1 className='text-xl font-light'>
-        Stacks on chain AI Data Analytics & Oracle
+      <h1 className='mx-10 mt-5 text-xl font-semibold'>
+        On Chain AI Data Agent & Analytics
       </h1>
 
       <QueryWrapper />

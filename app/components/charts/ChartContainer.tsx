@@ -50,7 +50,7 @@ const getChartComponent = (
               overflow: 'scroll',
             }}
           >
-            <Table data={data} />;
+            <Table data={data} />
           </div>
         );
     }

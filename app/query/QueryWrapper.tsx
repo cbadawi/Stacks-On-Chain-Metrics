@@ -15,8 +15,10 @@ import { QueryExplanation } from '../lib/types';
 import { seperatePromptFromSql } from './seperatePromptFromSql';
 import { findIsAIPrompt } from './isAIPrompt';
 
-const DEFAULT_QUERY = `-- PostgreSQL 15
--- Press Ctrl+Enter to run
+const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
+-- followed by your prompt here.
+
+-- Postgresql 15
 -- You can use variables by wrapping words in double brackets {{}}
 select * from stacks_blockchain_api.blocks limit 1;`;
 // TODO change default query to something more recent
@@ -25,17 +27,18 @@ const QueryWrapper = () => {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any[] | undefined | never[]>([]);
+  const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
+  const [queryExplanations, setQueryExplanations] = useState<
+    QueryExplanation[] | null
+  >();
+
   // array containing the type of column. ex ['bar', 'bar', 'line']
   // const [chartColumnsTypes, setChartColumnsTypes] = useState<
   //   CustomizableChartTypes[]
   // >([]);
   // array containing the position of axis.
   // const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
-  const [data, setData] = useState<any[] | undefined | never[]>([]);
-  const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
-  const [queryExplanations, setQueryExplanations] = useState<
-    QueryExplanation[] | null
-  >();
 
   const replaceVariables = (
     query: string,
@@ -96,9 +99,39 @@ const QueryWrapper = () => {
     setIsLoading(false);
   };
 
+  const getVisualization = () => {
+    if (isLoading)
+      return (
+        <div className='flex h-[300px] items-center justify-center'>
+          <Spinner />
+        </div>
+      );
+    if (!data?.length)
+      return (
+        <StarterPlaceholderMessage
+          start={() => {
+            setQuery(DEFAULT_QUERY);
+            runQuery(DEFAULT_QUERY);
+          }}
+        />
+      );
+    return (
+      <QueryVisualization
+        data={data}
+        query={query}
+        errorHandler={setError}
+        queryExplanations={queryExplanations}
+        handleExplainQuery={handleExplainQuery}
+        setQueryExplanations={setQueryExplanations}
+        error={error}
+        variableDefaults={variableDefaults}
+      />
+    );
+  };
+
   return (
     <div className='query-wrapper'>
-      <div className='editor-wrapper relative mx-auto mb-4 mt-10 flex w-[95%] items-center justify-center'>
+      <div className='editor-wrapper relative mx-10 mb-4 mt-5 flex items-center justify-center'>
         <SqlEditor
           query={query}
           setQuery={setQuery}
@@ -110,22 +143,8 @@ const QueryWrapper = () => {
       <>{JSON.stringify({ data })}</>
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        {isLoading && <Spinner />}
         <Card className='relative my-12 h-auto rounded-t-3xl  px-0 py-4 '>
-          {!data?.length ? (
-            <StarterPlaceholderMessage />
-          ) : (
-            <QueryVisualization
-              data={data}
-              query={query}
-              errorHandler={setError}
-              queryExplanations={queryExplanations}
-              handleExplainQuery={handleExplainQuery}
-              setQueryExplanations={setQueryExplanations}
-              error={error}
-              variableDefaults={variableDefaults}
-            />
-          )}
+          {getVisualization()}
         </Card>
       </div>
     </div>

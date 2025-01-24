@@ -44,7 +44,7 @@ const NavbarLinks = () => {
                 <NavigationMenuLink
                   className={cn(
                     navigationMenuTriggerStyle(),
-                    'bg-transparent text-lg hover:bg-gray-300',
+                    'text-l border-2 border-transparent px-4 py-1 text-white transition-all duration-300 ease-in-out hover:rounded-xl hover:border-gray-300 hover:bg-[#15161f] hover:text-orange-500',
                     isDisabled ? 'pointer-events-none opacity-50' : ''
                   )}
                   style={{

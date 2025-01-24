@@ -20,8 +20,8 @@ const Options = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant='secondary'
-          className='fixed bottom-2 right-2 z-50 m-5 h-16 w-16 p-2'
+          variant='outline'
+          className='fixed bottom-2 right-2 z-50 m-3 h-10 w-10 bg-slate-800 p-2 opacity-75 hover:bg-slate-800 hover:opacity-100'
         >
           <EllipsisVertical className='h-full w-full' />
         </Button>

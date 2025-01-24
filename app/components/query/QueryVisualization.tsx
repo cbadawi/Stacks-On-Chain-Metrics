@@ -52,29 +52,27 @@ const QueryVisualization = ({
   const [chartType, setChartType] = useState<ChartType>(ChartType.TABLE);
 
   const { prompt, sql } = seperatePromptFromSql(query);
-
-  // Need to show QueryButtons even if there are errors since the error can be set using invalid chart choice.
-  // if (error) return;
   return (
-    <div className='visualization-container relative flex h-auto flex-col items-center justify-center shadow-md'>
-      <QueryButtons
-        setChart={setChartType}
-        chartType={chartType}
-        handleExplainQuery={handleExplainQuery}
-        setQueryExplanations={setQueryExplanations}
-        query={query}
-        errorHandler={errorHandler}
-        variableDefaults={variableDefaults}
-      />
-      {queryExplanations ? (
-        <QueryWithTooltips sql={sql} queryExplanations={queryExplanations} />
-      ) : (
+    <div className='visualization-container relative flex h-auto min-h-[500px] flex-col shadow-md'>
+      <div className='flex justify-center'>
+        <QueryButtons
+          setChart={setChartType}
+          chartType={chartType}
+          handleExplainQuery={handleExplainQuery}
+          setQueryExplanations={setQueryExplanations}
+          query={query}
+          errorHandler={errorHandler}
+          variableDefaults={variableDefaults}
+        />
+      </div>
+      <div className='mt-5 flex flex-grow items-center justify-center'>
         <ChartContainer
+          height={chartType === 'PIE' ? 300 : 600}
           data={data}
           chartType={chartType}
           errorHandler={errorHandler}
         />
-      )}
+      </div>
     </div>
   );
 };

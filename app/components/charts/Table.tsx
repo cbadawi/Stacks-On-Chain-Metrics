@@ -14,7 +14,7 @@ const Table = ({ data }: TableProps) => {
   const colNames = Object.keys(data[0]);
 
   return (
-    <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px] sm:max-h-[40vh] lg:max-h-[45vh]'>
+    <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px]  sm:max-h-[50vh] lg:max-h-[60vh]'>
       <table className='h-auto w-full bg-[#0d0d0c] text-white'>
         <thead className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-[#0d0d0c]'>
           <tr>

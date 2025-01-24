@@ -26,8 +26,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { ChartType } from '@prisma/client';
 import { SelectDashboardInput } from '../SelectDashboardInput';
-import { addChartToDashboard } from './actions';
 import { Save } from 'lucide-react';
+import { addChartToDashboard } from '@/app/query/actions';
 
 const saveToDashboardSchema = z
   .object({

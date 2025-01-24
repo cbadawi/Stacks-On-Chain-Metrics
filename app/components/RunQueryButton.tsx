@@ -14,6 +14,7 @@ const RunQueryButton = ({
   runQuery: (query: string) => Promise<void>;
 }) => {
   const isAIprompt = findIsAIPrompt(query);
+
   const getIcon = () => {
     if (isLoading) {
       return <Spinner />;
@@ -26,20 +27,25 @@ const RunQueryButton = ({
 
   return (
     <Button
-      className='h-[75%] w-[75%] flex-col hover:h-full hover:bg-[#8e2e2e]'
+      className={`h-[75%] w-[75%] flex-col hover:h-full ${
+        isAIprompt
+          ? 'bg-gradient-to-tr from-red-400 to-blue-500'
+          : 'hover:bg-[#8e2e2e]'
+      }`}
       variant='outline'
       size='icon'
-      color='red'
       disabled={isLoading}
       onClick={() => {
         runQuery(query);
       }}
     >
       {getIcon()}
-      <div className='mt-2 flex items-center'>
-        <Command />+
-        <CornerDownLeft />
-      </div>
+      {!isLoading && (
+        <div className='mt-2 flex items-center'>
+          <Command />+
+          <CornerDownLeft />
+        </div>
+      )}
     </Button>
   );
 };
