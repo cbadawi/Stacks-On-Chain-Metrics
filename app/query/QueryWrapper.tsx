@@ -113,7 +113,7 @@ const QueryWrapper = () => {
     setQueryExplanations(null);
     setIsLoading(true);
     const { prompt, sql } = seperateCommentsFromSql(query);
-    const { explanations } = await explainQuery(prompt, query);
+    const { explanations } = await explainQuery(prompt, sql);
     console.log({ explanations });
     setQueryExplanations(explanations);
     setIsLoading(false);
@@ -126,6 +126,7 @@ const QueryWrapper = () => {
           <Spinner />
         </div>
       );
+    // TODO this blocks analayzing the query of there are no data. bad ux
     if (!data?.length)
       return (
         <StarterPlaceholderMessage

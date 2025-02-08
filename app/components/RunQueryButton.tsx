@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import React from 'react';
-import Spinner from './Spinner';
 import { PlayCircle, Sparkles, Command, CornerDownLeft } from 'lucide-react';
 import { findIsAIPrompt } from '../query/isAIPrompt';
 

@@ -103,13 +103,13 @@ export async function addChartToDashboard({
   });
 }
 
-export async function fetchData(query: string) {
+export async function fetchData(query: string, explain = false) {
   'use server';
   // await new Promise((resolve) => setTimeout(resolve, 3500));
   let queryString = seperateCommentsFromSql(query).sql;
   queryString = cleanQuery(queryString.trim());
   queryString = wrapQueryLimit(queryString);
-
+  if (explain) queryString = 'explain ' + queryString;
   log.info('fetchData', { queryString });
 
   let data: any;
@@ -117,13 +117,12 @@ export async function fetchData(query: string) {
     console.time('sql query');
     const res = await pool.query(queryString);
     console.timeEnd('sql query');
-    console.log('query result', { res });
+    console.log('query result', JSON.stringify({ res }));
     data = res;
   } catch (e: any) {
     console.error('query error', { e });
     throw e;
   }
-
   return data.rows as Result[];
 }
 
@@ -132,9 +131,10 @@ You are a PostgreSQL expert specializing in Stacks (STX) on-chain data. Follow t
 1. Generate only retrieval (SELECT) queries.
 2. Use explicit table.column notation in all clauses.
 3. Write proper JOINs with clear ON conditions.
-4. Format the query using new lines and tabs for readability (do not wrap it in a code block).
+4. Format the query only using new lines and tabs
 5. Do not include a trailing semicolon.
 6. Do not add any extra commentary or markdown formatting—only output the plain SQL query.
+7. use block_time timestamp to get the time
 ${documentation}
 ${pgSchema}
 `;
@@ -144,23 +144,26 @@ export const generateQuery = async (input: string) => {
   try {
     // TODO check if its helpful to add examples to the prompt
     const generateQueryUserPromptWrapper = `
-      USER REQUEST: ${input}
+      USER REQUEST: 
+      ${input}
       Based on the user's request, generate a PostgreSQL query that meets these conditions:
       - Follow all the system rules exactly.
       - Use the documentation in the system rules for the table columns, indexes and foreign keys for joins. Use the indexes for filtering to optimize the query.
       - Use explicit table.column notation.
       - Format the query with clear indentations and line breaks.
-      - Do not include any extraneous text or formatting.
+      - use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
       `;
     const result = await generateText({
       model: openai('gpt-4o'),
       system: generateQuerySystemPrompt,
       prompt: generateQueryUserPromptWrapper,
     });
-    log.info('ai generateQuery', { input, result: result.text });
-    if (result.text.startsWith('select'))
+
+    let aiquery = removeCodeBlocks(result.text.trim());
+    log.info('ai generateQuery', { input, result: aiquery });
+    if (aiquery.toLowerCase().startsWith('select'))
       return {
-        query: result.text,
+        query: aiquery,
       };
 
     return { message: result.text };
@@ -170,25 +173,46 @@ export const generateQuery = async (input: string) => {
   }
 };
 
+const removeCodeBlocks = (text: string) => {
+  return text.replace(/^```[\s\S]*?\n/, '').replace(/\n```$/, '');
+};
+
 export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
   'use server';
   try {
+    const queryPlan = await fetchData(sqlQuery, true);
     const result = await generateObject({
       model: openai('gpt-4o'),
       schema: z.object({
         explanations: explanationsSchema,
       }),
-      system: `You are a SQL (postgres) expert for the stacks (stx) cryptocurrency on-chain data. Your job is to explain to the user write a SQL query you wrote to retrieve the data they asked for. The table schema is as follows:
-      ${pgSchema}
-      When you explain you must take a section of the query, and then explain it. Each "section" should be unique. So in a query like: "SELECT * FROM blocks limit 20", the sections could be "SELECT *", "FROM blocks", "LIMIT 20".
-      If a section doesnt have any explanation, include it, but leave the explanation empty.
+      system: `
+      Your job is to explain to the user write a SQL query you wrote to retrieve the data they asked for. 
       `,
-      prompt: `Explain the SQL query to retrieve the data the user wanted. Assume the user is an idiot in SQL. Break down the query into steps. Be concise.
-      ${userPrompt ? 'User AI Prompt for context: ' + userPrompt : ''}
+      prompt: `Explain the SQL query to retrieve the data the user wanted. Break down the query into steps. Be concise. suggest postgres query optimizations.
+      ${pgSchema}
+      Explain what this query is doing to a user who is not familiar with SQL.
+      Extremely important to mention optimizations to the postgres query. Such as:
+      - count(*) instead of counting a specific column.
+      - avoid joins unles necessary.
+      - use indexes to filter the results or to join on tables.
+      When you explain you must take a section of the query, and then explain it with its optimization if it exists. Each "section" should be unique. So in a query like: "SELECT * FROM blocks limit 20", the sections could be "SELECT *", "FROM blocks", "LIMIT 20".
+      If a section doesnt have any explanation, include the section, but leave the explanation empty.
+      Mentioning an optimization is more important than explaining the section. Use the postgres query plan statement:
+      ${queryPlan}
 
       Generated SQL Query:
-      ${sqlQuery}`,
+      ${sqlQuery}
+
+      ${userPrompt ? 'User AI Prompt for context: ' + userPrompt : ''}
+      `,
     });
+    log.info('ai explainQuery', {
+      sqlQuery,
+      queryPlan,
+      result: result.object,
+    });
+
     return result.object;
   } catch (e) {
     console.error(e);

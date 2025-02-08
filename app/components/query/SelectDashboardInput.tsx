@@ -51,7 +51,7 @@ export function SelectDashboardInput({
           />
         </PopoverTrigger>
         {open && (
-          <Command className='absolute z-50 mt-8 h-auto max-h-[7.25rem] w-64 overflow-scroll'>
+          <Command className='absolute z-50 mt-8 h-auto max-h-[7.25rem] w-64 overflow-scroll border'>
             <CommandList>
               <CommandGroup>
                 {filteredDashboards.map((dash) => (

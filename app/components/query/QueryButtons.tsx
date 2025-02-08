@@ -112,7 +112,7 @@ const QueryButtons = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>AI Explain</p>
+              <p>AI Optimize & Explain</p>
             </TooltipContent>
           </Tooltip>
 

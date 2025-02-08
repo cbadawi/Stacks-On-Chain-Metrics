@@ -66,12 +66,16 @@ const QueryVisualization = ({
         />
       </div>
       <div className='mt-5 flex flex-grow items-center justify-center'>
-        <ChartContainer
-          height={chartType === 'PIE' ? 300 : 600}
-          data={data}
-          chartType={chartType}
-          errorHandler={errorHandler}
-        />
+        {queryExplanations ? (
+          <QueryWithTooltips sql={sql} queryExplanations={queryExplanations} />
+        ) : (
+          <ChartContainer
+            height={chartType === 'PIE' ? 300 : 600}
+            data={data}
+            chartType={chartType}
+            errorHandler={errorHandler}
+          />
+        )}
       </div>
     </div>
   );

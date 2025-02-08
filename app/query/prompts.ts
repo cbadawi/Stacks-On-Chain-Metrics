@@ -1,3 +1,18 @@
+const tableRelationships = `
+# SCHEMA RELATIONSHIPS
+ft_events
+├── block_height → blocks.block_height
+├── tx_id → txs.tx_id
+└── asset_identifier → Token contracts
+
+blocks
+└── block_height (UNIQUE)
+
+txs
+├── tx_id (UNIQUE)
+└── block_height → blocks.block_height
+`;
+
 export const documentation = `
 ft_events: table that contains the token transfers, mints and burns.
   
@@ -17,9 +32,6 @@ ft_events: table that contains the token transfers, mints and burns.
   DEX:
     alex token: SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex
     velar token: SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.velar-token
-
-  blocks: 
-  burn_block_time is the timestamp of the transactions in that block.
 `;
 
 export const pgSchema = `postgres database schema:
@@ -137,39 +149,6 @@ export const pgSchema = `postgres database schema:
           "txs_view_contract_call_contract_id_index" btree (contract_call_contract_id)
           "txs_view_sender_address_index" btree (sender_address)
           "txs_view_smart_contract_contract_id_index" btree (smart_contract_contract_id)
-`;
 
-const systemMessage = `
-You are a Postgres expert for Stacks (STX) cryptocurrency on-chain data. 
-Generate accurate SQL queries using these guidelines:
-
-${documentation}
-
-${pgSchema}
-
-# SCHEMA RELATIONSHIPS
-ft_events
-├── block_height → blocks.block_height
-├── tx_id → txs.tx_id
-└── asset_identifier → Token contracts
-
-blocks
-└── block_height (UNIQUE)
-
-txs
-├── tx_id (UNIQUE)
-└── block_height → blocks.block_height
-
-# COMMON MISTAKES TO AVOID
-1. Never use JOIN without ON clause
-2. Always quote VARCHAR values
-3. Use exact asset identifiers from provided list
-4. Never include semicolons
-5. Use burn_block_time for timestamps
-
-# OUTPUT RULES
-1. Return plain SQL without Markdown
-2. Use explicit table.column notation
-3. Include block_height in SELECT
-4. Validate joins with ON clauses
+    relationships between tables:  ${tableRelationships}
 `;
