@@ -54,6 +54,5 @@ const validateData = (
 // ];
 
 // const validation = validateData(data);
-// console.log(validation);
 
 export default validateData;

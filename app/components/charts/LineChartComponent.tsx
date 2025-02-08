@@ -10,6 +10,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { generateChartConfig } from '../helpers';
+import { labelFormatter } from '@/app/lib/pretty';
 
 function LineChartComponent({
   data,
@@ -24,9 +25,8 @@ function LineChartComponent({
   const keys = Object.keys(data[0]);
   const xLabel = keys[0];
   const config = generateChartConfig(data);
-  console.log('LineChartComponent', { data, keys });
   return (
-    <ResponsiveContainer width='100%' height={height}>
+    <ResponsiveContainer width='100%' height={height} className='mt-40'>
       <ChartContainer config={config}>
         <AreaChart
           accessibilityLayer
@@ -43,7 +43,7 @@ function LineChartComponent({
             axisLine={false}
             tickMargin={8}
             minTickGap={50}
-            tickFormatter={(value: string) => value.slice(0, 3)}
+            tickFormatter={labelFormatter}
           />
           <ChartTooltip
             cursor={false}

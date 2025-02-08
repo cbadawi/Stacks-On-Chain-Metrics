@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import { useEditMode } from './EditModeContext';
 
 export type DashboardChartsContainerProps = {
+  dashboardId: number;
   charts: ChartWithData[];
   variableValues: VariableType[];
 };
@@ -19,6 +20,7 @@ const baseModalId = 'modal-id-';
 
 const DashboardChartsCanvas = ({
   charts,
+  dashboardId,
   variableValues,
 }: DashboardChartsContainerProps) => {
   const [chartsPositions, setChartsPositions] = useState<PositionWithID[]>();
@@ -51,18 +53,10 @@ const DashboardChartsCanvas = ({
       (max, p) => Math.max(max, p.y + p.height),
       0
     );
-    console.log('!!!! updateContainerHeight ' + maxBottom);
     const extraPadding = 100;
     setContainerHeight(maxBottom + extraPadding);
   };
 
-  console.log(
-    'dashboardChartsCanvas',
-    JSON.stringify({
-      chart: charts.map((c) => c.type),
-      chartsPositions,
-    })
-  );
   return (
     <div
       id='draggables-wrapper'
@@ -75,6 +69,7 @@ const DashboardChartsCanvas = ({
         charts?.map((chart, index) => {
           return (
             <ResizableChart
+              dashboardId={dashboardId}
               chartsPositions={chartsPositions}
               updateChartPosition={updateChartPosition}
               updateContainerHeight={updateContainerHeight}

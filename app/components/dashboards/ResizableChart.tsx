@@ -26,6 +26,7 @@ import { fetchData } from '@/app/query/actions';
 SyntaxHighlighter.registerLanguage('sql', sql);
 
 type ResizableChartProps = {
+  dashboardId: number;
   chart: ChartWithData;
   chartsPositions: PositionWithID[];
   updateChartPosition: (id: number, newPos: PositionWithID) => void;
@@ -77,6 +78,7 @@ const validateDimensions = (
 
 const ResizableChart = ({
   chart,
+  dashboardId,
   chartsPositions,
   updateChartPosition,
   updateContainerHeight,
@@ -137,6 +139,7 @@ const ResizableChart = ({
       },
       allCharts
     );
+
     if (!isAvailable) return;
     const oldChart = chartsPositions.find((c) => c.id == chart.id);
     if (!oldChart) return;
@@ -168,7 +171,9 @@ const ResizableChart = ({
   return (
     <ResizableDraggableCard
       chartId={chart.id}
+      dashboardId={dashboardId}
       title={chart.title}
+      query={chart.query}
       allCharts={chartsPositions}
       baseModalId={baseModalId}
       titleHeaderHeightRem={titleHeaderHeightRem}
@@ -193,18 +198,6 @@ const ResizableChart = ({
           />
         )
       )}
-      <Modal
-        key={'modal' + '-' + chart.title}
-        modalId={baseModalId + chart.title}
-        modalChildren={
-          <div key={'chart-info-' + chart.title}>
-            <div>{chart.title}</div>
-            <SyntaxHighlighter language='sql' style={darcula}>
-              {chart.query}
-            </SyntaxHighlighter>
-          </div>
-        }
-      />
     </ResizableDraggableCard>
   );
 };

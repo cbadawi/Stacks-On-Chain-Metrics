@@ -8,8 +8,10 @@ const RunQueryButton = ({
   isLoading,
   query,
   runQuery,
+  handleClear,
 }: {
   isLoading: boolean;
+  handleClear: () => void;
   query: string;
   runQuery: (query: string) => Promise<void>;
 }) => {
@@ -17,7 +19,7 @@ const RunQueryButton = ({
 
   const getIcon = () => {
     if (isLoading) {
-      return <Spinner />;
+      return;
     }
     if (isAIprompt) {
       return <Sparkles style={{ width: '2.2rem', height: '2.2rem' }} />;
@@ -26,27 +28,39 @@ const RunQueryButton = ({
   };
 
   return (
-    <Button
-      className={`h-[75%] w-[75%] flex-col hover:h-full ${
-        isAIprompt
-          ? 'bg-gradient-to-tr from-red-400 to-blue-500'
-          : 'hover:bg-[#8e2e2e]'
-      }`}
-      variant='outline'
-      size='icon'
-      disabled={isLoading}
-      onClick={() => {
-        runQuery(query);
-      }}
-    >
-      {getIcon()}
-      {!isLoading && (
-        <div className='mt-2 flex items-center'>
-          <Command />+
-          <CornerDownLeft />
-        </div>
+    <>
+      {isLoading && (
+        <Button
+          variant='ghost'
+          className='absolute z-50 mx-10 mb-4 mt-2 flex flex-col items-center'
+          onClick={handleClear}
+        >
+          Clear
+        </Button>
       )}
-    </Button>
+      <Button
+        className={`h-[75%] w-[75%] flex-col hover:h-full ${
+          isAIprompt
+            ? 'bg-gradient-to-tr from-red-400 to-blue-500'
+            : 'hover:bg-[#8e2e2e]'
+        }`}
+        variant='outline'
+        size='icon'
+        disabled={isLoading}
+        onClick={() => {
+          runQuery(query);
+        }}
+      >
+        {getIcon()}
+
+        {!isLoading && (
+          <div className='mt-2 flex items-center'>
+            <Command />+
+            <CornerDownLeft />
+          </div>
+        )}
+      </Button>
+    </>
   );
 };
 

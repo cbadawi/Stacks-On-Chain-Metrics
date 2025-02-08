@@ -16,6 +16,7 @@ const Navbar = () => {
             className='text-xl hover:border-gray-500 hover:text-orange-400 md:text-xl xl:text-2xl xl:font-bold'
           >
             Stacks Metrics
+            <span className='text-xs'> beta</span>
           </Link>
           <div className='mr-10 flex items-center gap-4'>
             <NavbarLinks />

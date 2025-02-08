@@ -5,7 +5,7 @@ import QueryButtons from './QueryButtons';
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import ChartContainer from '../charts/ChartContainer';
 import { QueryWithTooltips } from '@/app/query/QueryWithTooltips';
-import { seperatePromptFromSql } from '@/app/query/seperatePromptFromSql';
+import { seperateCommentsFromSql } from '@/app/query/seperateCommentsFromSql';
 
 interface QueryVisualizationProps {
   data: any[];
@@ -51,7 +51,7 @@ const QueryVisualization = ({
 }: QueryVisualizationProps) => {
   const [chartType, setChartType] = useState<ChartType>(ChartType.TABLE);
 
-  const { prompt, sql } = seperatePromptFromSql(query);
+  const { prompt, sql } = seperateCommentsFromSql(query);
   return (
     <div className='visualization-container relative flex h-auto min-h-[500px] flex-col shadow-md'>
       <div className='flex justify-center'>

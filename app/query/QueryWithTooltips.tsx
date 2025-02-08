@@ -13,9 +13,7 @@ export function QueryWithTooltips({
   sql: string;
   queryExplanations: QueryExplanation[];
 }) {
-  console.log({ sql, queryExplanations });
   return (
-    // Classes below match the original snippet:
     <div className='flex flex-col items-center justify-center overflow-x-auto rounded-lg bg-muted p-4 font-mono'>
       <h1 className='mb-4 border-b-2 border-white'>Hover over the query</h1>
       {queryExplanations.map((segment, index) => (

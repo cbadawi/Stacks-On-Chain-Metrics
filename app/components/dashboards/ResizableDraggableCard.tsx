@@ -4,9 +4,24 @@ import { Position, PositionWithID } from '../helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEditMode } from '@/app/dashboards/[id]/EditModeContext';
 import { Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { Button } from '@/components/ui/button';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { deleteChart } from '@/app/lib/db/dashboards/charts';
 
 type ResizableDraggableCardProps = {
   chartId: number;
+  dashboardId: number;
   title: string;
   allCharts: PositionWithID[];
   baseModalId: string;
@@ -18,13 +33,16 @@ type ResizableDraggableCardProps = {
     position: PositionWithID,
     allCharts: PositionWithID[]
   ) => void;
+  query: string;
   children?: React.ReactNode;
 };
 
 const ResizableDraggableCard = ({
   chartId,
+  dashboardId,
   allCharts,
   title,
+  query,
   onStopHandler,
   onMovementHandler,
   children,
@@ -73,16 +91,44 @@ const ResizableDraggableCard = ({
           <CardTitle className='card-title text-lg font-normal'>
             {title}
           </CardTitle>
-          <Info
-            size={16}
-            color='rgb(255,255,255, 0.7)'
-            className='hover:cursor-pointer'
-            onClick={() => {
-              // (
-              //   document.getElementById(baseModalId + title) as HTMLDialogElement
-              // )?.showModal();
-            }}
-          />
+          <Dialog>
+            <DialogTrigger asChild>
+              <Info
+                size={16}
+                color='rgb(255,255,255, 0.7)'
+                className='hover:cursor-pointer'
+              />
+            </DialogTrigger>
+
+            <DialogContent className='dialog-content sm:max-w-lg'>
+              <DialogHeader>
+                <DialogTitle>{title}</DialogTitle>
+                {/* <DialogDescription>
+                  Chart description
+                </DialogDescription> */}
+              </DialogHeader>
+              <div key={'chart-info-' + title} className='my-4 w-[900px]'>
+                <SyntaxHighlighter language='sql' style={dracula}>
+                  {query}
+                </SyntaxHighlighter>
+              </div>
+              <div className='flex items-center justify-between'>
+                <Button variant='outline' aria-disabled={true} disabled={true}>
+                  Edit Chart
+                </Button>
+                <DialogClose asChild>
+                  <Button
+                    variant='destructive'
+                    disabled={true}
+                    aria-disabled={true}
+                    onClick={() => deleteChart({ id: chartId, dashboardId })}
+                  >
+                    Delete Chart
+                  </Button>
+                </DialogClose>
+              </div>
+            </DialogContent>
+          </Dialog>
         </CardHeader>
         {children}
       </Card>

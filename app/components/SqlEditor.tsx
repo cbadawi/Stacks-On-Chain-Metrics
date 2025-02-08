@@ -3,7 +3,6 @@
 import { PlayCircle } from 'lucide-react';
 import React, { useEffect } from 'react';
 import Spinner from './Spinner';
-import QueryVariablesForm from './query/QueryVariablesForm';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-mysql';
@@ -18,6 +17,7 @@ interface SqlEditorProps {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   runQuery: (query: string) => Promise<void>;
+  handleClear: () => void;
   setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -26,6 +26,7 @@ const SqlEditor = ({
   setQuery,
   isLoading,
   runQuery,
+  handleClear,
 }: SqlEditorProps) => {
   const { theme } = useTheme();
 
@@ -77,12 +78,12 @@ const SqlEditor = ({
       />
       <div className='flex h-[30rem] w-[5rem] items-center justify-center'>
         <RunQueryButton
+          handleClear={handleClear}
           isLoading={isLoading}
           query={query}
           runQuery={runQuery}
         />
       </div>
-      <QueryVariablesForm query={query} />
     </Card>
   );
 };

@@ -16,6 +16,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { colors, generateChartConfig } from '../helpers';
+import { labelFormatter } from '@/app/lib/pretty';
 
 export function BarChartComponent({
   data,
@@ -44,7 +45,7 @@ export function BarChartComponent({
             tickMargin={10}
             axisLine={false}
             minTickGap={50}
-            tickFormatter={(value) => value.slice(0, 3)}
+            tickFormatter={labelFormatter}
           />
           <ChartTooltip
             cursor={false}

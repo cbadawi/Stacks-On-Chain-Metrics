@@ -54,6 +54,29 @@ export async function addChart({
   return newChart;
 }
 
+export async function getCharts({ dashboardId }: { dashboardId: number }) {
+  const charts = await prisma.chart.findMany({
+    where: { dashboardId },
+    orderBy: { y: 'asc' },
+  });
+
+  return charts;
+}
+
+export async function deleteChart({
+  id,
+  dashboardId,
+}: {
+  dashboardId: number;
+  id: number;
+}) {
+  const charts = await prisma.chart.delete({
+    where: { id, dashboardId },
+  });
+
+  return charts;
+}
+
 export async function persistChartUpdate(chart: Chart | ChartWithData) {
   const { title, x, y, height, width, query, type } = chart;
 

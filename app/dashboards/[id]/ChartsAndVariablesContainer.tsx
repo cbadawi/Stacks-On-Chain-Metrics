@@ -23,8 +23,6 @@ const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
   return uniqueVariables;
 };
 
-const baseModalId = 'modal-id-';
-
 const ChartsAndVariablesContainer = ({
   dashboard,
   variablesFormId,
@@ -68,6 +66,7 @@ const ChartsAndVariablesContainer = ({
         </form>
       )}
       <DashboardChartsContainer
+        dashboardId={dashboard.id}
         charts={dashboard.charts}
         variableValues={variableValues}
       />

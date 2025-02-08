@@ -64,6 +64,12 @@ export const replaceVariable = (
   return query;
 };
 
+export const wrapQueryLimit = (query: string) =>
+  `WITH user_query AS (
+    ${query}
+    ) SELECT * FROM user_query LIMIT 100;`;
+export const cleanQuery = (query: string) => query.replace(/;+$/, '');
+
 export const transformPositionBetweenPxAndPerc = (
   pos: number,
   xOrY: 'x' | 'y',
@@ -79,58 +85,62 @@ export const transformPositionBetweenPxAndPerc = (
 };
 
 export const isAvailablePosition = (
-  card0: PositionWithID,
+  newCard: PositionWithID,
   allCharts: PositionWithID[]
 ) => {
-  const positionAvailable = allCharts.every((card1) => {
-    if (card0.id == card1.id) return true;
-    const x0 = card0.x;
-    const y0 = card0.y;
-    const width0 = card0.width;
-    const height0 = card0.height;
-
-    // Extracting the properties of the second card
-    const x1 = card1.x;
-    const y1 = card1.y;
-    const width1 = card1.width;
-    const height1 = card1.height;
-
-    const isRightEdgeBeforeChart1 = x0 + width0 < x1;
-    const isLeftEdgeAfterChart1 = x0 > x1 + width1;
-
-    const isTopEdgeAfterChart1 = y0 > y1 + height1;
-    const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
-
-    // console.log(
-    //   JSON.stringify({
-    //     card0,
-    //     card1: {
-    //       x: card1.x,
-    //       y: card1.y,
-    //       width: card1.width,
-    //       height: card1.height,
-    //     },
-    //   }),
-    //   x0 + width0 < x1,
-    //   x1 + width1 < x0,
-    //   y0 > y1 + height1,
-    //   y0 + height0 < y1,
-    //   JSON.stringify({
-    //     isLeftEdgeAfterChart1,
-    //     isRightEdgeBeforeChart1,
-    //     isTopEdgeAfterChart1,
-    //     isBottomEdgeBeforeChart1,
-    //   })
-    // );
-
-    if (isRightEdgeBeforeChart1 || isLeftEdgeAfterChart1) return true;
-    if (isTopEdgeAfterChart1 || isBottomEdgeBeforeChart1) return true;
-
-    return false;
+  const positionAvailable = allCharts.every((currentCard) => {
+    if (newCard?.id == currentCard.id) return true;
+    return doesOverlap(newCard, currentCard);
   });
 
   return positionAvailable;
 };
+
+export function doesOverlap(card0: Position, card1: Position) {
+  const x0 = card0.x;
+  const y0 = card0.y;
+  const width0 = card0.width;
+  const height0 = card0.height;
+
+  // Extracting the properties of the second card
+  const x1 = card1.x;
+  const y1 = card1.y;
+  const width1 = card1.width;
+  const height1 = card1.height;
+
+  const isRightEdgeBeforeChart1 = x0 + width0 < x1;
+  const isLeftEdgeAfterChart1 = x0 > x1 + width1;
+
+  const isTopEdgeAfterChart1 = y0 > y1 + height1;
+  const isBottomEdgeBeforeChart1 = y0 + height0 < y1;
+
+  // console.log(
+  //   JSON.stringify({
+  //     card0,
+  //     card1: {
+  //       x: card1.x,
+  //       y: card1.y,
+  //       width: card1.width,
+  //       height: card1.height,
+  //     },
+  //   }),
+  //   x0 + width0 < x1,
+  //   x1 + width1 < x0,
+  //   y0 > y1 + height1,
+  //   y0 + height0 < y1,
+  //   JSON.stringify({
+  //     isLeftEdgeAfterChart1,
+  //     isRightEdgeBeforeChart1,
+  //     isTopEdgeAfterChart1,
+  //     isBottomEdgeBeforeChart1,
+  //   })
+  // );
+
+  if (isRightEdgeBeforeChart1 || isLeftEdgeAfterChart1) return true;
+  if (isTopEdgeAfterChart1 || isBottomEdgeBeforeChart1) return true;
+
+  return false;
+}
 
 export const enumToArray = (e: any) =>
   Object.keys(e).filter((key) => isNaN(Number(key)));

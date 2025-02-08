@@ -1,4 +1,4 @@
-export function seperatePromptFromSql(input: string) {
+export function seperateCommentsFromSql(input: string) {
   let prompt = '';
   let query = '';
 

@@ -5,29 +5,34 @@ import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 // import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import { VariableType, replaceVariable } from '../components/helpers';
-import { CustomizableChartTypes, LeftRight } from '@prisma/client';
+import {
+  VariableType,
+  replaceVariable,
+  wrapQueryLimit,
+} from '../components/helpers';
 import QueryVisualization from '../components/query/QueryVisualization';
 import { explainQuery, fetchData, generateQuery } from './actions';
 import { Card } from '@/components/ui/card';
 import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
-import { seperatePromptFromSql } from './seperatePromptFromSql';
+import { seperateCommentsFromSql } from './seperateCommentsFromSql';
 import { findIsAIPrompt } from './isAIPrompt';
+import { Button } from '@/components/ui/button';
+import QueryVariablesForm from '../components/query/QueryVariablesForm';
 
 const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
 -- followed by your prompt here.
 
 -- Postgresql 15
 -- You can use variables by wrapping words in double brackets {{}}
-select * from stacks_blockchain_api.blocks limit 1;`;
+select * from blocks limit 1;`;
 // TODO change default query to something more recent
 
 const QueryWrapper = () => {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<any[] | undefined | never[]>([]);
+  const [data, setData] = useState<any[] | undefined | never[]>(undefined);
   const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
   const [queryExplanations, setQueryExplanations] = useState<
     QueryExplanation[] | null
@@ -61,25 +66,40 @@ const QueryWrapper = () => {
     return res ? query : '';
   };
 
+  const handleClear = () => {
+    console.log('CLEARRRRRR');
+    setError('');
+    setIsLoading(false);
+    setQueryExplanations(null);
+  };
+
   const runQuery = async (query: string) => {
     setIsLoading(true);
     setData([]);
     setVariableDefaults([]);
     setError('');
     const queryWithVariables = replaceVariables(query, setError);
-
     if (queryWithVariables) {
       const isAiPrompt = findIsAIPrompt(queryWithVariables);
-      const finalQuery = isAiPrompt
-        ? await generateQuery(queryWithVariables)
-        : queryWithVariables;
+      let finalQuery = queryWithVariables;
+      if (isAiPrompt) {
+        const aiquery = await generateQuery(queryWithVariables);
+        console.log({ aiquery });
+        if (!aiquery.query && aiquery.message) {
+          setError(aiquery.message);
+          setIsLoading(false);
+          return;
+        }
+        if (aiquery.query) finalQuery = aiquery.query;
+      }
 
       if (isAiPrompt) {
-        const { prompt } = seperatePromptFromSql(query);
+        const { prompt } = seperateCommentsFromSql(query);
         setQuery('-- ' + prompt + '\n' + finalQuery);
       }
       try {
         const response = await fetchData(finalQuery);
+        if (!response.length) setError('Empty response.');
         setData(response);
         setQueryExplanations(null);
       } catch (err) {
@@ -92,7 +112,7 @@ const QueryWrapper = () => {
   const handleExplainQuery = async () => {
     setQueryExplanations(null);
     setIsLoading(true);
-    const { prompt, sql } = seperatePromptFromSql(query);
+    const { prompt, sql } = seperateCommentsFromSql(query);
     const { explanations } = await explainQuery(prompt, query);
     console.log({ explanations });
     setQueryExplanations(explanations);
@@ -134,11 +154,13 @@ const QueryWrapper = () => {
       <div className='editor-wrapper relative mx-10 mb-4 mt-5 flex items-center justify-center'>
         <SqlEditor
           query={query}
+          handleClear={handleClear}
           setQuery={setQuery}
           setError={setError}
           isLoading={isLoading}
           runQuery={runQuery}
         />
+        <QueryVariablesForm query={query} />
       </div>
       <>{JSON.stringify({ data })}</>
       <div>

@@ -6,7 +6,7 @@ interface TableProps {
 
 const parseTableData = (tableData: any) => {
   if (typeof tableData === 'boolean') return JSON.stringify(tableData);
-  return tableData;
+  return (tableData || '').toString();
 };
 
 const Table = ({ data }: TableProps) => {
@@ -36,7 +36,10 @@ const Table = ({ data }: TableProps) => {
             >
               <td className='p-2 text-center'>{index}</td>
               {colNames.map((col: any) => (
-                <td key={col} className='p-2 text-center'>
+                <td
+                  key={col}
+                  className='mx-1 max-w-8 overflow-x-scroll p-2 text-center'
+                >
                   {parseTableData(row[col])}
                 </td>
               ))}
