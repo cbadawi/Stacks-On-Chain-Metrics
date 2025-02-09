@@ -41,9 +41,9 @@ const pool = new Pool({
 });
 
 const DEFAULT_CHART_X = 0;
-const DEFAULT_CHART_Y = 0;
-const DEFAULT_CHART_HEIGHT = 20;
-const DEFAULT_CHART_WIDTH = 25;
+const DEFAULT_CHART_Y = 2000;
+const DEFAULT_CHART_HEIGHT = 300;
+const DEFAULT_CHART_WIDTH = 600;
 
 export async function addChartToDashboard({
   dashboardTitle,
@@ -64,8 +64,6 @@ export async function addChartToDashboard({
   privateDashboard?: boolean;
   password?: string;
 }) {
-  let x = DEFAULT_CHART_X;
-  let y = DEFAULT_CHART_Y;
   let dashboard: Dashboard | null = await getDashboard({
     title: dashboardTitle,
     address: userAddress,

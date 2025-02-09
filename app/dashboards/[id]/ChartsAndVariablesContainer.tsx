@@ -5,7 +5,7 @@ import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import React, { useState } from 'react';
 import RunButton from './RunButton';
 import { VariableType } from '@/app/components/helpers';
-import DashboardChartsContainer from './DashboardChartsContainer';
+import DashboardChartsCanvas from './DashboardChartsCanvas';
 
 const getDefaultVariableValues = (dashboard: DashboardWithCharts) => {
   const vars = dashboard.charts
@@ -65,7 +65,7 @@ const ChartsAndVariablesContainer = ({
           </div>
         </form>
       )}
-      <DashboardChartsContainer
+      <DashboardChartsCanvas
         dashboardId={dashboard.id}
         charts={dashboard.charts}
         variableValues={variableValues}

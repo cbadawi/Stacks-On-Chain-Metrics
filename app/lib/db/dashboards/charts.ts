@@ -77,12 +77,37 @@ export async function deleteChart({
   return charts;
 }
 
-export async function persistChartUpdate(chart: Chart | ChartWithData) {
-  const { title, x, y, height, width, query, type } = chart;
+export async function persistChartUpdate({
+  title,
+  x,
+  y,
+  height,
+  width,
+  query,
+  type,
+  id,
+}: {
+  title?: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  query?: string;
+  type?: ChartType;
+  id: number;
+}) {
+  const data: Record<string, any> = {};
+  if (title !== undefined) data.title = title;
+  if (x !== undefined) data.x = x;
+  if (y !== undefined) data.y = y;
+  if (height !== undefined) data.height = height;
+  if (width !== undefined) data.width = width;
+  if (query !== undefined) data.query = query;
+  if (type !== undefined) data.type = type;
 
   const updatedChart = await prisma.chart.update({
-    where: { id: chart.id },
-    data: { title, x, y, height, width, query, type },
+    where: { id },
+    data,
   });
   return updatedChart;
 }

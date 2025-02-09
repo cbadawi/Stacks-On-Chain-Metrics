@@ -14,7 +14,7 @@ import { labelFormatter } from '@/app/lib/pretty';
 
 function LineChartComponent({
   data,
-  height = '70vh', // Using viewport units by default
+  height = '70vh',
   width = '70vh',
 }: {
   data: any[];

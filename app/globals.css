@@ -157,3 +157,11 @@ a {
     --chart-5: 340 75% 55%;
   }
 }
+
+.react-resizable-handle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 5px 5px 0;
+  border-color: transparent red red transparent;
+}
