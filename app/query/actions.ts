@@ -115,10 +115,10 @@ export async function fetchData(query: string, explain = false) {
     console.time('sql query');
     const res = await pool.query(queryString);
     console.timeEnd('sql query');
-    console.log('query result', JSON.stringify({ res }));
+    log.info('fetchData result', { res });
     data = res;
   } catch (e: any) {
-    console.error('query error', { e });
+    log.error('fetchData error', { e });
     throw e;
   }
   return data.rows as Result[];
@@ -151,6 +151,7 @@ export const generateQuery = async (input: string) => {
       - Add a limit 300 to the query.
       - Format the query with clear indentations and line breaks.
       - use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
+      - brackets, for example "where block_height > {{variable}}" are a user defined variable which he will replace later, do not modify any bracket or the variable within.
       `;
     const result = await generateText({
       model: openai('gpt-4o'),
@@ -159,8 +160,12 @@ export const generateQuery = async (input: string) => {
     });
 
     let aiquery = removeCodeBlocks(result.text.trim());
+    const isValidQuery =
+      aiquery.toLowerCase().startsWith('with') ||
+      aiquery.toLowerCase().startsWith('select') ||
+      aiquery.toLowerCase().startsWith('--');
     log.info('ai generateQuery', { input, result: aiquery });
-    if (aiquery.toLowerCase().startsWith('select'))
+    if (isValidQuery)
       return {
         query: aiquery,
       };

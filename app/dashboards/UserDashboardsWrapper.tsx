@@ -10,7 +10,7 @@ const UserDashboardsWrapper = () => {
 
   const fetchDashboards = async (email: string | null | undefined) => {
     if (!email) return;
-    const dashboards = await getDashboards({ email });
+    const dashboards = await getDashboards({});
     setDashboards(dashboards);
   };
 

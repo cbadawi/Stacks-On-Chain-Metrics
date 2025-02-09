@@ -52,7 +52,8 @@ const QueryWrapper = () => {
     const inputElements = document.getElementsByClassName('variable-input');
     const variablesList: VariableType[] = [];
     const res = Array.from(inputElements).every((element) => {
-      const variable = element.className.split(' ')[1];
+      const classnames = element.className.split(' ');
+      const variable = classnames.slice(-1)[0];
       const value = (element as HTMLButtonElement).value;
       if (!value) {
         errorHandler && errorHandler(`Variable "${variable}" not set.`);
@@ -63,7 +64,7 @@ const QueryWrapper = () => {
       return true;
     });
     setVariableDefaults(variablesList);
-    return res ? query : '';
+    return query;
   };
 
   const handleClear = () => {
@@ -161,9 +162,9 @@ const QueryWrapper = () => {
           isLoading={isLoading}
           runQuery={runQuery}
         />
-        <QueryVariablesForm query={query} />
       </div>
-      <>{JSON.stringify({ data })}</>
+      <QueryVariablesForm query={query} />
+      {/* <>{JSON.stringify({ data })}</> */}
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
         <Card className='relative my-12 h-auto rounded-t-3xl  px-0 py-4 '>

@@ -9,7 +9,7 @@ import { fetchData } from '@/app/query/actions';
 
 export type ChartWithData = { data: any[] } & Chart;
 
-export type DashboardWithCharts = Dashboard & { charts: ChartWithData[] };
+export type DashboardWithCharts = Dashboard & { charts: Chart[] };
 
 export async function addDashboard({
   title,
@@ -56,26 +56,6 @@ export async function getDashboardAndCharts({
     },
     include,
   });
-
-  if (includeCharts && dashboard?.charts.length) {
-    dashboard.charts = await Promise.all(
-      dashboard?.charts.map(async (chart) => {
-        const defaultVariables = chart.variables.map((variableObj) => {
-          const variableType = variableObj as VariableType;
-          const value = searchParams
-            ? searchParams[variableType.variable]
-            : null;
-          if (value) variableType.value = value;
-          return variableType as VariableType;
-        });
-        const queryWithDefaultVariables = defaultVariables?.length
-          ? replaceVariables(chart.query, defaultVariables)
-          : chart.query;
-        const dataResponse = await fetchData(queryWithDefaultVariables);
-        return { ...chart, data: dataResponse };
-      })
-    );
-  }
   return dashboard;
 }
 

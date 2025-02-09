@@ -30,7 +30,7 @@ const validateData = (
       };
     }
     // allow undefined
-    if (item[key2] && typeof item[key2] !== 'number') {
+    if (item[key2] !== undefined && isNaN(Number(item[key2]))) {
       return {
         isValid: false,
         message: `All values for the key \"${key2}\" must be numbers.`,

@@ -1,28 +1,34 @@
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import React from 'react';
+
+interface VariableProps {
+  value?: string;
+  variable: string;
+  inputPlaceholder?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
 
 const Variable = ({
   variable,
-  inputPlaceholder,
-  defaultValue,
-}: {
-  inputPlaceholder?: string;
-  defaultValue?: string;
-  variable: string;
-}) => {
+  inputPlaceholder = 'variable',
+  value,
+  onChange,
+}: VariableProps) => {
   return (
-    <div
-      key={`div-${variable}`}
-      className='filter-wrap overflow-auto rounded-3xl bg-[#18191e] px-3 py-2 text-gray-300'
-    >
-      <label key={`label-${variable}`}>{variable} </label>
-      <input
+    <div className='filter-wrap overflow-auto rounded-3xl border px-3 py-2'>
+      <Label htmlFor={variable} className='ml-3'>
+        {variable}
+      </Label>
+      <Input
+        id={variable}
         name={variable}
         autoComplete='off'
-        key={`variable-input-${variable}`}
-        className={`variable-input ${variable} bg-[#18191e] text-gray-400`}
+        className={`variable-input border-none shadow-none ${variable} `}
         placeholder={inputPlaceholder}
-        defaultValue={defaultValue}
-      ></input>
+        value={value}
+        onChange={onChange}
+      />
     </div>
   );
 };

@@ -28,8 +28,8 @@ import { deleteChart } from '@/app/lib/db/dashboards/charts';
 
 type ResizableChartProps = {
   dashboardId: number;
-  chart: ChartWithData;
-  variables: any[];
+  chart: Chart;
+  variables: Record<string, string>;
   editMode: boolean;
   width: number; // New: dynamic width (in pixels)
   height: number; // New: dynamic height (in pixels)
@@ -48,25 +48,29 @@ const ResizableChart = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (variables?.length) {
-      fetchChartData(chart, variables);
-    } else {
-      setChartData(chart.data);
-    }
-  }, [variables]);
+    fetchChartData(chart, variables);
+  }, [chart.variables.length ? variables : null]);
 
-  const fetchChartData = async (chart: ChartWithData, variables: any[]) => {
+  const fetchChartData = async (
+    chart: Chart,
+    variables: Record<string, string>
+  ) => {
     setError('');
     setIsLoading(true);
-    const queryWithVariables = replaceVariables(chart.query, variables);
-    const response = await fetchData(queryWithVariables);
-    setChartData(response);
+    console.log('fetchChartData', { chart, variables });
+    try {
+      const queryWithVariables = replaceVariables(chart.query, variables);
+      const response = await fetchData(queryWithVariables);
+      setChartData(response);
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+    }
     setIsLoading(false);
   };
 
   return (
     <>
-      <CardHeader className='card-header flex flex-row items-center justify-between px-8'>
+      <CardHeader className='card-header flex flex-row items-center justify-between px-8 py-2 pt-4'>
         <CardTitle className='card-title text-lg font-normal'>
           {chart.title}
         </CardTitle>
@@ -74,7 +78,7 @@ const ResizableChart = ({
           <DialogTrigger asChild>
             <Info
               size={16}
-              color='rgb(255,255,255, 0.7)'
+              // color='rgb(255,255,255, 0.7)'
               className='chartinfo hover:cursor-pointer'
             />
           </DialogTrigger>

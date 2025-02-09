@@ -38,7 +38,7 @@ const DashboardOptions = () => {
               onClick={handleToggleEditMode}
             >
               {/* use locks svg instead */}
-              {editMode ? 'Disable Editing' : 'Enable Editing'}
+              {editMode ? 'Save Editing' : 'Enable Editing'}
             </Button>
           </DropdownMenuItem>
           <DropdownMenuItem>

@@ -26,10 +26,7 @@ export type Position = {
 
 export type PositionWithID = Position & { id: number };
 
-export type VariableType = {
-  variable: string;
-  value: string | number;
-};
+export type VariableType = Record<string, string>;
 
 export type MarginObject = {
   top: number;

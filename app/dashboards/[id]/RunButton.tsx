@@ -1,50 +1,22 @@
-'use client';
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { PlayCircle } from 'lucide-react';
 
-import React, { useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { VariableType } from '@/app/components/helpers';
-import { Play, PlayCircle } from 'lucide-react';
-
-const RunButton = ({
-  formId,
-  setVariables,
-}: {
+interface RunButtonProps {
   formId?: string;
-  setVariables: React.Dispatch<React.SetStateAction<VariableType[]>>;
-}) => {
-  const router = useRouter();
+  disabled: boolean;
+}
 
-  const onClickHandler = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    const variablesElements = document.getElementsByClassName('variable-input');
-    let urlQuery = '';
-    const variableList: VariableType[] = [];
-    const res = Array.from(variablesElements).every((element) => {
-      const variable = element.className.split(' ')[1];
-      const value = (element as HTMLButtonElement).value;
-      // TODO switch to URL search params
-      const queryString = `${variable}=${value}`;
-      urlQuery += queryString + '&';
-      variableList.push({ variable, value });
-      return true;
-    });
-
-    setVariables(variableList);
-
-    // if (res && urlQuery) {
-    //   router.push('/dashboards/variabletest' + '?' + urlQuery);
-    // }
-  };
-
+const RunButton = ({ formId, disabled }: RunButtonProps) => {
   return (
-    <button
+    <Button
       form={formId}
-      className='btn btn-primary bg-[#563BD9] hover:bg-[#452AA5]'
       type='submit'
-      onClick={onClickHandler}
+      disabled={disabled}
+      className='h-full w-full'
     >
-      <PlayCircle size={20} />
-    </button>
+      <PlayCircle style={{ width: '2.2rem', height: '2.2rem' }} />
+    </Button>
   );
 };
 

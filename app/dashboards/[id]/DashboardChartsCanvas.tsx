@@ -8,18 +8,16 @@ import dynamic from 'next/dynamic';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { Card } from '@/components/ui/card';
-import { ChartType } from '@prisma/client';
+import { Chart, ChartType } from '@prisma/client';
 import { persistChartUpdate } from '@/app/lib/db/dashboards/charts';
-import { Info, MoveDiagonal2 } from 'lucide-react';
-import CustomResizeHandle from '@/app/components/dashboards/CustomResizeHandle';
 import { Layout } from 'react-grid-layout';
 
 const GridLayout = dynamic(() => import('react-grid-layout'), { ssr: false });
 
 export type DashboardChartsContainerProps = {
   dashboardId: number;
-  charts: ChartWithData[];
-  variableValues: any[];
+  charts: Chart[];
+  variableValues: Record<string, string>;
 };
 
 const GRID_UNIT_PX = 50;
@@ -108,12 +106,14 @@ const DashboardChartsCanvas = ({
               (item) => item.i === chart.id.toString()
             );
 
-            const cellWidth = layoutItem ? layoutItem.w * GRID_UNIT_PX : 400;
-            const cellHeight = layoutItem ? layoutItem.h * GRID_UNIT_PX : 300;
+            const cellWidth =
+              (layoutItem ? layoutItem.w * GRID_UNIT_PX : 400) - 30;
+            const cellHeight =
+              (layoutItem ? layoutItem.h * GRID_UNIT_PX : 300) - 30;
             return (
               <Card
                 key={chart.id.toString()}
-                className='card resizable-chart-wrapper grid-item card relative h-auto w-auto border border-gray-700 shadow-none'
+                className='card resizable-chart-wrapper grid-item card relative mb-36 h-auto w-auto border border-gray-700 shadow-none'
               >
                 <ResizableChart
                   dashboardId={dashboardId}
