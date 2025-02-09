@@ -65,7 +65,7 @@ const QueryVisualization = ({
           variableDefaults={variableDefaults}
         />
       </div>
-      <div className='mt-5 flex flex-grow items-center justify-center'>
+      <div className='chart-container-wrapper mt-5 flex flex-grow items-center justify-center'>
         {queryExplanations ? (
           <QueryWithTooltips sql={sql} queryExplanations={queryExplanations} />
         ) : (

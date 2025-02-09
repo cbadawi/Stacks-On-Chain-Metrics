@@ -1,6 +1,6 @@
 'use client';
 
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { ResponsiveContainer } from 'recharts';
 
 import {
@@ -14,22 +14,25 @@ import { labelFormatter } from '@/app/lib/pretty';
 
 function LineChartComponent({
   data,
-  height = '70vh',
+  height = '70vh', // Using viewport units by default
   width = '70vh',
 }: {
   data: any[];
-  height?: string | number | undefined;
-  width?: string | number | undefined;
+  height?: string | number;
+  width?: string | number;
 }) {
   if (!data?.length) return null;
   const keys = Object.keys(data[0]);
   const xLabel = keys[0];
+  const yLabels = keys.slice(1);
+  const yValues = data.flatMap((item) => yLabels.map((label) => item[label]));
+  const maxYValue = Math.max(...yValues);
+  const minYValue = Math.min(...yValues);
   const config = generateChartConfig(data);
   return (
-    <ResponsiveContainer width='100%' height={height} className='mt-40'>
+    <ResponsiveContainer width='100%' height={height}>
       <ChartContainer config={config}>
         <AreaChart
-          accessibilityLayer
           data={data}
           margin={{
             left: 6,
@@ -45,6 +48,8 @@ function LineChartComponent({
             minTickGap={50}
             tickFormatter={labelFormatter}
           />
+          <YAxis domain={[minYValue, maxYValue]} hide={true} />
+
           <ChartTooltip
             cursor={false}
             content={

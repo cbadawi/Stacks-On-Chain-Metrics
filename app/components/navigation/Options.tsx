@@ -35,7 +35,7 @@ const Options = () => {
               window.open('https://github.com/cbadawi/stacksmetrics/issues/new')
             }
           >
-            Report an issue
+            Feedback
             <DropdownMenuShortcut>
               <GithubIcon size={25} />
             </DropdownMenuShortcut>

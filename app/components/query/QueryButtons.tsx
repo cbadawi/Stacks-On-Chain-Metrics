@@ -32,14 +32,14 @@ const chartIcons = [
     key: ChartType.LINE,
   },
   {
-    icon: <PieChart color='#6543FC' size={25} />,
-    tooltip: 'Pie Chart',
-    key: ChartType.PIE,
-  },
-  {
     icon: <BarChart color='#6543FC' size={25} />,
     tooltip: 'Bar Chart',
     key: ChartType.BAR,
+  },
+  {
+    icon: <PieChart color='#6543FC' size={25} />,
+    tooltip: 'Pie Chart',
+    key: ChartType.PIE,
   },
   {
     icon: <Hash color='#6543FC' size={25} />,

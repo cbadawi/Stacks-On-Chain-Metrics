@@ -32,12 +32,12 @@ import { seperateCommentsFromSql } from './seperateCommentsFromSql';
 type Result = Record<string, string | number>;
 
 const pool = new Pool({
-  user: process.env.POSTGRES_USER,
-  host: process.env.POSTGRES_HOST,
-  database: process.env.POSTGRES_DATABASE,
-  password: process.env.POSTGRES_PASSWORD,
-  port: Number(process.env.POSTGRES_PORT),
-  // query_timeout: 10000,
+  user: process.env.STACKS_DB_USER,
+  host: process.env.STACKS_DB_HOST,
+  database: process.env.STACKS_DB_DATABASE,
+  password: process.env.STACKS_DB_PASSWORD,
+  port: Number(process.env.STACKS_DB_PORT),
+  query_timeout: 100000,
 });
 
 const DEFAULT_CHART_X = 0;
@@ -150,6 +150,7 @@ export const generateQuery = async (input: string) => {
       - Follow all the system rules exactly.
       - Use the documentation in the system rules for the table columns, indexes and foreign keys for joins. Use the indexes for filtering to optimize the query.
       - Use explicit table.column notation.
+      - Add a limit 300 to the query.
       - Format the query with clear indentations and line breaks.
       - use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
       `;
@@ -187,22 +188,26 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
         explanations: explanationsSchema,
       }),
       system: `
-      Your job is to explain to the user write a SQL query you wrote to retrieve the data they asked for. 
+      Your job is to optimize first, then explain the SQL query. Use the query plan provided,  to find optimizations.
       `,
-      prompt: `Explain the SQL query to retrieve the data the user wanted. Break down the query into steps. Be concise. suggest postgres query optimizations.
-      ${pgSchema}
-      Explain what this query is doing to a user who is not familiar with SQL.
-      Extremely important to mention optimizations to the postgres query. Such as:
+      prompt: `Explain the SQL query to retrieve the data the user wanted. Break down the query into steps. Be concise. 
+      Extremely important to mention future optimizations you found, using the query plan, that are not applied to the postgres query to make it run faster. Such as:
       - count(*) instead of counting a specific column.
       - avoid joins unles necessary.
       - use indexes to filter the results or to join on tables.
+      Be very specific, if you didnt find any optimizations, do not menthion them.
       When you explain you must take a section of the query, and then explain it with its optimization if it exists. Each "section" should be unique. So in a query like: "SELECT * FROM blocks limit 20", the sections could be "SELECT *", "FROM blocks", "LIMIT 20".
+      - In the first section, provide a brief overview of the query, but more importantly, mention the optimizations & modifications that are not yet applied to the query.
+
       If a section doesnt have any explanation, include the section, but leave the explanation empty.
       Mentioning an optimization is more important than explaining the section. Use the postgres query plan statement:
+      
       ${queryPlan}
 
       Generated SQL Query:
       ${sqlQuery}
+
+      use the postgres schema & indeces in your optimization analysis : ${pgSchema}
 
       ${userPrompt ? 'User AI Prompt for context: ' + userPrompt : ''}
       `,

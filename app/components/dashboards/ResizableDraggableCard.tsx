@@ -86,7 +86,7 @@ const ResizableDraggableCard = ({
       }}
       className='draggable-chart m-5 flex items-center justify-center'
     >
-      <Card className='card h-auto w-auto border border-gray-700'>
+      <Card className='card h-auto w-96 border border-gray-700'>
         <CardHeader className='card-header flex flex-row items-center justify-between px-8'>
           <CardTitle className='card-title text-lg font-normal'>
             {title}
@@ -96,22 +96,29 @@ const ResizableDraggableCard = ({
               <Info
                 size={16}
                 color='rgb(255,255,255, 0.7)'
-                className='hover:cursor-pointer'
+                className='chartinfo hover:cursor-pointer'
               />
             </DialogTrigger>
 
-            <DialogContent className='dialog-content sm:max-w-lg'>
+            {/* Increase the dialog content width by changing max-w-* */}
+            <DialogContent className='dialog-content sm:max-w-4xl'>
               <DialogHeader>
                 <DialogTitle>{title}</DialogTitle>
                 {/* <DialogDescription>
-                  Chart description
-                </DialogDescription> */}
+            Chart description
+          </DialogDescription> */}
               </DialogHeader>
-              <div key={'chart-info-' + title} className='my-4 w-[900px]'>
-                <SyntaxHighlighter language='sql' style={dracula}>
-                  {query}
-                </SyntaxHighlighter>
+
+              {/* Wrap the SyntaxHighlighter to allow horizontal scrolling */}
+              <div key={'chart-info-' + title} className='my-4 overflow-x-auto'>
+                {/* If you want a fixed inner width, you can use min-w instead of w */}
+                <div className='min-w-[900px]'>
+                  <SyntaxHighlighter language='sql' style={dracula}>
+                    {query}
+                  </SyntaxHighlighter>
+                </div>
               </div>
+
               <div className='flex items-center justify-between'>
                 <Button variant='outline' aria-disabled={true} disabled={true}>
                   Edit Chart
