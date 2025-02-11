@@ -6,21 +6,24 @@ import DashboardChartsCanvas from './DashboardChartsCanvas';
 import RunButton from './RunButton';
 import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
 import { VariableType } from '@/app/components/helpers';
+import { isJsonObject } from '@/app/lib/db/isJsonOject';
 
 // Helper to extract default values remains largely the same
 const getDefaultVariableValues = (
   dashboard: DashboardWithCharts
-): (VariableType | undefined)[] | null => {
-  const vars = dashboard.charts
-    ?.map((chart) => chart.variables)
-    .flat() as VariableType[];
-  if (!vars) return null;
-  const uniqueVariables = Array.from(
-    new Set(vars.map((obj) => obj.variable))
-  ).map((name) => {
-    return vars.find((obj) => obj.variable === name);
+): VariableType => {
+  const vars = dashboard.charts?.map((chart) => chart.variables);
+  if (!vars || !vars.length) return {};
+  const defaultVariables: VariableType = {};
+  vars.map((obj) => {
+    if (isJsonObject(obj))
+      Object.keys(obj).map((key) => {
+        const value = obj[key];
+        if (value) defaultVariables[key] = value.toString();
+      });
   });
-  return uniqueVariables;
+
+  return defaultVariables;
 };
 
 const ChartsAndVariablesContainer = ({
@@ -31,38 +34,36 @@ const ChartsAndVariablesContainer = ({
   variablesFormId: string;
 }) => {
   // Create a state object keyed by variable name for the initial values
-  const defaultVariableValues = getDefaultVariableValues(dashboard) || [];
-  const initialValues =
-    defaultVariableValues.reduce((acc, variable) => {
-      if (variable && acc) acc[variable.variable] = variable.value.toString();
-      return acc;
-    }, {} as VariableType) ?? {};
+  const defaultVariableValues = getDefaultVariableValues(dashboard);
+  const variableKeys = Object.keys(defaultVariableValues || {});
 
-  const [formValues, setFormValues] = useState<VariableType>(initialValues);
-  const [activeVariables, setActiveVariables] =
-    useState<VariableType>(initialValues);
+  const [activeValues, setActiveValues] = useState<VariableType>(
+    defaultVariableValues
+  );
 
-  const isFormValid = formValues
-    ? Object.values(formValues).every((val) => val && val.trim() !== '')
+  const isFormValid = defaultVariableValues
+    ? Object.values(defaultVariableValues).every(
+        (val) => val && val.trim() !== ''
+      )
     : false;
 
   // Update formValues on input change
   const handleInputChange =
     (variable: string) => (e: ChangeEvent<HTMLInputElement>) => {
-      setFormValues((prev) => ({ ...prev, [variable]: e.target.value }));
+      setActiveValues((prev) => ({ ...prev, [variable]: e.target.value }));
     };
 
-  // On form submit, update the activeVariables state
+  // // On form submit, update the activeVariables state
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isFormValid) return;
-    setActiveVariables(formValues);
-    console.log('Running with variables:', formValues);
+    setActiveValues(activeValues);
+    console.log('Running with variables:', activeValues);
   };
 
   return (
-    <div className='draggables-variable-wrapper absolute w-full flex-grow overflow-visible'>
-      {defaultVariableValues.length > 0 && (
+    <div className='draggables-variable-wrapper absolute flex-grow overflow-visible'>
+      {variableKeys.length > 0 && (
         <form
           id={variablesFormId}
           onSubmit={handleFormSubmit}
@@ -74,30 +75,26 @@ const ChartsAndVariablesContainer = ({
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
             }}
           >
-            {defaultVariableValues.map((variableObject, index) => {
-              if (!variableObject) return null;
-              const value = formValues
-                ? formValues[variableObject.variable]
-                : null;
+            {variableKeys.map((key, index) => {
               return (
                 <Variable
-                  key={`variable-wrapper-${index}`}
-                  variable={variableObject.variable}
-                  value={value ?? variableObject.value.toString()}
-                  onChange={handleInputChange(variableObject.variable)}
+                  key={`variable-wrapper-${key}-${index}`}
+                  variable={key}
+                  value={activeValues[key]}
+                  onChange={handleInputChange(key)}
                 />
               );
             })}
           </div>
-          <div className='py-2 pr-4'>
+          {/* <div className='py-2 pr-8'>
             <RunButton formId={variablesFormId} disabled={!isFormValid} />
-          </div>
+          </div> */}
         </form>
       )}
       <DashboardChartsCanvas
         dashboardId={dashboard.id}
         charts={dashboard.charts}
-        variableValues={activeVariables}
+        variableValues={activeValues}
       />
     </div>
   );

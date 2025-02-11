@@ -8,5 +8,6 @@ export function replaceVariables(
   keys.forEach((key) => {
     query = replaceVariable(query, key, variablesList[key]);
   });
+  console.log('replaceVariables', { query, variablesList, keys });
   return query;
 }

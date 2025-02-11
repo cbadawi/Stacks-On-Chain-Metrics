@@ -21,7 +21,7 @@ const SaveToDashBtn = ({
   chartType,
 }: {
   chartType: ChartType;
-  variableDefaults: VariableType[];
+  variableDefaults: VariableType;
   query: string;
 }) => {
   return (

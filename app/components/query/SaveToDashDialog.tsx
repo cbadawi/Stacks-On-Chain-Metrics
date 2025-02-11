@@ -37,7 +37,7 @@ export const SaveToDashDialog = ({
   chartType,
 }: {
   chartType: ChartType;
-  variableDefaults: VariableType[];
+  variableDefaults: VariableType;
   query: string;
 }) => {
   const [submitText, setSubmitText] = useState<

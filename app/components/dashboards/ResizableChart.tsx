@@ -49,7 +49,7 @@ const ResizableChart = ({
 
   useEffect(() => {
     fetchChartData(chart, variables);
-  }, [chart.variables.length ? variables : null]);
+  }, [chart.variables ? variables : null]);
 
   const fetchChartData = async (
     chart: Chart,

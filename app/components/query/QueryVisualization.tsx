@@ -11,7 +11,7 @@ interface QueryVisualizationProps {
   data: any[];
   query: string;
   error: string;
-  variableDefaults: VariableType[];
+  variableDefaults: VariableType;
   queryExplanations:
     | {
         section: string;

@@ -53,7 +53,7 @@ type QueryButtonsProps = {
   query: string;
   setChart: React.Dispatch<React.SetStateAction<ChartType>>;
   errorHandler?: (msg: string) => void;
-  variableDefaults: VariableType[];
+  variableDefaults: VariableType;
   handleExplainQuery: () => Promise<void>;
   setQueryExplanations: React.Dispatch<
     React.SetStateAction<

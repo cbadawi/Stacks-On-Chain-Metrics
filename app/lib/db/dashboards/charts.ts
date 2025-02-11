@@ -31,10 +31,34 @@ export async function addChart({
   y: number;
   width: number;
   height: number;
-  variables: VariableType[];
+  variables: VariableType;
   axesTypes?: LeftRight[] | undefined;
   columnTypes?: CustomizableChartTypes[] | undefined;
 }) {
+  console.log(
+    'title',
+    title,
+    'query',
+    query,
+    'chartType',
+    chartType,
+    'x',
+    x,
+    'y',
+    y,
+    'width',
+    width,
+    'height',
+    height,
+    'dashboardId',
+    dashboardId,
+    'variables',
+    variables,
+    'columnTypes',
+    columnTypes,
+    'axesTypes',
+    axesTypes
+  );
   const newChart = await prisma.chart.create({
     data: {
       title,
@@ -46,8 +70,6 @@ export async function addChart({
       height,
       dashboardId,
       variables,
-      columnTypes,
-      axesTypes,
     },
   });
 

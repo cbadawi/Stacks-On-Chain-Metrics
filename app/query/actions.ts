@@ -60,7 +60,7 @@ export async function addChartToDashboard({
   userAddress: string;
   chartType: ChartType;
   query: string;
-  variables: VariableType[];
+  variables: VariableType;
   privateDashboard?: boolean;
   password?: string;
 }) {

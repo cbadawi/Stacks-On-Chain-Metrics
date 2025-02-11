@@ -92,7 +92,7 @@ model Chart {
   width       Int
   height      Int
   deleted     Boolean                  @default(false)
-  variables   Json[]
+  variables   Json
   dashboard   Dashboard                @relation(fields: [dashboardId], references: [id])
   dashboardId Int                      @map("dashboard_id")
   axesTypes   LeftRight[]              @map("axes_types")

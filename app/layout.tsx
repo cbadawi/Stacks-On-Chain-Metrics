@@ -37,7 +37,7 @@ export default function RootLayout({
           <Navbar />
           <Options />
           <Toaster />
-          <main className='min-h-[100vh]'>{children}</main>
+          <main>{children}</main>
           {/* <Footer /> */}
           {/* </UserProvider> */}
         </ThemeProvider>

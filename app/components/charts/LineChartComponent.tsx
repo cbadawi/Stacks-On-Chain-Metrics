@@ -35,6 +35,7 @@ function LineChartComponent({
         <AreaChart
           data={data}
           margin={{
+            top: 24,
             left: 6,
             right: 6,
           }}

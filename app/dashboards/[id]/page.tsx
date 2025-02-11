@@ -29,9 +29,9 @@ const Dashboards = async ({ params }: DashboardProps) => {
   })) as DashboardWithCharts;
   if (!dashboard) redirect('/dashboards');
   return (
-    <div className='flex h-full flex-col'>
+    <div className='mx-4 flex h-full flex-col'>
       <EditModeProvider>
-        <Card className='mx-4 my-6 h-auto w-auto border px-6'>
+        <Card className='my-6 h-auto w-auto border px-6'>
           <CardHeader>
             <div className='flex items-center justify-between'>
               <CardTitle className='text-3xl font-normal'>

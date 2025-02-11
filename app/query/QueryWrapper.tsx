@@ -33,7 +33,7 @@ const QueryWrapper = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[] | undefined | never[]>(undefined);
-  const [variableDefaults, setVariableDefaults] = useState<VariableType[]>([]);
+  const [variableDefaults, setVariableDefaults] = useState<VariableType>({});
   const [queryExplanations, setQueryExplanations] = useState<
     QueryExplanation[] | null
   >();
@@ -50,21 +50,23 @@ const QueryWrapper = () => {
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const inputElements = document.getElementsByClassName('variable-input');
-    const variablesList: VariableType[] = [];
-    const res = Array.from(inputElements).every((element) => {
+    const variables: VariableType = {};
+    const hasAllVariables = Array.from(inputElements).every((element) => {
       const classnames = element.className.split(' ');
       const variable = classnames.slice(-1)[0];
       const value = (element as HTMLButtonElement).value;
+      console.log('replaceVariables', { variable, value });
       if (!value) {
         errorHandler && errorHandler(`Variable "${variable}" not set.`);
-        return false;
+        return '';
       }
       query = replaceVariable(query, variable, value);
-      variablesList.push({ variable, value });
+      variables[variable] = value;
       return true;
     });
-    setVariableDefaults(variablesList);
-    return query;
+    setVariableDefaults(variables);
+
+    return hasAllVariables ? query : '';
   };
 
   const handleClear = () => {
@@ -77,7 +79,7 @@ const QueryWrapper = () => {
   const runQuery = async (query: string) => {
     setIsLoading(true);
     setData([]);
-    setVariableDefaults([]);
+    setVariableDefaults({});
     setError('');
     const queryWithVariables = replaceVariables(query, setError);
     if (queryWithVariables) {

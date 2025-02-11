@@ -72,12 +72,8 @@ const ChartContainer = ({
   errorHandler,
 }: ChartContainerProps) => {
   return (
-    <div className='chart-container h-full w-full bg-transparent '>
-      <Card className='card h-full w-full border-none bg-transparent shadow-none'>
-        <CardContent className='card-content flex w-full items-center justify-center'>
-          {getChartComponent(chartType, data, height, width, errorHandler)}
-        </CardContent>
-      </Card>
+    <div className='chart-container flex w-full items-center justify-center bg-transparent px-8'>
+      {getChartComponent(chartType, data, height, width, errorHandler)}
     </div>
   );
 };
