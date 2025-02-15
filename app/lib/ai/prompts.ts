@@ -1,3 +1,13 @@
+export const generateQuerySystemPrompt = `
+You are a PostgreSQL expert specializing in Stacks (STX) on-chain data. Follow these guidelines exactly:
+ - Generate only retrieval (SELECT) queries.
+ - Write proper JOINs with clear ON conditions following the table relationships outlined below.
+ - Format the query only using new lines and tabs
+ - Do NOT include a trailing semicolon.
+ - Do NOT add any extra commentary or markdown formatting—only output the plain SQL query.
+ - use block_time timestamp to get the time
+`;
+
 const tableRelationships = `
 # SCHEMA RELATIONSHIPS
 ft_events
@@ -45,8 +55,6 @@ export const pgSchema = `postgres database schema:
         parent_index_block_hash text
         microblock_hash text
         microblock_sequence integer
-        microblock_canonical boolean
-        canonical boolean
         asset_event_type_id smallint
         asset_identifier text
         amount numeric
@@ -56,7 +64,6 @@ export const pgSchema = `postgres database schema:
         ft_events Indexes:
           "ft_events_view_block_height_index" btree (block_height DESC)
           "ft_events_view_event_index_index" btree (event_index)
-          "ft_events_view_index_block_hash_canonical_index" btree (index_block_hash)
           "ft_events_view_microblock_hash_index" btree (microblock_hash)
           "ft_events_view_pkey" UNIQUE, btree (id)
           "ft_events_view_recipient_index" btree (recipient)
@@ -75,7 +82,6 @@ export const pgSchema = `postgres database schema:
         parent_block_hash text
         parent_microblock_hash text
         parent_microblock_sequence integer
-        canonical boolean
         execution_cost_read_count bigint
         execution_cost_read_length bigint
         execution_cost_runtime bigint
@@ -99,7 +105,6 @@ export const pgSchema = `postgres database schema:
         type_id smallint
         anchor_mode smallint
         status smallint
-        canonical boolean
         post_conditions text
         nonce integer
         fee_rate bigint
@@ -115,7 +120,6 @@ export const pgSchema = `postgres database schema:
         execution_cost_write_count bigint
         execution_cost_write_length bigint
         raw_tx text
-        microblock_canonical boolean
         microblock_sequence integer
         microblock_hash text
         parent_index_block_hash text

@@ -27,9 +27,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChartType, Dashboard } from '@prisma/client';
 import { SelectDashboardInput } from './SelectDashboardInput';
 import { Save } from 'lucide-react';
-import { addChartToDashboard } from '@/app/query/actions';
 import { Button } from '@/components/ui/button';
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';
+import { addChartToDashboard } from '@/app/query/actions';
 
 export const SaveToDashDialog = ({
   query,

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import React from 'react';
 import { PlayCircle, Sparkles, Command, CornerDownLeft } from 'lucide-react';
-import { findIsAIPrompt } from '../query/isAIPrompt';
+import { findIsAIPrompt } from '../lib/ai/cleanQuery';
 
 const RunQueryButton = ({
   isLoading,

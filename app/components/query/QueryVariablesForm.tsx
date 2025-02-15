@@ -1,4 +1,4 @@
-import { getQueryVariables } from '@/app/lib/getQueryVariables';
+import { getQueryVariableNames } from '@/app/lib/variables';
 import React from 'react';
 import Variable from './Variable';
 
@@ -7,7 +7,7 @@ interface QueryVariablesFormProps {
 }
 
 const QueryVariablesForm = ({ query }: QueryVariablesFormProps) => {
-  const variables = getQueryVariables(query);
+  const variables = getQueryVariableNames(query);
   if (!variables.length) return;
 
   return (

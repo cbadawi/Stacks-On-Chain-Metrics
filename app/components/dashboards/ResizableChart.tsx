@@ -2,17 +2,13 @@
 
 import { Info } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
-import { fetchData } from '@/app/query/actions';
-import { replaceVariables } from '@/app/lib/db/replaceVariables';
 import QueryErrorContainer from '../QueryErrorContainer';
 import LoadingSkeleton from '@/app/dashboards/loading';
 import ChartContainer from '../charts/ChartContainer';
 import { Chart } from '@prisma/client';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import sql from 'react-syntax-highlighter/dist/esm/languages/hljs/sql';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,6 +21,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { deleteChart } from '@/app/lib/db/dashboards/charts';
+import { replaceVariables } from '@/app/lib/variables';
+import { fetchData } from '@/app/lib/ai/query';
 
 type ResizableChartProps = {
   dashboardId: number;

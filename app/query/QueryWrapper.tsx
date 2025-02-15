@@ -1,24 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 // import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import {
-  VariableType,
-  replaceVariable,
-  wrapQueryLimit,
-} from '../components/helpers';
+import { VariableType } from '../components/helpers';
 import QueryVisualization from '../components/query/QueryVisualization';
-import { explainQuery, fetchData, generateQuery } from './actions';
 import { Card } from '@/components/ui/card';
 import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
-import { seperateCommentsFromSql } from './seperateCommentsFromSql';
-import { findIsAIPrompt } from './isAIPrompt';
-import { Button } from '@/components/ui/button';
+import { seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
+import {
+  explainQuery,
+  fetchData,
+  generateQuery,
+  runQueryCombined,
+} from '../lib/ai/query';
 
 const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
 -- followed by your prompt here.
@@ -45,8 +44,7 @@ const QueryWrapper = () => {
   // array containing the position of axis.
   // const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
 
-  const replaceVariables = (
-    query: string,
+  const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const inputElements = document.getElementsByClassName('variable-input');
@@ -55,67 +53,52 @@ const QueryWrapper = () => {
       const classnames = element.className.split(' ');
       const variable = classnames.slice(-1)[0];
       const value = (element as HTMLButtonElement).value;
-      console.log('replaceVariables', { variable, value });
       if (!value) {
         errorHandler && errorHandler(`Variable "${variable}" not set.`);
         return '';
       }
-      query = replaceVariable(query, variable, value);
       variables[variable] = value;
       return true;
     });
     setVariableDefaults(variables);
-
-    return hasAllVariables ? query : '';
+    return variables;
   };
 
   const handleClear = () => {
-    console.log('CLEARRRRRR');
     setError('');
     setIsLoading(false);
     setQueryExplanations(null);
   };
 
-  const runQuery = async (query: string) => {
-    setIsLoading(true);
-    setData([]);
-    setVariableDefaults({});
-    setError('');
-    const queryWithVariables = replaceVariables(query, setError);
-    if (queryWithVariables) {
-      const isAiPrompt = findIsAIPrompt(queryWithVariables);
-      let finalQuery = queryWithVariables;
-      if (isAiPrompt) {
-        const aiquery = await generateQuery(queryWithVariables);
-        console.log({ aiquery });
-        if (!aiquery.query && aiquery.message) {
-          setError(aiquery.message);
-          setIsLoading(false);
-          return;
-        }
-        if (aiquery.query) finalQuery = aiquery.query;
-      }
-
-      if (isAiPrompt) {
-        const { prompt } = seperateCommentsFromSql(query);
-        setQuery('-- ' + prompt + '\n' + finalQuery);
-      }
+  const runQuery = useCallback(
+    async (query: string) => {
+      setIsLoading(true);
+      setData([]);
+      setVariableDefaults({});
+      setError('');
       try {
-        const response = await fetchData(finalQuery);
-        if (!response.length) setError('Empty response.');
-        setData(response);
+        const vars = getVariables(setError);
+        const { data, displayQuery, isAiPrompt } = await runQueryCombined(
+          query,
+          vars
+        );
+        setData(data);
         setQueryExplanations(null);
-      } catch (err) {
-        if (err instanceof Error) setError(err.message);
+        if (!data.length) setError('Empty response.');
+        if (isAiPrompt) setQuery(displayQuery);
+      } catch (e: unknown) {
+        setError((e as Error).message);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    }
-  };
+    },
+    [variableDefaults, query]
+  );
 
   const handleExplainQuery = async () => {
     setQueryExplanations(null);
     setIsLoading(true);
-    const { prompt, sql } = seperateCommentsFromSql(query);
+    const { prompt, sql } = seperatePromptFromSql(query);
     const { explanations } = await explainQuery(prompt, sql);
     console.log({ explanations });
     setQueryExplanations(explanations);

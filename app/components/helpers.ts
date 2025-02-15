@@ -49,24 +49,6 @@ export const CustomizableChartDropdownOptions: CustomizableChartTypes[] = [
 
 export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 
-// Functions
-export const replaceVariable = (
-  query: string,
-  variable: string,
-  value: any
-) => {
-  const regex = new RegExp(`{{${variable}}}`, 'g');
-  const valueWithQuotes = `'` + value + `'`; // put quotes around contracts for ex 'SP3...'. if not, pg considers them an entity
-  query = query.replace(regex, valueWithQuotes);
-  return query;
-};
-
-export const wrapQueryLimit = (query: string) =>
-  `WITH user_query AS (
-    ${query}
-    ) SELECT * FROM user_query LIMIT 100;`;
-export const cleanQuery = (query: string) => query.replace(/;+$/, '');
-
 export const transformPositionBetweenPxAndPerc = (
   pos: number,
   xOrY: 'x' | 'y',
