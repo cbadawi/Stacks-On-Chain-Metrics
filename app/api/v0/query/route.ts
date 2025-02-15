@@ -1,7 +1,10 @@
+import { fetchData, generateQuery } from '@/app/lib/ai/query';
 import { stacksPool } from '@/app/lib/db/client';
+import { log } from '@/app/lib/logger';
+import { replaceVariables } from '@/app/lib/variables';
 import { NextRequest, NextResponse } from 'next/server';
 
-const errorResponse = (message: string, status: number = 400) => {
+const errorResponse = (message: string, status: number = 500) => {
   return NextResponse.json(
     {
       success: false,
@@ -20,8 +23,9 @@ interface QueryRequest {
 
 // either query or body need to be present
 const queryValidation = (body: any): body is QueryRequest => {
+  console.log({ body });
   if (!body) return false;
-
+  console.log({ query: body.query, prompt: body.prompt });
   if (!body.query && !body.prompt) return false;
 
   return true;
@@ -30,28 +34,31 @@ const queryValidation = (body: any): body is QueryRequest => {
 export type Result = Record<string, string | number>;
 
 export async function POST(request: NextRequest) {
-  const body = request.body;
+  const body = await request.json();
   if (!queryValidation(body)) {
     return errorResponse('Invalid request body');
   }
-
   const { query, prompt } = body;
-  let result: Result[] = [];
+  log.info('query post : ', { query, prompt });
+  let sql = query;
+
   try {
-    if (!prompt && query) {
-      const response = await stacksPool.query(query);
-      result = response.rows;
-    } else if (prompt) {
-      const promptAndQuery = `-- ${prompt}\n${query}`;
-      stacksPool.query(prompt);
-    } else return errorResponse('Invalid request body');
+    if (prompt) {
+      const aiQueryResult = await generateQuery(prompt, query);
+      sql = aiQueryResult.query;
+    }
+    if (!sql) return errorResponse('No query found');
 
-    return NextResponse.json(result, {
-      status: result ? 200 : 400,
+    const data = await fetchData(sql);
+
+    const response = NextResponse.json(data, {
+      status: 200,
     });
-
-    return NextResponse.json({ success: true });
-  } catch (err: unknown) {
-    return errorResponse((err as Error).message);
+    return response;
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(error.message, 400);
+    }
+    return errorResponse('Internal server error', 500);
   }
 }

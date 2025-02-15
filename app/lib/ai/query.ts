@@ -49,7 +49,7 @@ export async function fetchData(query: string, explain = false) {
   return data.rows as Result[];
 }
 
-export const generateQuery = async (prompt: string, sql: string) => {
+export const generateQuery = async (prompt: string, sql?: string) => {
   'use server';
   try {
     const generateQueryUserPromptWrapper = `
@@ -143,8 +143,6 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
     throw new Error('Failed to generate explainQuery');
   }
 };
-
-export async function parseAiInput(input: string) {}
 
 export async function runQueryCombined(query: string, variables: VariableType) {
   'use server';
