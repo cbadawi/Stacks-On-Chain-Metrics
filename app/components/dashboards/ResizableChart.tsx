@@ -85,16 +85,16 @@ const ResizableChart = ({
             />
           </DialogTrigger>
 
-          <DialogContent className='dialog-content sm:max-w-4xl'>
+          <DialogContent className='dialog-content max-h-[80%] sm:max-w-4xl'>
             <DialogHeader>
               <DialogTitle>{chart.title}</DialogTitle>
             </DialogHeader>
 
             <div
               key={'chart-info-' + chart.title}
-              className='my-4 overflow-x-auto'
+              className='my-4 max-h-[70%] overflow-x-auto'
             >
-              <div className='min-w-[900px]'>
+              <div className='max-h-[70%] min-w-[900px] overflow-y-scroll'>
                 <SyntaxHighlighter language='sql' style={dracula}>
                   {chart.query}
                 </SyntaxHighlighter>
