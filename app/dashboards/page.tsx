@@ -1,6 +1,9 @@
 import AllDashboardsWrapper from './AllDashboardsWrapper';
 import { getDashboards } from '../lib/db/dashboards/dashboard';
 import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import UserDashboardsWrapper from './UserDashboardsWrapper';
 
 interface DashPageProps {
   searchParams: { search: string };
@@ -9,39 +12,26 @@ interface DashPageProps {
 const Dashboards = async ({ searchParams }: DashPageProps) => {
   const dashboards = await getDashboards({});
   return (
-    <div className='dashboards w-full'>
-      <h1>Dashboards : </h1>
-      <div className='highlights-container flex items-center justify-center'>
-        <div className=' max-w-[75%] rounded-lg bg-gray-500 p-4 shadow-md'>
-          <h2 className='mb-3 text-xl font-semibold'>Highlights:</h2>
-          <div className='scrollbar-thin grid auto-cols-[minmax(160px,1fr)] grid-flow-col grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 overflow-x-auto pt-4 '>
+    <div className='mx-4 flex h-full flex-col'>
+      <Card className='my-6 h-auto w-auto border px-6'>
+        <CardHeader>
+          <CardTitle className='text-2xl font-normal'>Dashboards</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='all-dashboards flex max-h-[70%] w-[70%] flex-col gap-4'>
             {dashboards.map((d, index) => (
               <Link
+                key={'dash-link-' + d.id + '-' + d.title}
                 href={'/dashboards/' + d.id}
-                className='dash-element flex cursor-pointer flex-col items-center justify-between rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-lg'
-                key={'dash-elem' + index}
+                className='dashboard-link flex w-full cursor-pointer overflow-hidden border border-gray-500 p-2 font-semibold hover:bg-orange-500'
               >
-                <h2 className='mb-4 overflow-hidden text-lg font-medium'>
-                  {d.title}
-                </h2>
-                <img
-                  src='/temp-dash-thumbnail.png'
-                  alt={d.title + ' thumbnail'}
-                  className='h-auto w-full rounded'
-                />
+                {d.title}
               </Link>
             ))}
           </div>
-        </div>
-      </div>
-
-      <AllDashboardsWrapper
-        dashboards={dashboards.filter((d) =>
-          !searchParams.search
-            ? true
-            : d.title.toLowerCase().startsWith(searchParams.search)
-        )}
-      />
+        </CardContent>
+        <UserDashboardsWrapper />
+      </Card>
     </div>
   );
 };

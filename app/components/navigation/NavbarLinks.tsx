@@ -13,15 +13,12 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
+import { Menu, X } from 'lucide-react';
 
 const NavbarLinks = () => {
-  const [navbarMenu, setNavbarMenu] = useState(false);
-
-  const handleNavbarMenu = () => {
-    setNavbarMenu(!navbarMenu);
-  };
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+
   const links = [
     { href: '/query', label: 'Query' },
     { href: '/dashboards', label: 'Dashboards' },
@@ -29,95 +26,92 @@ const NavbarLinks = () => {
   ];
 
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        {links.map((link) => {
-          const isActive = pathname.split('/')[1] === link.href.split('/')[1];
-          const textShadow = isActive
-            ? '0 0 15px #f9f9f9, 0 0 6px #ffa366'
-            : '';
+    <>
+      {/* Desktop Navigation - Hidden on mobile */}
+      <div className='hidden md:block'>
+        <NavigationMenu>
+          <NavigationMenuList>
+            {links.map((link) => {
+              const isActive =
+                pathname.split('/')[1] === link.href.split('/')[1];
+              const textShadow = isActive
+                ? '0 0 15px #f9f9f9, 0 0 6px #ffa366'
+                : '';
+              const isDisabled = link.href === '/docs';
 
-          const isDisabled = link.href === '/docs';
-          return (
-            <NavigationMenuItem key={link.href} className='cursor-not-allowed'>
-              <Link href={link.href} legacyBehavior passHref>
-                <NavigationMenuLink
-                  className={cn(
-                    navigationMenuTriggerStyle(),
-                    'text-l border-2 border-transparent px-4 py-1 transition-all duration-300 ease-in-out hover:rounded-xl hover:border-gray-300 hover:bg-[#15161f] hover:text-orange-500',
-                    isDisabled ? 'pointer-events-none opacity-50' : ''
-                  )}
-                  style={{
-                    textShadow,
-                  }}
+              return (
+                <NavigationMenuItem
+                  key={link.href}
+                  className='cursor-not-allowed'
                 >
-                  {link.label}
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-          );
-        })}
-      </NavigationMenuList>
-    </NavigationMenu>
+                  <Link href={link.href} legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={cn(
+                        navigationMenuTriggerStyle(),
+                        'text-l border-2 border-transparent px-4 py-1 transition-all duration-300 ease-in-out hover:rounded-xl hover:border-gray-300 hover:bg-[#15161f] hover:text-orange-500',
+                        isDisabled ? 'pointer-events-none opacity-50' : ''
+                      )}
+                      style={{ textShadow }}
+                    >
+                      {link.label}
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              );
+            })}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
 
-    // <div className='nav-buttons-wrapper flex w-full justify-between'>
-    //   <div className='hidden md:flex'>
-    //     {links.map((link, index) => {
-    //       const textShadow =
-    //         link.props.href == '/' + pathname
-    //           ? '0 0 10px #f9f9f9, 0 0 6px #ffa366'
-    //           : '';
-    //       return (
-    //         <div
-    //           key={'bar-' + index}
-    //           className='btn btn-square btn-ghost w-24 text-sm font-thin text-white'
-    //           style={{ textShadow }}
-    //         >
-    //           {link}
-    //         </div>
-    //       );
-    //     })}
-    //   </div>
-    //   <div className='ml-auto hidden md:flex'></div>
-    //   <div
-    //     className='btn btn-square btn-ghost ml-auto flex md:hidden'
-    //     onClick={handleNavbarMenu}
-    //   >
-    //     {navbarMenu ? (
-    //       <AiOutlineClose size={30} />
-    //     ) : (
-    //       <AiOutlineMenu size={30} />
-    //     )}
-    //   </div>
-    //   <div
-    //     className={
-    //       // top-[-100%] is the only difference. Handles the opening & closing
-    //       navbarMenu
-    //         ? 'absolute bottom-0 left-0 right-0 top-[4rem] z-50 flex h-screen w-full items-center justify-center bg-slate-800 text-center text-white duration-300 ease-in md:hidden'
-    //         : 'absolute left-0 right-0 top-[-100%] z-50 flex h-screen w-full items-center justify-center bg-slate-800 text-center text-white duration-300 ease-in md:hidden'
-    //     }
-    //   >
-    //     <div className='w-full'>
-    //       <ul className='text-2xl font-bold uppercase'>
-    //         {links.map((link, index) => (
-    //           <li
-    //             key={'menu-' + index}
-    //             onClick={handleNavbarMenu}
-    //             className='cursor-pointer py-5 hover:text-[#747FFF]'
-    //           >
-    //             {link}
-    //           </li>
-    //         ))}
-    //         <li
-    //           onClick={handleNavbarMenu}
-    //           className='cursor-pointer py-5 hover:text-[#747FFF]'
-    //         >
-    //           wallet connect
-    //         </li>
-    //       </ul>
-    //     </div>
-    //   </div>
-    // </div>
+      {/* Mobile Hamburger Button - Visible on mobile */}
+      <button
+        className='rounded-lg p-2 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 md:hidden'
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label='Toggle menu'
+      >
+        {isMenuOpen ? (
+          <X className='h-6 w-6 text-white' />
+        ) : (
+          <Menu className='h-6 w-6 text-white' />
+        )}
+      </button>
+
+      {/* Mobile Menu - Slide down animation */}
+      <div
+        className={cn(
+          'absolute right-0 top-16 w-full border-b border-gray-800 bg-[#15161f] shadow-lg md:hidden',
+          'overflow-hidden transition-all duration-300 ease-out',
+          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        )}
+      >
+        <div className='flex flex-col space-y-4 p-4'>
+          {links.map((link) => {
+            const isActive = pathname.split('/')[1] === link.href.split('/')[1];
+            const textShadow = isActive
+              ? '0 0 15px #f9f9f9, 0 0 6px #ffa366'
+              : '';
+            const isDisabled = link.href === '/docs';
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsMenuOpen(false)}
+                className={cn(
+                  'rounded-md px-4 py-2 text-white transition-colors',
+                  'hover:bg-gray-800 hover:text-orange-500',
+                  isActive && 'font-medium text-orange-400',
+                  isDisabled && 'pointer-events-none opacity-50'
+                )}
+                style={{ textShadow }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 };
 

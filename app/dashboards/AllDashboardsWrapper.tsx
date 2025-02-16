@@ -36,20 +36,6 @@ const AllDashboardsWrapper = async ({
           );
         })}
       </div>
-      <div className='dashboards-search-sort-wrapper w-30% bg-slate-900'>
-        <div>Sort Dashboards</div>
-        <form action={searchDashboards}>
-          <div className='form-control'>
-            <input
-              name='search'
-              placeholder='Search'
-              autoComplete='off'
-              className='input input-bordered w-full min-w-[100px]'
-            />
-          </div>
-        </form>
-        <div>{JSON.stringify({ tags })}</div>
-      </div>
       <UserDashboardsWrapper />
     </div>
   );

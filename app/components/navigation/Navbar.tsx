@@ -18,7 +18,7 @@ const Navbar = () => {
             Stacks Metrics
             <span className='text-xs'> beta</span>
           </Link>
-          <div className='mr-10 flex items-center gap-4'>
+          <div className='flex items-end gap-4'>
             <NavbarLinks />
             <ThemeToggle />
             <ConnectWallet />

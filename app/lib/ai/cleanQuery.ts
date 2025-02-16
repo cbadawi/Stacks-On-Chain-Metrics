@@ -11,7 +11,7 @@ export function seperatePromptFromSql(input: string) {
         .toLowerCase()
         .replace(/--\s?ai?/gi, '');
     } else {
-      query += line.replace(/\t/g, ' ') + ' ';
+      query += line.replace(/\t/g, ' ') + ' \n';
     }
   }
 

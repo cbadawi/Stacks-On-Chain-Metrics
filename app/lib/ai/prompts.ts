@@ -23,6 +23,8 @@ txs
 └── block_height → blocks.block_height
 `;
 
+// for column definitions and enums
+// https://github.com/hirosystems/stacks-blockchain-api/blob/07426a2e0060029ffe908597120a820c16cb3db3/src/datastore/common.ts
 export const documentation = `
 ft_events: table that contains the token transfers, mints and burns.
   
@@ -104,9 +106,9 @@ export const pgSchema = `postgres database schema:
         parent_block_hash text
         burn_block_time integer
         parent_burn_block_time integer
-        type_id smallint
+        type_id smallint /**  0=TokenTransfer, 1=SmartContract, 2=ContractCall, 3=PoisonMicroblock, 4=Coinbase,5=CoinbaseToAltRecipient, 6=VersionedSmartContract, 7=TenureChange, 8=NakamotoCoinbase *//
         anchor_mode smallint
-        status smallint
+        status smallint: 0=Pending, 1=Success, -1=AbortByResponse, -2=AbortByPostCondition, -10=DroppedReplaceByFee
         post_conditions text
         nonce integer
         fee_rate bigint
@@ -139,6 +141,9 @@ export const pgSchema = `postgres database schema:
         coinbase_payload text
         coinbase_alt_recipient text
         coinbase_vrf_proof text
+        block_time integer
+        burn_block_height integer
+        /** Only valid for tenure-change tx types. */
         tenure_change_tenure_consensus_hash text
         tenure_change_prev_tenure_consensus_hash text
         tenure_change_burn_view_consensus_hash text
@@ -146,8 +151,7 @@ export const pgSchema = `postgres database schema:
         tenure_change_previous_tenure_blocks integer
         tenure_change_cause smallint
         tenure_change_pubkey_hash text
-        block_time integer
-        burn_block_height integer
+
 
         txs Indexes:
           "txs_block_height_microblock_sequence_tx_index_index" btree (block_height DESC, microblock_sequence DESC, tx_index DESC)

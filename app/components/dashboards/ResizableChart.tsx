@@ -59,7 +59,11 @@ const ResizableChart = ({
     try {
       const queryWithVariables = replaceVariables(chart.query, variables);
       const response = await fetchData(queryWithVariables);
-      setChartData(response);
+      if (response.message) {
+        setError(response.message);
+      } else {
+        setChartData(response.data ?? []);
+      }
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     }

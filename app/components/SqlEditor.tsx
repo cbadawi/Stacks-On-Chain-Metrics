@@ -18,7 +18,6 @@ interface SqlEditorProps {
   isLoading: boolean;
   runQuery: (query: string) => Promise<void>;
   handleClear: () => void;
-  setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SqlEditor = ({

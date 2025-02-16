@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
-// import QueryVisualization from '../components/query/QueryVisualization';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
 import { VariableType } from '../components/helpers';
 import QueryVisualization from '../components/query/QueryVisualization';
@@ -12,9 +11,15 @@ import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
 import { findIsAIPrompt, seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
-import { explainQuery, runQueryCombined } from '../lib/ai/query';
-import { getTokensUsed } from '../lib/db/owner/tokens';
+import {
+  explainQuery,
+  fetchData,
+  generateQuery,
+  runQueryCombined,
+} from '../lib/ai/query';
+import { getTokensPurchased, getTokensUsed } from '../lib/db/owner/tokens';
 import { useUser } from '../contexts/UserProvider';
+import { replaceVariables } from '../lib/variables';
 
 const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
 -- followed by your prompt here.
@@ -34,14 +39,8 @@ const QueryWrapper = () => {
     QueryExplanation[] | null
   >();
   const { userSession, userData } = useUser();
-  console.log({ userData, userSession });
 
-  // array containing the type of column. ex ['bar', 'bar', 'line']
-  // const [chartColumnsTypes, setChartColumnsTypes] = useState<
-  //   CustomizableChartTypes[]
-  // >([]);
-  // array containing the position of axis.
-  // const [chartAxesTypes, setChartAxesTypes] = useState<LeftRight[]>([]);
+  const latestRequestRef = useRef(0);
 
   const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
@@ -67,6 +66,7 @@ const QueryWrapper = () => {
     setError('');
     setIsLoading(false);
     setQueryExplanations(null);
+    latestRequestRef.current++;
   };
 
   const runQuery = useCallback(
@@ -75,6 +75,8 @@ const QueryWrapper = () => {
       setData([]);
       setVariableDefaults({});
       setError('');
+      const currentRequestId = ++latestRequestRef.current;
+
       try {
         const vars = getVariables(setError);
         if (findIsAIPrompt(query)) {
@@ -83,32 +85,29 @@ const QueryWrapper = () => {
             setIsLoading(false);
             return;
           }
-          // const tokensLeft = getTokensUsed({
-          //   address: userData.profile.stxAddress.mainnet,
-          // });
-
-          // if (!tokensLeft) {
-          //   setError('Connnect wallet to run AI prompts.');
-          //   setIsLoading(false);
-          //   return;
-          // }
         }
-        const { data, displayQuery, isAiPrompt } = await runQueryCombined(
-          userData?.profile.stxAddress.mainnet,
-          query,
-          vars
-        );
-        setData(data);
-        setQueryExplanations(null);
-        if (!data.length) setError('Empty response.');
+        const { displayQuery, isAiPrompt, ...response } =
+          await runQueryCombined(
+            userData?.profile.stxAddress.mainnet,
+            query,
+            vars
+          );
+
+        if (currentRequestId !== latestRequestRef.current) return;
+
+        if (response.message) setError(response.message);
         if (isAiPrompt) setQuery(displayQuery);
+        setData(response.data || []);
+        setQueryExplanations(null);
       } catch (e: unknown) {
+        if (currentRequestId !== latestRequestRef.current) return;
         setError((e as Error).message);
-      } finally {
+      }
+      if (currentRequestId === latestRequestRef.current) {
         setIsLoading(false);
       }
     },
-    [variableDefaults, query]
+    [userData, variableDefaults, query]
   );
 
   const handleExplainQuery = async () => {
@@ -116,7 +115,6 @@ const QueryWrapper = () => {
     setIsLoading(true);
     const { prompt, sql } = seperatePromptFromSql(query);
     const { explanations } = await explainQuery(prompt, sql);
-    console.log({ explanations });
     setQueryExplanations(explanations);
     setIsLoading(false);
   };
@@ -128,7 +126,7 @@ const QueryWrapper = () => {
           <Spinner />
         </div>
       );
-    // TODO this blocks analayzing the query of there are no data. bad ux
+
     if (!data?.length)
       return (
         <StarterPlaceholderMessage
@@ -159,13 +157,11 @@ const QueryWrapper = () => {
           query={query}
           handleClear={handleClear}
           setQuery={setQuery}
-          setError={setError}
           isLoading={isLoading}
           runQuery={runQuery}
         />
       </div>
       <QueryVariablesForm query={query} />
-      {/* <>{JSON.stringify({ data })}</> */}
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
         <Card className='relative my-12 h-auto rounded-t-3xl  px-0 py-4 '>

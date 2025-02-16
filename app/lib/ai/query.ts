@@ -1,7 +1,7 @@
 'use server';
 
 import { createAnthropic } from '@ai-sdk/anthropic';
-import { Pool } from 'pg';
+import { Pool, QueryResult } from 'pg';
 import {
   cleanQuery,
   findIsAIPrompt,
@@ -31,30 +31,49 @@ const anthropic = createAnthropic({
 
 const claude = anthropic('claude-3-5-sonnet-latest');
 
-export async function fetchData(query: string, explain = false) {
+type FetchDataResponse = { data: Result[] | null; message?: string };
+export async function fetchData(
+  query: string,
+  explain = false
+): Promise<FetchDataResponse> {
   'use server';
   // await new Promise((resolve) => setTimeout(resolve, 3500));
-  // let cleanedQuery = seperatePromptFromSql(query).sql;
-  let cleanedQuery = cleanQuery(query.trim());
-  cleanedQuery = wrapQueryLimit(cleanedQuery);
-  if (explain) cleanedQuery = 'explain ' + cleanedQuery;
-  log.info('fetchData', { cleanedQuery, query });
 
-  let data: any;
-  try {
-    console.time('sql query');
-    const res = await stacksPool.query(cleanedQuery);
-    console.timeEnd('sql query');
-    log.info('fetchData result', { res });
-    data = res;
-  } catch (error: any) {
-    log.error('fetchData error', { error });
-    if (error instanceof Error) {
-      log.error(error.message);
-      throw error;
-    }
+  let cleanedQuery = cleanQuery(query.trim());
+  const queryWithoutComments = cleanedQuery
+    .replace(/^(?:\s*--.*\n)*/i, '')
+    .trim();
+  const startsWithExplain = queryWithoutComments
+    .toLowerCase()
+    .startsWith('explain');
+
+  log.info('fetchData', { cleanedQuery, query });
+  if (!startsWithExplain && !explain) {
+    cleanedQuery = wrapQueryLimit(cleanedQuery);
+  } else if (explain && !startsWithExplain) {
+    cleanedQuery = 'explain \n ' + cleanedQuery;
   }
-  return data.rows as Result[];
+
+  try {
+    console.time('sql');
+    console.log({ query, cleanedQuery });
+    const data = await stacksPool.query(cleanedQuery);
+    console.timeEnd('sql');
+    log.info('fetchData result', { data });
+
+    const response: FetchDataResponse = { data: data.rows as Result[] };
+    if ('data' in response && !response.data?.length) {
+      response.message = 'Empty response.';
+    }
+
+    return response;
+  } catch (error: any) {
+    if (error instanceof Error) {
+      log.error('fetchData error', { error });
+      return { message: error.message ?? JSON.stringify(error), data: null };
+    }
+    throw error;
+  }
 }
 
 export const generateQuery = async (
@@ -71,7 +90,7 @@ export const generateQuery = async (
       Based on the user's request, generate a PostgreSQL query that meets these conditions:
       - Follow all the system rules exactly.
       - Use the documentation for the table columns, indexes and foreign keys for joins. Use the indexes for filtering to optimize the query.
-      - Add a limit 300 to the query even if otherwise specified.
+      - ALWAYS ADD A LIMIT 300 to the query even if otherwise specified.
       - Format the query with clear indentations and line breaks. Do NOT add code blocks.
       - If asked about the time, use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
       - double brackets {{}}, for example "where block_height > {{variable}}" are a user defined variable which he will replace later, do not modify any bracket or the variable within.
@@ -143,21 +162,28 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
       system: `
       Your job is to optimize first, then explain the SQL query. Use the query plan provided to find optimizations.
       `,
-      prompt: `Explain the SQL query to retrieve the data the user wanted. Break down the query into steps. Be concise. 
+      prompt: `Explain the POSTGRES SQL query to retrieve the data the user wanted. Break down the query into steps. Be concise. 
+      
+      OPTIMIZATIONS : 
       Extremely important to mention future optimizations you found, using the query plan, that are not applied to the postgres query to make it run faster. Such as:
       - count(*) instead of counting a specific column.
       - avoid joins unles necessary.
       - use indexes to filter the results or to join on tables.
-      Be very specific, if you didnt find any optimizations, do not menthion them.
+      - If the query is filtering on the index but the index is not used, mention that and why. One potential solution would be to pass the filter as a variable. For example	burn_block_time >= {{variable}} instead of 	burn_block_time >= EXTRACT(EPOCH FROM NOW()).
+      for info : double brackets {{variables}} inside the query are variables my app replaces with a precomputed value.  
+
+      Be very specific, mention inefficiencies in details in the query plan and how to fix them.
+      
+      SYNTAX :
       When you explain you must take a section of the query, and then explain it with its optimization if it exists. Each "section" should be unique. So in a query like: "SELECT * FROM blocks limit 20", the sections could be "SELECT *", "FROM blocks", "LIMIT 20".
       - In the first section, provide a brief overview of the query, but more importantly, mention the optimizations & modifications that are not yet applied to the query.
 
       If a section doesnt have any explanation, include the section, but leave the explanation empty.
       Mentioning an optimization is more important than explaining the section. Use the postgres query plan statement:
       
-      queryPlan : ${queryPlan}
+      QUERY PLAN : ${queryPlan}
 
-      SQL Query:
+      SQL QUERY:
       ${sqlQuery}
 
       use the postgres schema & indeces in your optimization analysis : ${pgSchema}
@@ -183,8 +209,6 @@ export async function runQueryCombined(
   query: string,
   variables: VariableType
 ) {
-  'use server';
-
   const isAiPrompt = findIsAIPrompt(query);
   const { prompt, sql } = seperatePromptFromSql(query);
   if (isAiPrompt) {
@@ -207,16 +231,18 @@ export async function runQueryCombined(
   }
   const finalQuery = replaceVariables(query, variables);
   log.info('runQueryCombined', {
-    query,
     finalQuery,
     variables,
     isAiPrompt,
     prompt,
     sql,
   });
-  const data = await fetchData(finalQuery);
-  if (!data.length) {
-    throw new Error('Empty response.');
-  }
-  return { data, displayQuery: `-- AI ${prompt} \n${query}`, isAiPrompt };
+  console.log({ sql });
+  const response = await fetchData(finalQuery);
+  console.log({ response });
+  return {
+    ...response,
+    displayQuery: `-- AI ${prompt} \n${query}`,
+    isAiPrompt,
+  };
 }
