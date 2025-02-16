@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.1.8",
     "@ai-sdk/openai": "^1.1.1",
     "@hookform/resolvers": "^3.10.0",
     "@logtail/node": "^0.5.2",
@@ -22,7 +23,10 @@
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.1.7",
-    "@stacks/connect": "^7.7.1",
+    "@stacks/auth": "^7.0.4",
+    "@stacks/connect": "^7.10.0",
+    "@stacks/network": "^7.0.2",
+    "@stacks/transactions": "^7.0.4",
     "@vercel/firewall": "^0.1.5",
     "ace-builds": "^1.37.5",
     "ai": "^4.1.1",

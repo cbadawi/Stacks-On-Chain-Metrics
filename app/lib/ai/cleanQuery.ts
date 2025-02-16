@@ -22,7 +22,7 @@ export const wrapQueryLimit = (query: string) =>
   `WITH user_query AS (
     ${query}
     ) SELECT * FROM user_query LIMIT 100;`;
-export const cleanQuery = (query: string) => query.replace(/;+$/, '');
+export const cleanQuery = (query: string) => query.replaceAll(';', ' ');
 
 export const findIsAIPrompt = (query: string) =>
   query.slice(0, 5).toLowerCase() === '-- ai' ||

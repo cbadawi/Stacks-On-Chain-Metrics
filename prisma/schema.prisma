@@ -49,10 +49,21 @@ enum Tags {
   @@schema("dash")
 }
 
+//  usd price
+model TokenPrice {
+  id        Int      @id @default(autoincrement())
+  price     Float     @default(0)
+
+  createdAt  DateTime    @default(now()) @map("created_at")
+  @@schema("dash")
+}
+
 model Owner {
   id         Int         @id @default(autoincrement())
   address    String      @unique
+  appKey     String      @unique
   name       String?
+  tokens     Int         @default(0) // tokens already used by the user
   dashboards Dashboard[]
   createdAt  DateTime    @default(now()) @map("created_at")
   updatedAt  DateTime    @updatedAt @map("updated_at")

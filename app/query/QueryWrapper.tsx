@@ -10,14 +10,11 @@ import QueryVisualization from '../components/query/QueryVisualization';
 import { Card } from '@/components/ui/card';
 import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
-import { seperatePromptFromSql } from '../lib/ai/cleanQuery';
+import { findIsAIPrompt, seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
-import {
-  explainQuery,
-  fetchData,
-  generateQuery,
-  runQueryCombined,
-} from '../lib/ai/query';
+import { explainQuery, runQueryCombined } from '../lib/ai/query';
+import { getTokensUsed } from '../lib/db/owner/tokens';
+import { useUser } from '../contexts/UserProvider';
 
 const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
 -- followed by your prompt here.
@@ -36,6 +33,8 @@ const QueryWrapper = () => {
   const [queryExplanations, setQueryExplanations] = useState<
     QueryExplanation[] | null
   >();
+  const { userSession, userData } = useUser();
+  console.log({ userData, userSession });
 
   // array containing the type of column. ex ['bar', 'bar', 'line']
   // const [chartColumnsTypes, setChartColumnsTypes] = useState<
@@ -78,7 +77,24 @@ const QueryWrapper = () => {
       setError('');
       try {
         const vars = getVariables(setError);
+        if (findIsAIPrompt(query)) {
+          if (!userData) {
+            setError('Connnect wallet to run AI prompts.');
+            setIsLoading(false);
+            return;
+          }
+          // const tokensLeft = getTokensUsed({
+          //   address: userData.profile.stxAddress.mainnet,
+          // });
+
+          // if (!tokensLeft) {
+          //   setError('Connnect wallet to run AI prompts.');
+          //   setIsLoading(false);
+          //   return;
+          // }
+        }
         const { data, displayQuery, isAiPrompt } = await runQueryCombined(
+          userData?.profile.stxAddress.mainnet,
           query,
           vars
         );

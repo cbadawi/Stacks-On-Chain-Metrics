@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/anthropic':
+        specifier: ^1.1.8
+        version: 1.1.8(zod@3.24.1)
       '@ai-sdk/openai':
         specifier: ^1.1.1
         version: 1.1.1(zod@3.24.1)
@@ -47,9 +50,18 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.7
         version: 1.1.7(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@stacks/auth':
+        specifier: ^7.0.4
+        version: 7.0.4
       '@stacks/connect':
-        specifier: ^7.7.1
+        specifier: ^7.10.0
         version: 7.10.0
+      '@stacks/network':
+        specifier: ^7.0.2
+        version: 7.0.2
+      '@stacks/transactions':
+        specifier: ^7.0.4
+        version: 7.0.4
       '@vercel/firewall':
         specifier: ^0.1.5
         version: 0.1.5(next@14.2.23(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
@@ -174,6 +186,12 @@ importers:
 
 packages:
 
+  '@ai-sdk/anthropic@1.1.8':
+    resolution: {integrity: sha512-QD8c3ShPIpXaqjCDq9tCBI9iI/GeZETnP/DxgA8wRTs13Sqx6HcLh1eKTaGyePOtJvRx5XBcR+wSdeZZcaeUQQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
+
   '@ai-sdk/openai@1.1.1':
     resolution: {integrity: sha512-0tUlrjSMWYYQxiC/6d6n5C6nxUYSHzlt/FipJgzKQleMts3Br5+u2cM4nwOVtuS14J2MsBM/SK2DGL0lFctirA==}
     engines: {node: '>=18'}
@@ -189,8 +207,21 @@ packages:
       zod:
         optional: true
 
+  '@ai-sdk/provider-utils@2.1.8':
+    resolution: {integrity: sha512-1j9niMUAFlCBdYRYJr1yoB5kwZcRFBVuBiL1hhrf0ONFNrDiJYA6F+gROOuP16NHhezMfTo60+GeeV1xprHFjg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
+
   '@ai-sdk/provider@1.0.5':
     resolution: {integrity: sha512-KATFp9CNXtMEzs8KBwLYK2+rGkkeED6p1+4koQveszyscIavObXIRW7vjr0MoZ9HFIHOUlrcak+3s/Xt3UXmAg==}
+    engines: {node: '>=18'}
+
+  '@ai-sdk/provider@1.0.7':
+    resolution: {integrity: sha512-q1PJEZ0qD9rVR+8JFEd01/QM++csMT5UVwYXSN2u54BrVw/D8TZLTeg2FEfKK00DgAx0UtWd8XOhhwITP9BT5g==}
     engines: {node: '>=18'}
 
   '@ai-sdk/react@1.1.1':
@@ -993,8 +1024,8 @@ packages:
   '@scure/bip39@1.1.0':
     resolution: {integrity: sha512-pwrPOS16VeTKg98dYXQyIjJEcWfz7/1YJIwxUEPFfQPtc86Ym/1sVgQ2RLoD43AazMk2l/unK4ITySSpW2+82w==}
 
-  '@stacks/auth@7.0.2':
-    resolution: {integrity: sha512-1N0ylkK9mz6RqIH3SbuIvoUG4eTgSkun7hHiPirScGCyXvmugjereGdTowSRSrEnl32/qrnquAAaO7a1XF6TMA==}
+  '@stacks/auth@7.0.4':
+    resolution: {integrity: sha512-e875v255+9mKv3v5tQIRBcyvnFXvdYcAX4y/7HcVjPAVKe8IPR938zURTmMlY3yehtXMyG1G5LFizi7qERsP7A==}
 
   '@stacks/common@6.16.0':
     resolution: {integrity: sha512-PnzvhrdGRMVZvxTulitlYafSK4l02gPCBBoI9QEoTqgSnv62oaOXhYAUUkTMFKxdHW1seVEwZsrahuXiZPIAwg==}
@@ -1008,8 +1039,8 @@ packages:
   '@stacks/connect@7.10.0':
     resolution: {integrity: sha512-h6i/cFWUVWLFyn8Y62+oDh7PJYQR5Ultrc6dEUp8rZZbHO9ldLT5Qm+rwTS0tRXzoPXJ2KNbqsG70Sqa/lRnVQ==}
 
-  '@stacks/encryption@7.0.2':
-    resolution: {integrity: sha512-3evRvxPqVzQAhcZ8uacQrVfAETUMIV8VyKkHGsd4QZroGWlvXQheLV3CFeDttFb304QcKq/oKv1clOvQ2shaAw==}
+  '@stacks/encryption@7.0.4':
+    resolution: {integrity: sha512-MIoRURjfIWN/1WpUGthY1jz7gCN/A76VV6G04MGw7Haiy1jW3Vhprf0kkoYKcQSu+NPyE9PWhaKjRXN4ZS/SwA==}
 
   '@stacks/network@6.17.0':
     resolution: {integrity: sha512-numHbfKjwco/rbkGPOEz8+FcJ2nBnS/tdJ8R422Q70h3SiA9eqk9RjSzB8p4JP8yW1SZvW+eihADHfMpBuZyfw==}
@@ -1020,11 +1051,14 @@ packages:
   '@stacks/profile@7.0.2':
     resolution: {integrity: sha512-BJis1ZAP2yzv0IFaJcm4mZFtauizcB1zBVpAeOSX06BDEUgM8h0L8uRvAbfTvSuSjsveNgblucZouZMSEsQMGA==}
 
+  '@stacks/profile@7.0.4':
+    resolution: {integrity: sha512-BLuPrjwQEBYd4PfPZGIuwbR16MvmgPQezeLs3TnWABAMrI5LQXFZRsw/SP7mlzGk0tgWk7lS/YHHLTUZepkF8Q==}
+
   '@stacks/transactions@6.17.0':
     resolution: {integrity: sha512-FUah2BRgV66ApLcEXGNGhwyFTRXqX5Zco3LpiM3essw8PF0NQlHwwdPgtDko5RfrJl3LhGXXe/30nwsfNnB3+g==}
 
-  '@stacks/transactions@7.0.2':
-    resolution: {integrity: sha512-m2bvchqUeYv1ttXuC0EukW8UX4xBXTDcYb8bXmfI1RG89HXAvvCCgr5aiadU6zbutgoXvm8mquDt3nww0PO4Jg==}
+  '@stacks/transactions@7.0.4':
+    resolution: {integrity: sha512-OTQSqb+xaq+QeHB1m83SONVjVs9DD1SMqX7UvvLmzQx3ppZNoRqbWx9UGjm1bVwpQ+mw44TVOe7w3Zm0HRYFfw==}
 
   '@stencil/core@2.22.3':
     resolution: {integrity: sha512-kmVA0M/HojwsfkeHsifvHVIYe4l5tin7J5+DLgtl8h6WWfiMClND5K3ifCXXI2ETDNKiEk21p6jql3Fx9o2rng==}
@@ -3213,6 +3247,12 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@1.1.8(zod@3.24.1)':
+    dependencies:
+      '@ai-sdk/provider': 1.0.7
+      '@ai-sdk/provider-utils': 2.1.8(zod@3.24.1)
+      zod: 3.24.1
+
   '@ai-sdk/openai@1.1.1(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.0.5
@@ -3228,7 +3268,20 @@ snapshots:
     optionalDependencies:
       zod: 3.24.1
 
+  '@ai-sdk/provider-utils@2.1.8(zod@3.24.1)':
+    dependencies:
+      '@ai-sdk/provider': 1.0.7
+      eventsource-parser: 3.0.0
+      nanoid: 3.3.8
+      secure-json-parse: 2.7.0
+    optionalDependencies:
+      zod: 3.24.1
+
   '@ai-sdk/provider@1.0.5':
+    dependencies:
+      json-schema: 0.4.0
+
+  '@ai-sdk/provider@1.0.7':
     dependencies:
       json-schema: 0.4.0
 
@@ -4015,13 +4068,13 @@ snapshots:
       '@noble/hashes': 1.1.5
       '@scure/base': 1.1.9
 
-  '@stacks/auth@7.0.2':
+  '@stacks/auth@7.0.4':
     dependencies:
       '@noble/secp256k1': 1.7.1
       '@stacks/common': 7.0.2
-      '@stacks/encryption': 7.0.2
+      '@stacks/encryption': 7.0.4
       '@stacks/network': 7.0.2
-      '@stacks/profile': 7.0.2
+      '@stacks/profile': 7.0.4
       cross-fetch: 3.2.0
       jsontokens: 4.0.1
     transitivePeerDependencies:
@@ -4040,19 +4093,19 @@ snapshots:
 
   '@stacks/connect@7.10.0':
     dependencies:
-      '@stacks/auth': 7.0.2
+      '@stacks/auth': 7.0.4
       '@stacks/common': 7.0.2
       '@stacks/connect-ui': 6.6.0
       '@stacks/network': 7.0.2
       '@stacks/network-v6': '@stacks/network@6.17.0'
       '@stacks/profile': 7.0.2
-      '@stacks/transactions': 7.0.2
+      '@stacks/transactions': 7.0.4
       '@stacks/transactions-v6': '@stacks/transactions@6.17.0'
       jsontokens: 4.0.1
     transitivePeerDependencies:
       - encoding
 
-  '@stacks/encryption@7.0.2':
+  '@stacks/encryption@7.0.4':
     dependencies:
       '@noble/hashes': 1.1.5
       '@noble/secp256k1': 1.7.1
@@ -4081,7 +4134,18 @@ snapshots:
     dependencies:
       '@stacks/common': 7.0.2
       '@stacks/network': 7.0.2
-      '@stacks/transactions': 7.0.2
+      '@stacks/transactions': 7.0.4
+      jsontokens: 4.0.1
+      schema-inspector: 2.1.0
+      zone-file: 2.0.0-beta.3
+    transitivePeerDependencies:
+      - encoding
+
+  '@stacks/profile@7.0.4':
+    dependencies:
+      '@stacks/common': 7.0.2
+      '@stacks/network': 7.0.2
+      '@stacks/transactions': 7.0.4
       jsontokens: 4.0.1
       schema-inspector: 2.1.0
       zone-file: 2.0.0-beta.3
@@ -4099,7 +4163,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@stacks/transactions@7.0.2':
+  '@stacks/transactions@7.0.4':
     dependencies:
       '@noble/hashes': 1.1.5
       '@noble/secp256k1': 1.7.1
@@ -4424,7 +4488,7 @@ snapshots:
 
   c32check@2.0.0:
     dependencies:
-      '@noble/hashes': 1.1.5
+      '@noble/hashes': 1.7.1
       base-x: 4.0.0
 
   call-bind-apply-helpers@1.0.1:

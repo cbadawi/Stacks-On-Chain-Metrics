@@ -1,11 +1,8 @@
 'use server';
 
 import { addOwner, getOwner } from '../owner';
-import { replaceVariables } from '../replaceVariables';
-import { VariableType } from '@/app/components/helpers';
 import { Chart, Dashboard, Owner } from '@prisma/client';
 import prisma from '../client';
-import { fetchData } from '@/app/query/actions';
 
 export type ChartWithData = { data: any[] } & Chart;
 

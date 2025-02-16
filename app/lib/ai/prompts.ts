@@ -45,7 +45,9 @@ ft_events: table that contains the token transfers, mints and burns.
 `;
 
 export const pgSchema = `postgres database schema:
-        table: ft_events
+        tables: blocks, txs, ft_events, stx_events
+        
+        table: ft_events: Contains events of funglible tokens 
         id integer
         event_index integer
         tx_id text
@@ -87,7 +89,7 @@ export const pgSchema = `postgres database schema:
         execution_cost_runtime bigint
         execution_cost_write_count bigint
         execution_cost_write_length bigint
-        tx_count integer
+        tx_count integer : transaction count inside a block
         block_time integer
         signer_bitvec bit varying
 

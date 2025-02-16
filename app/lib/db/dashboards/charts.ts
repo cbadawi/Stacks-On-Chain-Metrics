@@ -1,13 +1,7 @@
 'use server';
 
-import {
-  Chart,
-  ChartType,
-  CustomizableChartTypes,
-  LeftRight,
-} from '@prisma/client';
+import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import prisma from '../client';
-import { ChartWithData } from './dashboard';
 import { VariableType } from '@/app/components/helpers';
 
 export async function addChart({

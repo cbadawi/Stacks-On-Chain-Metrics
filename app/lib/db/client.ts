@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
+import { PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
   return new PrismaClient();

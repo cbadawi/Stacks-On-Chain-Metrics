@@ -17,6 +17,11 @@ import { z } from 'zod';
 import { stacksPool } from '../db/client';
 import { VariableType } from '@/app/components/helpers';
 import { replaceVariables } from '../variables';
+import {
+  getTokensPurchased,
+  getTokensUsed,
+  updateTokensUsed,
+} from '../db/owner/tokens';
 
 export type Result = Record<string, string | number>;
 
@@ -29,11 +34,11 @@ const claude = anthropic('claude-3-5-sonnet-latest');
 export async function fetchData(query: string, explain = false) {
   'use server';
   // await new Promise((resolve) => setTimeout(resolve, 3500));
-  let cleanedQuery = seperatePromptFromSql(query).sql;
-  cleanedQuery = cleanQuery(cleanedQuery.trim());
+  // let cleanedQuery = seperatePromptFromSql(query).sql;
+  let cleanedQuery = cleanQuery(query.trim());
   cleanedQuery = wrapQueryLimit(cleanedQuery);
   if (explain) cleanedQuery = 'explain ' + cleanedQuery;
-  log.info('fetchData', { cleanedQuery });
+  log.info('fetchData', { cleanedQuery, query });
 
   let data: any;
   try {
@@ -42,14 +47,21 @@ export async function fetchData(query: string, explain = false) {
     console.timeEnd('sql query');
     log.info('fetchData result', { res });
     data = res;
-  } catch (e: any) {
-    log.error('fetchData error', { e });
-    throw e;
+  } catch (error: any) {
+    log.error('fetchData error', { error });
+    if (error instanceof Error) {
+      log.error(error.message);
+      throw error;
+    }
   }
   return data.rows as Result[];
 }
 
-export const generateQuery = async (prompt: string, sql?: string) => {
+export const generateQuery = async (
+  address: string,
+  prompt: string,
+  sql?: string
+) => {
   'use server';
   try {
     const generateQueryUserPromptWrapper = `
@@ -64,6 +76,7 @@ export const generateQuery = async (prompt: string, sql?: string) => {
       - If asked about the time, use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
       - double brackets {{}}, for example "where block_height > {{variable}}" are a user defined variable which he will replace later, do not modify any bracket or the variable within.
 
+      DO NOT include a table that is not mentioned here:
       documentation: ${documentation}
       ${pgSchema}
       `;
@@ -79,7 +92,28 @@ export const generateQuery = async (prompt: string, sql?: string) => {
       aiquery.toLowerCase().startsWith('select') ||
       aiquery.toLowerCase().startsWith('--');
 
-    log.info('ai generateQuery', { prompt, sql, result: aiquery });
+    const {
+      usage,
+      steps,
+      response,
+      reasoning,
+      warnings,
+      toolCalls,
+      toolResults,
+    } = result;
+    log.info('ai generateQuery', {
+      prompt,
+      sql,
+      usage,
+      steps,
+      response,
+      reasoning,
+      warnings,
+      toolCalls,
+      toolResults,
+    });
+
+    await updateTokensUsed({ address, tokensUsed: usage.completionTokens });
 
     if (isValidQuery)
       return {
@@ -144,13 +178,26 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
   }
 };
 
-export async function runQueryCombined(query: string, variables: VariableType) {
+export async function runQueryCombined(
+  address: string,
+  query: string,
+  variables: VariableType
+) {
   'use server';
 
   const isAiPrompt = findIsAIPrompt(query);
   const { prompt, sql } = seperatePromptFromSql(query);
   if (isAiPrompt) {
-    const aiQueryResult = await generateQuery(prompt, sql);
+    const [tokensUsed, tokensPurchased] = await Promise.all([
+      getTokensUsed({ address }),
+      getTokensPurchased({ address }),
+    ]);
+    // if (tokensUsed > tokensPurchased)
+    //   throw new Error(
+    //     'You have run out of tokens. Please purchase more to continue.'
+    //   );
+
+    const aiQueryResult = await generateQuery(address, prompt, sql);
     if (!aiQueryResult.query) {
       throw new Error(
         aiQueryResult.message || 'Failed to generate SQL query from AI prompt.'
@@ -159,6 +206,14 @@ export async function runQueryCombined(query: string, variables: VariableType) {
     query = aiQueryResult.query;
   }
   const finalQuery = replaceVariables(query, variables);
+  log.info('runQueryCombined', {
+    query,
+    finalQuery,
+    variables,
+    isAiPrompt,
+    prompt,
+    sql,
+  });
   const data = await fetchData(finalQuery);
   if (!data.length) {
     throw new Error('Empty response.');

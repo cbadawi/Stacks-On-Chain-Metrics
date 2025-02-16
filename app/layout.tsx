@@ -6,6 +6,7 @@ import Options from './components/navigation/Options';
 import Footer from './components/navigation/Footer';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
+import { UserProvider } from './contexts/UserProvider';
 // import { UserProvider } from './contexts/UserProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -33,13 +34,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <UserProvider> */}
-          <Navbar />
-          <Options />
-          <Toaster />
-          <main>{children}</main>
+          <UserProvider>
+            <Navbar />
+            <Options />
+            <Toaster />
+            <main>{children}</main>
+          </UserProvider>
           {/* <Footer /> */}
-          {/* </UserProvider> */}
         </ThemeProvider>
       </body>
     </html>

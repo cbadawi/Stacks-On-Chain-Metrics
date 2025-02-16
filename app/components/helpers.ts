@@ -16,6 +16,10 @@ console.log('NODE_ENV', process.env.NODE_ENV);
 export const CHART_CONTAINER_WIDTH = 1100;
 export const CHART_CONTAINER_HEIGHT = 700;
 
+export const velarWstx = 'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.wstx';
+
+export const aeusdc = 'SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc';
+
 // Types
 export type Position = {
   height: number;

@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import NavbarLinks from './NavbarLinks';
-import ConnectWallet from './ConnectWallet';
 import ThemeToggle from './ThemeToggle';
 import { Card } from '@/components/ui/card';
+import ConnectWallet from '../wallet/ConnectButton';
 
 const Navbar = () => {
   return (
@@ -21,7 +21,7 @@ const Navbar = () => {
           <div className='mr-10 flex items-center gap-4'>
             <NavbarLinks />
             <ThemeToggle />
-            {/* <ConnectWallet /> */}
+            <ConnectWallet />
           </div>
         </div>
       </div>

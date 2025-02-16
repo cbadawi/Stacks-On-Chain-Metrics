@@ -5,7 +5,7 @@ const Query = async () => {
   return (
     <div>
       <h1 className='mx-10 mt-5 text-xl font-semibold'>
-        On Chain AI Data Agent & Market Intelligence
+        Stacks On Chain AI Data Agent & Market Intelligence
       </h1>
 
       <QueryWrapper />
