@@ -14,13 +14,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useEditMode } from './EditModeContext';
 import { EllipsisVertical } from 'lucide-react';
+import { useUser } from '@/app/contexts/UserProvider';
 
-const DashboardOptions = () => {
+const DashboardOptions = ({ owner }: { owner: string }) => {
   const { editMode, setEditMode } = useEditMode();
+  const { userData } = useUser();
 
   const handleToggleEditMode = () => {
     setEditMode(!editMode);
   };
+
+  if (owner !== userData?.profile.stxAddress.mainnet) return;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

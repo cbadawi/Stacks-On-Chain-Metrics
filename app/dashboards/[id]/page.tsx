@@ -21,6 +21,7 @@ type DashboardProps = {
 
 const Dashboards = async ({ params }: DashboardProps) => {
   const id = parseInt(decodeURIComponent(params.id));
+
   const variablesFormId = 'variables-form';
   // todo decouple data fetching from getDashboardAndCharts
   // todo fetch data on the chart level to have one each render seperately
@@ -37,7 +38,7 @@ const Dashboards = async ({ params }: DashboardProps) => {
               <CardTitle className='text-3xl font-normal'>
                 {dashboard.title}
               </CardTitle>
-              <DashboardOptions />
+              <DashboardOptions owner={dashboard.owner.address} />
             </div>
             <CardDescription>{dashboard.description}</CardDescription>
           </CardHeader>
