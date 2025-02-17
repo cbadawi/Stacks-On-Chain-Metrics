@@ -97,6 +97,16 @@ export async function persistChartUpdate({
   type?: ChartType;
   id: number;
 }) {
+  console.log('persistChartUpdate', {
+    title,
+    x,
+    y,
+    height,
+    width,
+    query,
+    type,
+    id,
+  });
   const data: Record<string, any> = {};
   if (title !== undefined) data.title = title;
   if (x !== undefined) data.x = x;

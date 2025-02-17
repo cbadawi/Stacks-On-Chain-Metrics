@@ -14,6 +14,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { APP_NAME } from '@/app/appDetails';
 
 const Options = () => {
   return (
@@ -28,7 +29,7 @@ const Options = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className='w-56'>
-        <DropdownMenuLabel>Stacks on chain</DropdownMenuLabel>
+        <DropdownMenuLabel>{APP_NAME}</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem
             onClick={() =>

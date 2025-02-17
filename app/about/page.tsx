@@ -6,7 +6,7 @@ const About = () => {
     <div>
       <p>
         I havent written an about me yet but you can find me here
-        https://twitter.com/anononchain
+        https://twitter.com/stacksmetrics
       </p>
       <AsciiArt />
     </div>

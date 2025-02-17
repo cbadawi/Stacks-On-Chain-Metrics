@@ -67,6 +67,8 @@ const DashboardChartsCanvas = ({
   const onLayoutChange = (newLayout: Layout[]) => {
     setLayout(newLayout);
     console.log('onLayoutChange', { newLayout });
+    // Layout is changed on cscreen resize etc. so we only want to persist changes in edit mode
+    if (!editMode) return;
     newLayout.forEach((item) => {
       persistChartUpdate({
         id: parseInt(item.i),
