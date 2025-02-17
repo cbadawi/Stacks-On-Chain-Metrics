@@ -29,30 +29,6 @@ export async function addChart({
   axesTypes?: LeftRight[] | undefined;
   columnTypes?: CustomizableChartTypes[] | undefined;
 }) {
-  console.log(
-    'title',
-    title,
-    'query',
-    query,
-    'chartType',
-    chartType,
-    'x',
-    x,
-    'y',
-    y,
-    'width',
-    width,
-    'height',
-    height,
-    'dashboardId',
-    dashboardId,
-    'variables',
-    variables,
-    'columnTypes',
-    columnTypes,
-    'axesTypes',
-    axesTypes
-  );
   const newChart = await prisma.chart.create({
     data: {
       title,
@@ -82,10 +58,19 @@ export async function getCharts({ dashboardId }: { dashboardId: number }) {
 export async function deleteChart({
   id,
   dashboardId,
+  owner,
+  appKey,
 }: {
   dashboardId: number;
+  owner: string;
+  appKey: string;
   id: number;
 }) {
+  const dashboard = await prisma.dashboard.findUnique({
+    where: { id: dashboardId, owner: { appKey, address: owner } },
+  });
+
+  if (!dashboard) return;
   const charts = await prisma.chart.delete({
     where: { id, dashboardId },
   });

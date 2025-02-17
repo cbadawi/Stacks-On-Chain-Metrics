@@ -24,9 +24,9 @@ const Dashboards = async ({ params }: DashboardProps) => {
   const variablesFormId = 'variables-form';
   // todo decouple data fetching from getDashboardAndCharts
   // todo fetch data on the chart level to have one each render seperately
-  const dashboard = (await getDashboardAndCharts({
+  const dashboard = await getDashboardAndCharts({
     id,
-  })) as DashboardWithCharts;
+  });
   if (!dashboard) redirect('/dashboards');
   return (
     <div className='mx-4 flex h-full flex-col'>

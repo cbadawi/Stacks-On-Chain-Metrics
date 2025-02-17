@@ -14,19 +14,21 @@ import { Layout } from 'react-grid-layout';
 
 const GridLayout = dynamic(() => import('react-grid-layout'), { ssr: false });
 
-export type DashboardChartsContainerProps = {
+export type DashboardChartsCanvasProps = {
   dashboardId: number;
   charts: Chart[];
+  owner: string;
   variableValues: Record<string, string>;
 };
 
 const GRID_UNIT_PX = 50;
 
 const DashboardChartsCanvas = ({
+  owner,
   charts,
   dashboardId,
   variableValues,
-}: DashboardChartsContainerProps) => {
+}: DashboardChartsCanvasProps) => {
   const { editMode } = useEditMode();
   const [layout, setLayout] = useState<Layout[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,7 @@ const DashboardChartsCanvas = ({
                 <ResizableChart
                   dashboardId={dashboardId}
                   chart={chart}
+                  owner={owner}
                   variables={variableValues}
                   editMode={editMode}
                   width={cellWidth}

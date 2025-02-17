@@ -23,9 +23,11 @@ import {
 import { deleteChart } from '@/app/lib/db/dashboards/charts';
 import { replaceVariables } from '@/app/lib/variables';
 import { fetchData } from '@/app/lib/ai/query';
+import { useUser } from '@/app/contexts/UserProvider';
 
 type ResizableChartProps = {
   dashboardId: number;
+  owner: string;
   chart: Chart;
   variables: Record<string, string>;
   editMode: boolean;
@@ -38,12 +40,14 @@ const ResizableChart = ({
   dashboardId,
   variables,
   editMode,
+  owner,
   width,
   height,
 }: ResizableChartProps) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { userData } = useUser();
 
   useEffect(() => {
     fetchChartData(chart, variables);
@@ -90,31 +94,39 @@ const ResizableChart = ({
               <DialogTitle>{chart.title}</DialogTitle>
             </DialogHeader>
 
-            <div
-              key={'chart-info-' + chart.title}
-              className='my-4 max-h-[70%] overflow-x-auto'
-            >
-              <div className='max-h-[70%] min-w-[900px] overflow-y-scroll'>
+            <div className=' flex flex-col'>
+              <div className='max-h-[45%] min-w-[400px] overflow-y-auto'>
                 <SyntaxHighlighter language='sql' style={dracula}>
                   {chart.query}
                 </SyntaxHighlighter>
               </div>
-            </div>
 
-            <div className='flex items-center justify-between'>
-              <Button variant='outline' aria-disabled={true} disabled={true}>
-                Edit Chart
-              </Button>
-              <DialogClose asChild>
-                <Button
-                  variant='destructive'
-                  disabled={true}
-                  aria-disabled={true}
-                  onClick={() => deleteChart({ id: chart.id, dashboardId })}
-                >
-                  Delete Chart
-                </Button>
-              </DialogClose>
+              {owner === userData?.profile.stxAddress.mainnet && (
+                <div className='my-5 flex items-center justify-between'>
+                  <Button
+                    variant='outline'
+                    disabled={true}
+                    aria-disabled={true}
+                  >
+                    Edit Chart
+                  </Button>
+                  <DialogClose asChild>
+                    <Button
+                      variant='destructive'
+                      onClick={async () =>
+                        await deleteChart({
+                          id: chart.id,
+                          dashboardId,
+                          owner,
+                          appKey: userData?.appPrivateKey,
+                        })
+                      }
+                    >
+                      Delete Chart
+                    </Button>
+                  </DialogClose>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>

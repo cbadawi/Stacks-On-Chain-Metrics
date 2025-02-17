@@ -42,6 +42,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
   function authenticate() {
     if (!stacksConnect) return;
     if (userData) {
+      console.log({ userData });
       userSession.signUserOut();
       setUserData(undefined);
       if (typeof window !== 'undefined') {
@@ -75,7 +76,6 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
       userSession,
     });
   }
-
   return (
     <Button onClick={authenticate}>
       {userData

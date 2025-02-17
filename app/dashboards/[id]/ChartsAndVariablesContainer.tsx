@@ -93,6 +93,7 @@ const ChartsAndVariablesContainer = ({
       )}
       <DashboardChartsCanvas
         dashboardId={dashboard.id}
+        owner={dashboard.owner.address}
         charts={dashboard.charts}
         variableValues={activeValues}
       />

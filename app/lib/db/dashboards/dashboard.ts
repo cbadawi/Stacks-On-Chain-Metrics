@@ -6,7 +6,10 @@ import prisma from '../client';
 
 export type ChartWithData = { data: any[] } & Chart;
 
-export type DashboardWithCharts = Dashboard & { charts: Chart[] };
+export type DashboardWithCharts = Dashboard & {
+  charts: Chart[];
+  owner: { address: string };
+};
 
 export async function addDashboard({
   title,
@@ -41,7 +44,7 @@ export async function getDashboardAndCharts({
   id?: number;
   searchParams?: any;
   includeCharts?: boolean;
-}): Promise<Dashboard | DashboardWithCharts | null> {
+}) {
   const include = includeCharts
     ? { charts: { where: { deleted: false } } }
     : {};
@@ -51,7 +54,7 @@ export async function getDashboardAndCharts({
       deleted: false,
       id,
     },
-    include,
+    include: { owner: { select: { address: true } }, ...include },
   });
   return dashboard;
 }

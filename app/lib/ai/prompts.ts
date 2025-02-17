@@ -106,9 +106,9 @@ export const pgSchema = `postgres database schema:
         parent_block_hash text
         burn_block_time integer
         parent_burn_block_time integer
-        type_id smallint /**  0=TokenTransfer, 1=SmartContract, 2=ContractCall, 3=PoisonMicroblock, 4=Coinbase,5=CoinbaseToAltRecipient, 6=VersionedSmartContract, 7=TenureChange, 8=NakamotoCoinbase *//
+        type_id smallint /**  TokenTransfer=0, SmartContract=1, ContractCall=2, PoisonMicroblock=3, Coinbase=4,CoinbaseToAltRecipient=5, VersionedSmartContract=6, TenureChange=7, NakamotoCoinbase=8 */
         anchor_mode smallint
-        status smallint: 0=Pending, 1=Success, -1=AbortByResponse, -2=AbortByPostCondition, -10=DroppedReplaceByFee
+        status smallint: /** Pending=0, Success=1, -AbortByResponse=1, AbortByPostCondition=-2, DroppedReplaceByFee=-10 */
         post_conditions text
         nonce integer
         fee_rate bigint
