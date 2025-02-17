@@ -95,8 +95,18 @@ const ResizableChart = ({
             </DialogHeader>
 
             <div className=' flex flex-col'>
-              <div className='max-h-[45%] min-w-[400px] overflow-y-auto'>
-                <SyntaxHighlighter language='sql' style={dracula}>
+              <div className='max-h-[45%]'>
+                <SyntaxHighlighter
+                  language='sql'
+                  style={dracula}
+                  customStyle={{
+                    height: '100%',
+                    maxWidth: '50rem',
+                    overflowX: 'auto',
+                    overflowY: 'auto',
+                    margin: 0,
+                  }}
+                >
                   {chart.query}
                 </SyntaxHighlighter>
               </div>

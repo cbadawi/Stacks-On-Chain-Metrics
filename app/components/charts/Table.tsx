@@ -1,3 +1,13 @@
+import {
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Table,
+} from '@/components/ui/table';
 import React from 'react';
 
 interface TableProps {
@@ -6,49 +16,49 @@ interface TableProps {
 
 const parseTableData = (tableData: any) => {
   if (typeof tableData === 'boolean') return JSON.stringify(tableData);
+  // if (tableData.length && tableData.length > 50)
+  //   return tableData.slice(0, 30) + '...';
   return (tableData || '').toString();
 };
 
-const Table = ({ data }: TableProps) => {
+const TableComponent = ({ data }: TableProps) => {
   if (!data?.length) return null;
   const colNames = Object.keys(data[0]);
 
   return (
     <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px]  sm:max-h-[50vh] lg:max-h-[60vh]'>
       <table className='h-auto w-full bg-[#0d0d0c] text-white'>
-        <thead className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-[#0d0d0c]'>
-          <tr>
-            <th key={'#'} className='w-4 p-2 text-center text-lg'>
-              #
-            </th>
-            {colNames.map((col: string, index: number) => (
-              <th key={'th-' + index} className='p-2 text-center text-lg'>
-                {col}
-              </th>
+        <TableCaption>Stacks Metrics</TableCaption>
+        <TableHeader className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-[#0d0d0c]'>
+          <TableRow>
+            {colNames.map((colName, i) => (
+              <TableHead key={'th-' + colName + i}>{colName}</TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody className='divide-y divide-gray-400 divide-opacity-40 text-lg'>
-          {data.map((row: any, index: number) => (
-            <tr
-              key={index}
-              className='border-b border-solid border-gray-400 border-opacity-40 text-lg hover:bg-gray-800'
-            >
-              <td className='p-2 text-center'>{index}</td>
-              {colNames.map((col: any) => (
-                <td
-                  key={col}
-                  className='mx-1 max-w-8 overflow-x-scroll p-2 text-center'
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((d: any, i: number) => (
+            <TableRow key={'tr-' + i}>
+              {colNames.map((colName, j) => (
+                <TableCell
+                  key={'td-' + colName + j}
+                  className='max-w-40 overflow-scroll'
                 >
-                  {parseTableData(row[col])}
-                </td>
+                  {parseTableData(d[colName])}
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
+        {/* <TableFooter>
+        <TableRow>
+          <TableCell colSpan={3}>Total</TableCell>
+          <TableCell className='text-right'>$2,500.00</TableCell>
+        </TableRow>
+      </TableFooter> */}
       </table>
     </div>
   );
 };
 
-export default Table;
+export default TableComponent;

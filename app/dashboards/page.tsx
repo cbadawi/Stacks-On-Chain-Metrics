@@ -1,8 +1,6 @@
-import AllDashboardsWrapper from './AllDashboardsWrapper';
 import { getDashboards } from '../lib/db/dashboards/dashboard';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import UserDashboardsWrapper from './UserDashboardsWrapper';
 
 interface DashPageProps {
