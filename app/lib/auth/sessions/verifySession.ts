@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers';
 import { decryptSession } from './session';
-import { redirect } from 'next/navigation';
 
 /**
  * Reads the session cookie and verifies it.

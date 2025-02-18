@@ -23,6 +23,9 @@ import {
   updateTokensUsed,
 } from '../db/owner/tokens';
 import { verifySession } from '../auth/sessions/verifySession';
+import { headers } from 'next/headers';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export type Result = Record<string, string | number>;
 
@@ -32,6 +35,15 @@ export interface ServerResponse<T> {
   message: string;
   response: T;
 }
+
+const redis = new Redis({
+  url: process.env.REDIS_URL,
+  token: process.env.REDIS_TOKEN,
+});
+const rateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(Number(process.env.RL_TOKENS) || 10, '60 s'),
+});
 
 const anthropic = createAnthropic({
   apiKey: process.env.CLAUDE_API_KEY,
@@ -47,6 +59,16 @@ export async function fetchData(
   explain = false
 ): Promise<ServerResponse<{ data: Result[] | null }>> {
   'use server';
+
+  const ip = headers().get('x-forwarded-for') || 'unknown';
+  const { success: rateSuccess } = await rateLimit.limit(ip);
+  if (!rateSuccess) {
+    return {
+      success: false,
+      message: 'Too many requests. Please try again later.',
+      response: { data: null },
+    };
+  }
 
   const session = await verifySession();
   if (!session) {
