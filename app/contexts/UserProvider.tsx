@@ -16,7 +16,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const appConfig = new AppConfig(['publish_data']);
   const userSession = new UserSession({ appConfig });
-  const [userData, setUserData] = useState<any | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   return (
     <UserContext.Provider value={{ userSession, userData, setUserData }}>

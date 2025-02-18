@@ -74,7 +74,6 @@ export async function fetchData(
 
   try {
     console.time('sql');
-    console.log({ query, cleanedQuery });
     const data = await stacksPool.query(cleanedQuery);
     console.timeEnd('sql');
     log.info('fetchData result', { data });
@@ -297,7 +296,6 @@ export async function runQueryCombined(
 
   const isAiPrompt = findIsAIPrompt(query);
   const session = await verifySession();
-  console.log('runQueryCombined', { session });
   if (!session) {
     return {
       success: false,
@@ -341,7 +339,6 @@ export async function runQueryCombined(
     prompt,
     sql,
   });
-  console.log({ sql });
   const fetchResult = await fetchData(finalQuery);
   if (!fetchResult.success) {
     return {

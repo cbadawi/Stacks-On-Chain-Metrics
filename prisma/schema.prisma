@@ -61,7 +61,6 @@ model TokenPrice {
 model Owner {
   id         Int         @id @default(autoincrement())
   address    String      @unique
-  appKey     String      @unique
   name       String?
   tokens     Int         @default(0) // tokens already used by the user
   dashboards Dashboard[]

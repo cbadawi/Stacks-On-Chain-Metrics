@@ -28,7 +28,8 @@ const Dashboards = async ({ params }: DashboardProps) => {
   const dashboard = await getDashboardAndCharts({
     id,
   });
-  if (!dashboard) redirect('/dashboards');
+  if (!dashboard || !dashboard.response) redirect('/dashboards');
+
   return (
     <div className='mx-4 flex h-full flex-col'>
       <EditModeProvider>
@@ -36,16 +37,19 @@ const Dashboards = async ({ params }: DashboardProps) => {
           <CardHeader>
             <div className='flex items-center justify-between'>
               <CardTitle className='text-3xl font-normal'>
-                {dashboard.title}
+                {dashboard.response.title}
               </CardTitle>
-              <DashboardOptions owner={dashboard.owner.address} />
+              <DashboardOptions
+                id={dashboard.response.id}
+                owner={dashboard.response.owner.address}
+              />
             </div>
-            <CardDescription>{dashboard.description}</CardDescription>
+            <CardDescription>{dashboard.response.description}</CardDescription>
           </CardHeader>
         </Card>
         <div>
           <ChartsAndVariablesContainer
-            dashboard={dashboard}
+            dashboard={dashboard.response}
             variablesFormId={variablesFormId}
           />
         </div>

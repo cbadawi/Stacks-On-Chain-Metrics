@@ -16,17 +16,19 @@ const Dashboards = async ({ searchParams }: DashPageProps) => {
           <CardTitle className='text-2xl font-normal'>Dashboards</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='all-dashboards flex max-h-[70%] w-[70%] flex-col gap-4'>
-            {dashboards.map((d, index) => (
-              <Link
-                key={'dash-link-' + d.id + '-' + d.title}
-                href={'/dashboards/' + d.id}
-                className='dashboard-link flex w-full cursor-pointer overflow-hidden border border-gray-500 p-2 font-semibold hover:bg-orange-500'
-              >
-                {d.title}
-              </Link>
-            ))}
-          </div>
+          {dashboards.response && (
+            <div className='all-dashboards flex max-h-[70%] w-[70%] flex-col gap-4'>
+              {dashboards.response.map((d, index) => (
+                <Link
+                  key={'dash-link-' + d.id + '-' + d.title}
+                  href={'/dashboards/' + d.id}
+                  className='dashboard-link flex w-full cursor-pointer overflow-hidden border border-gray-500 p-2 font-semibold hover:bg-orange-500'
+                >
+                  {d.title}
+                </Link>
+              ))}
+            </div>
+          )}
         </CardContent>
         <UserDashboardsWrapper />
       </Card>

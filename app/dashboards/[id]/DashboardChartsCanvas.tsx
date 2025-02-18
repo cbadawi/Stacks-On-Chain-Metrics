@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useEditMode } from './EditModeContext';
-import { ChartWithData } from '@/app/lib/db/dashboards/dashboard';
 import ResizableChart from '@/app/components/dashboards/ResizableChart';
 import dynamic from 'next/dynamic';
 import 'react-grid-layout/css/styles.css';
@@ -61,7 +60,6 @@ const DashboardChartsCanvas = ({
       h: Math.ceil(chart.height / GRID_UNIT_PX) || 4,
     })) as Layout[];
     setLayout(newLayout);
-    console.log('useEffect', { newLayout });
   }, [charts]);
 
   const onLayoutChange = (newLayout: Layout[]) => {

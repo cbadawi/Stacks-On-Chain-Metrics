@@ -3,6 +3,13 @@
 import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
 import prisma from '../client';
 import { VariableType } from '@/app/components/helpers';
+import { verifySession } from '../../auth/sessions/verifySession';
+
+interface ServerResponse<T> {
+  success: boolean;
+  message: string;
+  response: T | null;
+}
 
 export async function addChart({
   dashboardId,
@@ -26,9 +33,29 @@ export async function addChart({
   width: number;
   height: number;
   variables: VariableType;
-  axesTypes?: LeftRight[] | undefined;
-  columnTypes?: CustomizableChartTypes[] | undefined;
-}) {
+  axesTypes?: LeftRight[];
+  columnTypes?: CustomizableChartTypes[];
+}): Promise<ServerResponse<any>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
+
+  const dashboard = await prisma.dashboard.findUnique({
+    where: { id: dashboardId, owner: { address: session.userId } },
+  });
+  if (!dashboard) {
+    return {
+      success: false,
+      message: 'Dashboard not found or unauthorized.',
+      response: null,
+    };
+  }
+
   const newChart = await prisma.chart.create({
     data: {
       title,
@@ -42,40 +69,71 @@ export async function addChart({
       variables,
     },
   });
-
-  return newChart;
+  return {
+    success: true,
+    message: 'Chart added successfully.',
+    response: newChart,
+  };
 }
 
-export async function getCharts({ dashboardId }: { dashboardId: number }) {
+export async function getCharts({
+  dashboardId,
+}: {
+  dashboardId: number;
+}): Promise<ServerResponse<any[]>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: [],
+    };
+  }
   const charts = await prisma.chart.findMany({
     where: { dashboardId },
     orderBy: { y: 'asc' },
   });
-
-  return charts;
+  return {
+    success: true,
+    message: 'Charts retrieved successfully.',
+    response: charts,
+  };
 }
 
 export async function deleteChart({
   id,
   dashboardId,
-  owner,
-  appKey,
 }: {
   dashboardId: number;
   owner: string;
-  appKey: string;
   id: number;
-}) {
+}): Promise<ServerResponse<any>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
   const dashboard = await prisma.dashboard.findUnique({
-    where: { id: dashboardId, owner: { appKey, address: owner } },
+    where: { id: dashboardId, owner: { address: session.userId } },
   });
-
-  if (!dashboard) return;
-  const charts = await prisma.chart.delete({
+  if (!dashboard) {
+    return {
+      success: false,
+      message: 'Dashboard not found or unauthorized.',
+      response: null,
+    };
+  }
+  const deletedChart = await prisma.chart.delete({
     where: { id, dashboardId },
   });
-
-  return charts;
+  return {
+    success: true,
+    message: 'Chart deleted successfully.',
+    response: deletedChart,
+  };
 }
 
 export async function persistChartUpdate({
@@ -96,17 +154,30 @@ export async function persistChartUpdate({
   query?: string;
   type?: ChartType;
   id: number;
-}) {
-  console.log('persistChartUpdate', {
-    title,
-    x,
-    y,
-    height,
-    width,
-    query,
-    type,
-    id,
+}): Promise<ServerResponse<any>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
+
+  const chart = await prisma.chart.findUnique({
+    where: { id },
+    select: {
+      dashboardId: true,
+      dashboard: { select: { owner: { select: { address: true } } } },
+    },
   });
+  if (!chart || chart.dashboard.owner.address !== session.userId) {
+    return {
+      success: false,
+      message: 'Dashboard not found or unauthorized.',
+      response: null,
+    };
+  }
   const data: Record<string, any> = {};
   if (title !== undefined) data.title = title;
   if (x !== undefined) data.x = x;
@@ -120,5 +191,9 @@ export async function persistChartUpdate({
     where: { id },
     data,
   });
-  return updatedChart;
+  return {
+    success: true,
+    message: 'Chart updated successfully.',
+    response: updatedChart,
+  };
 }

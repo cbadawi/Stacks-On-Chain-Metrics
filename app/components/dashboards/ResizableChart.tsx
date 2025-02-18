@@ -62,11 +62,11 @@ const ResizableChart = ({
     console.log('fetchChartData', { chart, variables });
     try {
       const queryWithVariables = replaceVariables(chart.query, variables);
-      const response = await fetchData(queryWithVariables);
-      if (response.message) {
-        setError(response.message);
+      const data = await fetchData(queryWithVariables);
+      if (data.message && !data.success) {
+        setError(data.message);
       } else {
-        setChartData(response.data ?? []);
+        setChartData(data.response.data ?? []);
       }
     } catch (err) {
       if (err instanceof Error) setError(err.message);
@@ -128,7 +128,6 @@ const ResizableChart = ({
                           id: chart.id,
                           dashboardId,
                           owner,
-                          appKey: userData?.appPrivateKey,
                         })
                       }
                     >

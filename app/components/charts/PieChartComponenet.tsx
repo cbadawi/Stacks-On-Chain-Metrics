@@ -38,7 +38,6 @@ function PieChartComponent({
     return data.reduce((acc, curr) => acc + curr[keys[1]], 0);
   }, []);
 
-  console.log({ data, keys, config });
   return (
     <ResponsiveContainer width='100%' height={height}>
       <ChartContainer

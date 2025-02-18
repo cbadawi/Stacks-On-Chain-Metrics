@@ -33,7 +33,6 @@ const ChartsAndVariablesContainer = ({
   dashboard: DashboardWithCharts;
   variablesFormId: string;
 }) => {
-  // Create a state object keyed by variable name for the initial values
   const defaultVariableValues = getDefaultVariableValues(dashboard);
   const variableKeys = Object.keys(defaultVariableValues || {});
 
@@ -47,18 +46,15 @@ const ChartsAndVariablesContainer = ({
       )
     : false;
 
-  // Update formValues on input change
   const handleInputChange =
     (variable: string) => (e: ChangeEvent<HTMLInputElement>) => {
       setActiveValues((prev) => ({ ...prev, [variable]: e.target.value }));
     };
 
-  // // On form submit, update the activeVariables state
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isFormValid) return;
     setActiveValues(activeValues);
-    console.log('Running with variables:', activeValues);
   };
 
   return (

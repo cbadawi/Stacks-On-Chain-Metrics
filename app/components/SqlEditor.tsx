@@ -53,9 +53,10 @@ const SqlEditor = ({
         mode='mysql'
         theme={theme === 'dark' ? 'terminal' : 'github'}
         name='sqlEditor'
-        onLoad={(editor) =>
+        onLoad={
+          (editor) => {}
           // todo
-          console.log('set loading and <Spinner /> to false')
+          // console.log('set loading and <Spinner /> to false')
         }
         onChange={(newValue) => setQuery(newValue as string)}
         fontSize={14}

@@ -3,6 +3,13 @@
 import { addOwner, getOwner } from '../owner';
 import { Chart, Dashboard, Owner } from '@prisma/client';
 import prisma from '../client';
+import { verifySession } from '../../auth/sessions/verifySession';
+
+interface ServerResponse<T> {
+  success: boolean;
+  message: string;
+  response: T | null;
+}
 
 export type ChartWithData = { data: any[] } & Chart;
 
@@ -14,14 +21,20 @@ export type DashboardWithCharts = Dashboard & {
 export async function addDashboard({
   title,
   privateDashboard,
-  password,
   address,
 }: {
   title: string;
   address: string;
-  privateDashboard?: boolean | undefined;
-  password?: string | undefined;
-}) {
+  privateDashboard?: boolean;
+}): Promise<ServerResponse<Dashboard>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
   let owner = await getOwner(address);
   if (!owner) owner = await addOwner(address);
   const newDashboard = await prisma.dashboard.create({
@@ -31,7 +44,11 @@ export async function addDashboard({
       ownerId: owner.id,
     },
   });
-  return newDashboard;
+  return {
+    success: true,
+    message: 'Dashboard created successfully.',
+    response: newDashboard,
+  };
 }
 
 export async function getDashboardAndCharts({
@@ -44,7 +61,15 @@ export async function getDashboardAndCharts({
   id?: number;
   searchParams?: any;
   includeCharts?: boolean;
-}) {
+}): Promise<ServerResponse<DashboardWithCharts | null>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
   const include = includeCharts
     ? { charts: { where: { deleted: false } } }
     : {};
@@ -56,7 +81,11 @@ export async function getDashboardAndCharts({
     },
     include: { owner: { select: { address: true } }, ...include },
   });
-  return dashboard;
+  return {
+    success: true,
+    message: 'Dashboard retrieved successfully.',
+    response: dashboard,
+  };
 }
 
 export async function getDashboards({
@@ -68,11 +97,24 @@ export async function getDashboards({
   id?: number;
   title?: string;
   includePrivate?: boolean;
-}): Promise<Dashboard[]> {
+}): Promise<ServerResponse<Dashboard[]>> {
+  // const session = await verifySession();
+  // if (!session) {
+  //   return {
+  //     success: false,
+  //     message: 'Invalid session. Sign in to continue.',
+  //     response: [],
+  //   };
+  // }
   const whereClause = await buildDashboardWhereClause(address, id, title);
-  return await prisma.dashboard.findMany({
+  const dashboards = await prisma.dashboard.findMany({
     where: { ...whereClause },
   });
+  return {
+    success: true,
+    message: 'Dashboards retrieved successfully.',
+    response: dashboards,
+  };
 }
 
 export async function getDashboard({
@@ -84,11 +126,24 @@ export async function getDashboard({
   id?: number;
   title?: string;
   includePrivate?: boolean;
-}): Promise<Dashboard | null> {
+}): Promise<ServerResponse<Dashboard | null>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
   const whereClause = await buildDashboardWhereClause(address, id, title);
-  return await prisma.dashboard.findFirst({
+  const dashboard = await prisma.dashboard.findFirst({
     where: { ...whereClause },
   });
+  return {
+    success: true,
+    message: 'Dashboard retrieved successfully.',
+    response: dashboard,
+  };
 }
 
 async function buildDashboardWhereClause(
@@ -110,4 +165,43 @@ async function buildDashboardWhereClause(
   if (id) whereClause = { ...whereClause, id };
   if (title) whereClause = { ...whereClause, title };
   return whereClause;
+}
+
+export async function deleteDashboard({
+  id,
+}: {
+  id: number;
+}): Promise<ServerResponse<Dashboard | null>> {
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: null,
+    };
+  }
+  const dashboard = await prisma.dashboard.findFirst({
+    where: {
+      id,
+      owner: {
+        address: session.userId,
+      },
+      deleted: false,
+    },
+  });
+  if (!dashboard) {
+    return {
+      success: false,
+      message: 'Dashboard not found or unauthorized.',
+      response: null,
+    };
+  }
+  const deletedDashboard = await prisma.dashboard.delete({
+    where: { id },
+  });
+  return {
+    success: true,
+    message: 'Dashboard deleted successfully.',
+    response: deletedDashboard,
+  };
 }

@@ -13,14 +13,18 @@ const UserDashboardsWrapper = () => {
 
   useEffect(() => {
     const fetchDashboards = async (address?: string) => {
+      console.log('UserDashboardsWrapper', {
+        address,
+        userData, // userData is null
+      });
       if (!address) return;
       const dashboards = await getDashboards({ address });
-      setDashboards(dashboards);
+      setDashboards(dashboards.response ?? []);
     };
 
     const address = userData?.profile.stxAddress.mainnet;
     fetchDashboards(address);
-  }, []);
+  }, [userData]);
 
   if (!userData) return null;
 

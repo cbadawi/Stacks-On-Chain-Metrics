@@ -78,14 +78,13 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
       appDetails: getAppDetails(),
       redirectTo: '/',
       onFinish: async (payload: FinishedAuthData) => {
-        console.log('onFinish', payload);
         if (typeof window !== 'undefined') {
+          const userData = payload.userSession.loadUserData();
           await signMessage();
+          await createOwner(userData.profile.stxAddress.mainnet).catch(
+            (e) => {}
+          );
           window.location.reload();
-          await createOwner(
-            payload.userSession.loadUserData().profile.stxAddress.mainnet,
-            payload.userSession.loadUserData().appPrivateKey
-          ).catch((e) => {});
         }
       },
       onCancel: () => {

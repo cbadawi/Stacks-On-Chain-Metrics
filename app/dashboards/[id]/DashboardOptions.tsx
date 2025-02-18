@@ -15,8 +15,9 @@ import {
 import { useEditMode } from './EditModeContext';
 import { EllipsisVertical } from 'lucide-react';
 import { useUser } from '@/app/contexts/UserProvider';
+import { deleteDashboard } from '@/app/lib/db/dashboards/dashboard';
 
-const DashboardOptions = ({ owner }: { owner: string }) => {
+const DashboardOptions = ({ owner, id }: { id: number; owner: string }) => {
   const { editMode, setEditMode } = useEditMode();
   const { userData } = useUser();
 
@@ -41,7 +42,7 @@ const DashboardOptions = ({ owner }: { owner: string }) => {
               className='h-full w-full'
               onClick={handleToggleEditMode}
             >
-              {/* use locks svg instead */}
+              {/* todo use locks svg instead */}
               {editMode ? 'Save Editing' : 'Enable Editing'}
             </Button>
           </DropdownMenuItem>
@@ -57,7 +58,11 @@ const DashboardOptions = ({ owner }: { owner: string }) => {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Button variant='destructive' className='h-full w-full'>
+            <Button
+              variant='destructive'
+              className='h-full w-full'
+              onClick={() => deleteDashboard({ id })}
+            >
               Delete
             </Button>
           </DropdownMenuItem>

@@ -31,7 +31,6 @@ const QueryWrapper = () => {
     QueryExplanation[] | null
   >(null);
   const { userSession, userData } = useUser();
-  console.log({ userData, userSession });
 
   const latestRequestRef = useRef(0);
 
@@ -78,8 +77,6 @@ const QueryWrapper = () => {
             return;
           }
         }
-        console.log('running query ', { userData }, query, vars);
-
         const result = await runQueryCombined(
           userData?.profile.stxAddress.mainnet,
           query,
