@@ -35,7 +35,7 @@ const QueryWrapper = () => {
 
   const latestRequestRef = useRef(0);
 
-  // Helper to extract variables from inputs on the page
+  // todo refactor to not reach into the dom to get variables
   const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
@@ -80,7 +80,6 @@ const QueryWrapper = () => {
         }
         console.log('running query ', { userData }, query, vars);
 
-        // The new response type is now { success, message, response }
         const result = await runQueryCombined(
           userData?.profile.stxAddress.mainnet,
           query,
@@ -95,7 +94,6 @@ const QueryWrapper = () => {
           return;
         }
 
-        // Destructure the inner response
         const {
           data: responseData,
           isAiPrompt,
@@ -121,7 +119,6 @@ const QueryWrapper = () => {
     const { prompt, sql } = seperatePromptFromSql(query);
     const result = await explainQuery(prompt, sql);
 
-    // Check if the explainQuery call was successful
     if (!result.success) {
       setError(result.message);
       setIsLoading(false);

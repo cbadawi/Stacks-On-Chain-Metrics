@@ -99,7 +99,7 @@ const DashboardChartsCanvas = ({
           isDraggable={editMode}
           isResizable={editMode}
           resizeHandles={['se']}
-          // TODO gave up on figuring out how to customize resize handle
+          // TODO gave up on figuring out how to customize resize handle. increment this. hours spent: 3
           // resizeHandle={(resizeHanldle: string) => (
           //   <CustomResizeHandle resizeHandle={resizeHanldle} />
           // )}
