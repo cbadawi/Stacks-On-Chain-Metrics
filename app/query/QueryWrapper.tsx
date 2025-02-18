@@ -11,22 +11,15 @@ import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
 import { findIsAIPrompt, seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
-import {
-  explainQuery,
-  fetchData,
-  generateQuery,
-  runQueryCombined,
-} from '../lib/ai/query';
-import { getTokensPurchased, getTokensUsed } from '../lib/db/owner/tokens';
+import { explainQuery, runQueryCombined } from '../lib/ai/query';
 import { useUser } from '../contexts/UserProvider';
-import { replaceVariables } from '../lib/variables';
 
 const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
 -- followed by your prompt here.
 
 -- Postgresql 15
 -- You can use variables by wrapping words in double brackets {{}}
-select * from blocks limit 1;`;
+select max(block_height) from blocks;`;
 // TODO change default query to something more recent
 
 const QueryWrapper = () => {
@@ -39,6 +32,7 @@ const QueryWrapper = () => {
     QueryExplanation[] | null
   >();
   const { userSession, userData } = useUser();
+  console.log({ userData, userSession });
 
   const latestRequestRef = useRef(0);
 

@@ -14,7 +14,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { APP_NAME } from '@/app/appDetails';
+import { APP_NAME } from '@/lib/appDetails';
 
 const Options = () => {
   return (

@@ -52,11 +52,13 @@ function LineChartComponent({
           <YAxis domain={[minYValue, maxYValue]} hide={true} />
 
           <ChartTooltip
-            cursor={false}
+            cursor={true}
             content={
               <ChartTooltipContent
                 indicator='line'
-                labelFormatter={(value) => String(value)}
+                labelFormatter={
+                  (value, payload) => String(value) //+ JSON.stringify(payload)
+                }
               />
             }
           />

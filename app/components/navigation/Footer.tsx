@@ -1,4 +1,4 @@
-import { APP_NAME } from '@/app/appDetails';
+import { APP_NAME } from '@/lib/appDetails';
 import React from 'react';
 
 const Footer = () => {
