@@ -22,22 +22,40 @@ import {
   getTokensUsed,
   updateTokensUsed,
 } from '../db/owner/tokens';
+import { verifySession } from '../auth/sessions/verifySession';
 
 export type Result = Record<string, string | number>;
+
+/** A common server response type */
+export interface ServerResponse<T> {
+  success: boolean;
+  message: string;
+  response: T;
+}
 
 const anthropic = createAnthropic({
   apiKey: process.env.CLAUDE_API_KEY,
 });
 
-const claude = anthropic('claude-3-5-sonnet-latest');
+const claude = anthropic('claude-3-5-haiku-latest');
 
-type FetchDataResponse = { data: Result[] | null; message?: string };
+// ---------------------------------------------------------------------
+// fetchData
+// ---------------------------------------------------------------------
 export async function fetchData(
   query: string,
   explain = false
-): Promise<FetchDataResponse> {
+): Promise<ServerResponse<{ data: Result[] | null }>> {
   'use server';
-  // await new Promise((resolve) => setTimeout(resolve, 3500));
+
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: { data: null },
+    };
+  }
 
   let cleanedQuery = cleanQuery(query.trim());
   const queryWithoutComments = cleanedQuery
@@ -61,44 +79,65 @@ export async function fetchData(
     console.timeEnd('sql');
     log.info('fetchData result', { data });
 
-    const response: FetchDataResponse = { data: data.rows as Result[] };
-    if ('data' in response && !response.data?.length) {
-      response.message = 'Empty response.';
-    }
-
-    return response;
+    const rows = data.rows as Result[];
+    const msg =
+      rows.length === 0 ? 'Empty response.' : 'Query executed successfully.';
+    return {
+      success: true,
+      message: msg,
+      response: { data: rows },
+    };
   } catch (error: any) {
     if (error instanceof Error) {
       log.error('fetchData error', { error });
-      return { message: error.message ?? JSON.stringify(error), data: null };
+      return {
+        success: false,
+        message: error.message ?? JSON.stringify(error),
+        response: { data: null },
+      };
     }
     throw error;
   }
 }
 
+// ---------------------------------------------------------------------
+// generateQuery
+// ---------------------------------------------------------------------
 export const generateQuery = async (
   address: string,
   prompt: string,
   sql?: string
-) => {
+): Promise<ServerResponse<{ query?: string }>> => {
   'use server';
+
+  // Protect server action
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: {},
+    };
+  }
+
   try {
     const generateQueryUserPromptWrapper = `
       USER REQUEST: 
       prompt: ${prompt} 
-			${sql ? 'sql: ' + sql : ''}
+      ${sql ? 'sql: ' + sql : ''}
       Based on the user's request, generate a PostgreSQL query that meets these conditions:
       - Follow all the system rules exactly.
       - Use the documentation for the table columns, indexes and foreign keys for joins. Use the indexes for filtering to optimize the query.
       - ALWAYS ADD A LIMIT 300 to the query even if otherwise specified.
       - Format the query with clear indentations and line breaks. Do NOT add code blocks.
-      - If asked about the time, use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time))  to get the date if asked. join on "blocks" table only if block_time is not present
-      - double brackets {{}}, for example "where block_height > {{variable}}" are a user defined variable which he will replace later, do not modify any bracket or the variable within.
+      - If asked about the time, use the table's block_time timestamp DATE_TRUNC('day', TO_TIMESTAMP(txs.block_time)) to get the date if asked. Join on the "blocks" table only if block_time is not present.
+      - double brackets {{}}, for example "where block_height > {{variable}}" are user defined variables which will be replaced later. Do not modify any bracket or the variable within.
 
       DO NOT include a table that is not mentioned here:
       documentation: ${documentation}
       ${pgSchema}
       `;
+
     const result = await generateText({
       model: claude,
       system: generateQuerySystemPrompt,
@@ -114,7 +153,7 @@ export const generateQuery = async (
     const {
       usage,
       steps,
-      response,
+      response: aiResponse,
       reasoning,
       warnings,
       toolCalls,
@@ -125,7 +164,7 @@ export const generateQuery = async (
       sql,
       usage,
       steps,
-      response,
+      aiResponse,
       reasoning,
       warnings,
       toolCalls,
@@ -134,15 +173,26 @@ export const generateQuery = async (
 
     await updateTokensUsed({ address, tokensUsed: usage.completionTokens });
 
-    if (isValidQuery)
+    if (isValidQuery) {
       return {
-        query: aiquery,
+        success: true,
+        message: 'Query generated successfully.',
+        response: { query: aiquery },
       };
+    }
 
-    return { message: result.text };
-  } catch (e) {
+    return {
+      success: false,
+      message: result.text,
+      response: {},
+    };
+  } catch (e: any) {
     log.error('Failed to generateQuery ' + e);
-    throw new Error('Failed to generateQuery ' + e);
+    return {
+      success: false,
+      message: 'Failed to generateQuery: ' + e,
+      response: {},
+    };
   }
 };
 
@@ -150,8 +200,25 @@ const removeCodeBlocks = (text: string) => {
   return text.replace(/^```[\s\S]*?\n/, '').replace(/\n```$/, '');
 };
 
-export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
+// ---------------------------------------------------------------------
+// explainQuery
+// ---------------------------------------------------------------------
+export const explainQuery = async (
+  userPrompt: string,
+  sqlQuery: string
+): Promise<ServerResponse<any>> => {
   'use server';
+
+  // Protect server action
+  const session = await verifySession();
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: {},
+    };
+  }
+
   try {
     const queryPlan = await fetchData(sqlQuery, true);
     const result = await generateObject({
@@ -167,9 +234,9 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
       OPTIMIZATIONS : 
       Extremely important to mention future optimizations you found, using the query plan, that are not applied to the postgres query to make it run faster. Such as:
       - count(*) instead of counting a specific column.
-      - avoid joins unles necessary.
+      - avoid joins unless necessary.
       - use indexes to filter the results or to join on tables.
-      - If the query is filtering on the index but the index is not used, mention that and why. One potential solution would be to pass the filter as a variable. For example	burn_block_time >= {{variable}} instead of 	burn_block_time >= EXTRACT(EPOCH FROM NOW()).
+      - If the query is filtering on the index but the index is not used, mention that and why. One potential solution would be to pass the filter as a variable. For example	burn_block_time >= {{variable}} instead of burn_block_time >= EXTRACT(EPOCH FROM NOW()).
       for info : double brackets {{variables}} inside the query are variables my app replaces with a precomputed value.  
 
       Be very specific, mention inefficiencies in details in the query plan and how to fix them.
@@ -178,7 +245,7 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
       When you explain you must take a section of the query, and then explain it with its optimization if it exists. Each "section" should be unique. So in a query like: "SELECT * FROM blocks limit 20", the sections could be "SELECT *", "FROM blocks", "LIMIT 20".
       - In the first section, provide a brief overview of the query, but more importantly, mention the optimizations & modifications that are not yet applied to the query.
 
-      If a section doesnt have any explanation, include the section, but leave the explanation empty.
+      If a section doesn't have any explanation, include the section, but leave the explanation empty.
       Mentioning an optimization is more important than explaining the section. Use the postgres query plan statement:
       
       QUERY PLAN : ${queryPlan}
@@ -197,37 +264,74 @@ export const explainQuery = async (userPrompt: string, sqlQuery: string) => {
       result: result.object,
     });
 
-    return result.object;
-  } catch (e) {
+    return {
+      success: true,
+      message: 'Query explained successfully.',
+      response: result.object,
+    };
+  } catch (e: any) {
     console.error(e);
-    throw new Error('Failed to generate explainQuery');
+    return {
+      success: false,
+      message: 'Failed to generate explainQuery',
+      response: {},
+    };
   }
 };
 
+// ---------------------------------------------------------------------
+// runQueryCombined
+// ---------------------------------------------------------------------
 export async function runQueryCombined(
   address: string,
   query: string,
   variables: VariableType
-) {
+): Promise<
+  ServerResponse<{
+    data: Result[] | null;
+    isAiPrompt: boolean;
+    displayQuery: string;
+  }>
+> {
+  'use server';
+
   const isAiPrompt = findIsAIPrompt(query);
+  const session = await verifySession();
+  console.log('runQueryCombined', { session });
+  if (!session) {
+    return {
+      success: false,
+      message: 'Invalid session. Sign in to continue.',
+      response: {
+        data: null,
+        isAiPrompt,
+        displayQuery: query,
+      },
+    };
+  }
+
   const { prompt, sql } = seperatePromptFromSql(query);
   if (isAiPrompt) {
+    // TODO token check
     const [tokensUsed, tokensPurchased] = await Promise.all([
       getTokensUsed({ address }),
       getTokensPurchased({ address }),
     ]);
-    // if (tokensUsed > tokensPurchased)
-    //   throw new Error(
-    //     'You have run out of tokens. Please purchase more to continue.'
-    //   );
-
     const aiQueryResult = await generateQuery(address, prompt, sql);
-    if (!aiQueryResult.query) {
-      throw new Error(
-        aiQueryResult.message || 'Failed to generate SQL query from AI prompt.'
-      );
+    if (!aiQueryResult.response.query) {
+      return {
+        success: false,
+        message:
+          aiQueryResult.message ||
+          'Failed to generate SQL query from AI prompt.',
+        response: {
+          data: null,
+          isAiPrompt,
+          displayQuery: query,
+        },
+      };
     }
-    query = aiQueryResult.query;
+    query = aiQueryResult.response.query;
   }
   const finalQuery = replaceVariables(query, variables);
   log.info('runQueryCombined', {
@@ -238,11 +342,25 @@ export async function runQueryCombined(
     sql,
   });
   console.log({ sql });
-  const response = await fetchData(finalQuery);
-  console.log({ response });
+  const fetchResult = await fetchData(finalQuery);
+  if (!fetchResult.success) {
+    return {
+      success: false,
+      message: fetchResult.message,
+      response: {
+        data: null,
+        isAiPrompt,
+        displayQuery: `-- AI ${prompt} \n${query}`,
+      },
+    };
+  }
   return {
-    ...response,
-    displayQuery: `-- AI ${prompt} \n${query}`,
-    isAiPrompt,
+    success: true,
+    message: 'Query executed successfully.',
+    response: {
+      data: fetchResult.response.data,
+      isAiPrompt,
+      displayQuery: `-- AI ${prompt} \n${query}`,
+    },
   };
 }

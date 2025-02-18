@@ -56,7 +56,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
         await signup({
           publicKey,
           signature,
-          address: userData?.profile.stxAddress.mainnet,
+          address: userSession.loadUserData()?.profile.stxAddress.mainnet,
         });
       },
     });

@@ -20,37 +20,35 @@ const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai"
 -- Postgresql 15
 -- You can use variables by wrapping words in double brackets {{}}
 select max(block_height) from blocks;`;
-// TODO change default query to something more recent
 
 const QueryWrapper = () => {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<any[] | undefined | never[]>(undefined);
+  const [data, setData] = useState<any[] | undefined>(undefined);
   const [variableDefaults, setVariableDefaults] = useState<VariableType>({});
   const [queryExplanations, setQueryExplanations] = useState<
     QueryExplanation[] | null
-  >();
+  >(null);
   const { userSession, userData } = useUser();
   console.log({ userData, userSession });
 
   const latestRequestRef = useRef(0);
 
+  // Helper to extract variables from inputs on the page
   const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const inputElements = document.getElementsByClassName('variable-input');
     const variables: VariableType = {};
-    const hasAllVariables = Array.from(inputElements).every((element) => {
+    Array.from(inputElements).forEach((element) => {
       const classnames = element.className.split(' ');
       const variable = classnames.slice(-1)[0];
-      const value = (element as HTMLButtonElement).value;
-      if (!value) {
-        errorHandler && errorHandler(`Variable "${variable}" not set.`);
-        return '';
+      const value = (element as HTMLInputElement).value;
+      if (!value && errorHandler) {
+        errorHandler(`Variable "${variable}" not set.`);
       }
       variables[variable] = value;
-      return true;
     });
     setVariableDefaults(variables);
     return variables;
@@ -75,23 +73,36 @@ const QueryWrapper = () => {
         const vars = getVariables(setError);
         if (findIsAIPrompt(query)) {
           if (!userData) {
-            setError('Connnect wallet to run AI prompts.');
+            setError('Connect wallet to run AI prompts.');
             setIsLoading(false);
             return;
           }
         }
-        const { displayQuery, isAiPrompt, ...response } =
-          await runQueryCombined(
-            userData?.profile.stxAddress.mainnet,
-            query,
-            vars
-          );
+        console.log('running query ', { userData }, query, vars);
+
+        // The new response type is now { success, message, response }
+        const result = await runQueryCombined(
+          userData?.profile.stxAddress.mainnet,
+          query,
+          vars
+        );
 
         if (currentRequestId !== latestRequestRef.current) return;
 
-        if (response.message) setError(response.message);
+        if (!result.success) {
+          setError(result.message);
+          setIsLoading(false);
+          return;
+        }
+
+        // Destructure the inner response
+        const {
+          data: responseData,
+          isAiPrompt,
+          displayQuery,
+        } = result.response;
         if (isAiPrompt) setQuery(displayQuery);
-        setData(response.data || []);
+        setData(responseData || []);
         setQueryExplanations(null);
       } catch (e: unknown) {
         if (currentRequestId !== latestRequestRef.current) return;
@@ -101,15 +112,22 @@ const QueryWrapper = () => {
         setIsLoading(false);
       }
     },
-    [userData, variableDefaults, query]
+    [userData, query]
   );
 
   const handleExplainQuery = async () => {
     setQueryExplanations(null);
     setIsLoading(true);
     const { prompt, sql } = seperatePromptFromSql(query);
-    const { explanations } = await explainQuery(prompt, sql);
-    setQueryExplanations(explanations);
+    const result = await explainQuery(prompt, sql);
+
+    // Check if the explainQuery call was successful
+    if (!result.success) {
+      setError(result.message);
+      setIsLoading(false);
+      return;
+    }
+    setQueryExplanations(result.response.explanations);
     setIsLoading(false);
   };
 
@@ -121,7 +139,7 @@ const QueryWrapper = () => {
         </div>
       );
 
-    if (!data?.length)
+    if (!data || data.length === 0)
       return (
         <StarterPlaceholderMessage
           start={() => {
@@ -158,7 +176,7 @@ const QueryWrapper = () => {
       <QueryVariablesForm query={query} />
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <Card className='relative my-12 h-auto rounded-t-3xl  px-0 py-4 '>
+        <Card className='relative my-12 h-auto rounded-t-3xl px-0 py-4 '>
           {getVisualization()}
         </Card>
       </div>

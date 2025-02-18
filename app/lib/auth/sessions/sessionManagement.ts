@@ -23,6 +23,7 @@ export async function createSession(
 
   // Set expiration as a Unix timestamp (7 days from now)
   const expiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+  console.log('encryptsession', address, publicKey, expiresAt);
   const sessionToken = await encryptSession({
     userId: address,
     publicKey,

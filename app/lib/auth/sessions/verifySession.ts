@@ -6,17 +6,19 @@ import { redirect } from 'next/navigation';
 
 /**
  * Reads the session cookie and verifies it.
- * If invalid or missing, redirects the user to the login page.
+ * If invalid or missing, return null
  */
 export async function verifySession() {
   const cookieStore = cookies();
   const token = cookieStore.get('session')?.value;
+  console.log('verifySession', { token });
   if (!token) {
-    redirect('/');
+    return null;
   }
   const session = await decryptSession(token!);
+  console.log('verifySession', { session });
   if (!session || !session.userId || !session.publicKey) {
-    redirect('/');
+    return null;
   }
   return session;
 }

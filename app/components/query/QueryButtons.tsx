@@ -62,7 +62,6 @@ type QueryButtonsProps = {
           explanation: string;
         }[]
       | null
-      | undefined
     >
   >;
   // chartColumnsTypes: CustomizableChartTypes[];
