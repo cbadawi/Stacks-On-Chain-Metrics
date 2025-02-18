@@ -9,11 +9,13 @@ import { config } from './config';
 
 class Logger {
   private winstonLogger: WinstonLogger;
-  private logtailLogger: Logtail;
+  private logtailLogger: Logtail | null;
 
   constructor() {
     // Initialize the Logtail instance.
-    this.logtailLogger = new Logtail(process.env.LOGTAIL_TOKEN!);
+    this.logtailLogger = process.env.LOGTAIL_TOKEN
+      ? new Logtail(process.env.LOGTAIL_TOKEN)
+      : null;
 
     // Initialize the Winston logger.
     this.winstonLogger = createLogger({
@@ -89,7 +91,7 @@ class Logger {
   ): void {
     // Log via Winston.
     this.winstonLogger.log({ level, message, ...meta });
-
+    if (!this.logtailLogger) return;
     // Log via Logtail using the corresponding log level.
     switch (level) {
       case 'error':
