@@ -26,7 +26,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { ChartType, Dashboard } from '@prisma/client';
 import { SelectDashboardInput } from './SelectDashboardInput';
-import { Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';
 import { addChartToDashboard } from '@/app/query/actions';
@@ -47,32 +46,42 @@ export const SaveToDashDialog = ({
 
   useEffect(() => {
     const fetchDashboards = async () => {
-      const dashboards = await getDashboards({ address: '' });
-      setDashboards(dashboards);
+      const dashboardsResp = await getDashboards({ address: '' });
+      if (dashboardsResp.response) setDashboards(dashboardsResp.response);
     };
     fetchDashboards();
   }, []);
 
   async function onSubmit(values: z.infer<typeof saveToDashboardSchema>) {
     try {
-      const response = await addChartToDashboard({
+      const addChartResponse = await addChartToDashboard({
         dashboardTitle: values.dashboardTitle,
         chartTitle: values.chartTitle,
         userAddress: '',
         chartType,
         privateDashboard: values.privateDashboard,
-        password: values.password,
+        dashboardPassword: values.password,
         query,
         variables: variableDefaults,
       });
-      toast('Chart has been added', {
-        description: values.chartTitle,
-        action: {
-          label: 'Go to dashboard ' + values.dashboardTitle,
-          onClick: () =>
-            window.open(`/dashboards/${response.dashboard.id}`, '_blank'),
-        },
-      });
+      if (!addChartResponse.success) {
+        toast.error('Failed to add chart', {
+          description: addChartResponse.message,
+        });
+      }
+      if ('dashboard' in addChartResponse) {
+        toast('Chart has been added', {
+          description: values.chartTitle,
+          action: {
+            label: 'Go to dashboard ' + values.dashboardTitle,
+            onClick: () =>
+              window.open(
+                `/dashboards/${addChartResponse.dashboard.id}`,
+                '_blank'
+              ),
+          },
+        });
+      }
       form.reset();
     } catch (error) {
       console.error('Form submission error', error);

@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useEditMode } from './EditModeContext';
+import { useEditMode } from '../../contexts/EditModeContext';
 import ResizableChart from '@/app/components/dashboards/ResizableChart';
 import dynamic from 'next/dynamic';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { Card } from '@/components/ui/card';
 import { Chart, ChartType } from '@prisma/client';
-import { persistChartUpdate } from '@/app/lib/db/dashboards/charts';
+import { updateChart } from '@/app/lib/db/dashboards/charts';
 import { Layout } from 'react-grid-layout';
 
 const GridLayout = dynamic(() => import('react-grid-layout'), { ssr: false });
@@ -68,7 +68,7 @@ const DashboardChartsCanvas = ({
     // Layout is changed on cscreen resize etc. so we only want to persist changes in edit mode
     if (!editMode) return;
     newLayout.forEach((item) => {
-      persistChartUpdate({
+      updateChart({
         id: parseInt(item.i),
         x: item.x * GRID_UNIT_PX,
         y: item.y * GRID_UNIT_PX,

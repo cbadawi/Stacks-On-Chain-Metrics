@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import DashboardOptions from './DashboardOptions';
-import { EditModeProvider } from './EditModeContext';
+import { EditModeProvider } from '../../contexts/EditModeContext';
 
 type DashboardProps = {
   params: { id: string };

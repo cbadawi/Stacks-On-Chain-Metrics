@@ -24,6 +24,8 @@ import { deleteChart } from '@/app/lib/db/dashboards/charts';
 import { replaceVariables } from '@/app/lib/variables';
 import { fetchData } from '@/app/lib/ai/query';
 import { useUser } from '@/app/contexts/UserProvider';
+import Link from 'next/link';
+import { QueryContextParams } from '@/app/contexts/QueryContext';
 
 type ResizableChartProps = {
   dashboardId: number;
@@ -113,13 +115,27 @@ const ResizableChart = ({
 
               {owner === userData?.profile.stxAddress.mainnet && (
                 <div className='my-5 flex items-center justify-between'>
-                  <Button
-                    variant='outline'
-                    disabled={true}
-                    aria-disabled={true}
+                  <Link
+                    href={{
+                      pathname: '/query',
+                      query: {
+                        dashboardId,
+                        query: chart.query,
+                        updateMode: true,
+                        chartId: chart.id,
+                        chartType: chart.type,
+                        chartTitle: chart.title,
+                      } as QueryContextParams,
+                    }}
                   >
-                    Edit Chart
-                  </Button>
+                    <Button
+                      variant='outline'
+                      // disabled={true}
+                      // aria-disabled={true}
+                    >
+                      Edit Chart
+                    </Button>
+                  </Link>
                   <DialogClose asChild>
                     <Button
                       variant='destructive'

@@ -136,7 +136,7 @@ export async function deleteChart({
   };
 }
 
-export async function persistChartUpdate({
+export async function updateChart({
   title,
   x,
   y,

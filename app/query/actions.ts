@@ -17,7 +17,6 @@ export async function addChartToDashboard({
   userAddress,
   chartType,
   privateDashboard,
-  password,
   query,
   variables,
 }: {
@@ -28,25 +27,31 @@ export async function addChartToDashboard({
   query: string;
   variables: VariableType;
   privateDashboard?: boolean;
-  password?: string;
+  dashboardPassword?: string;
 }) {
-  let dashboard: Dashboard | null = await getDashboard({
+  let dashboardResponse = await getDashboard({
     title: dashboardTitle,
     address: userAddress,
   });
-  if (!dashboard)
-    dashboard = await addDashboard({
+  let dashboard = dashboardResponse.response;
+  let message = dashboardResponse.message;
+  if (!dashboard) {
+    const addDashboardResp = await addDashboard({
       title: dashboardTitle,
       privateDashboard,
-      password,
       address: userAddress,
     });
-  else {
-    const currentCharts = await getCharts({ dashboardId: dashboard.id });
-    currentCharts.map((c) => c.x);
+    message = addDashboardResp.message;
+    dashboard = addDashboardResp.response;
+  } else {
+    // const currentCharts = await getCharts({ dashboardId: dashboard.id });
+    // currentCharts.map((c) => c.x);
   }
 
-  return await prisma.$transaction(async (tx) => {
+  if (!dashboard)
+    return { message: 'Failed to add chart: ' + message, success: false };
+
+  const response = await prisma.$transaction(async (tx) => {
     const newChart = await addChart({
       dashboardId: dashboard.id,
       title: chartTitle,
@@ -65,4 +70,6 @@ export async function addChartToDashboard({
       chart: newChart,
     };
   });
+
+  return { ...response, success: true };
 }

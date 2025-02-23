@@ -2,7 +2,7 @@ import React from 'react';
 import { Rnd } from 'react-rnd';
 import { Position, PositionWithID } from '../helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useEditMode } from '@/app/dashboards/[id]/EditModeContext';
+import { useEditMode } from '@/app/contexts/EditModeContext';
 import { Info } from 'lucide-react';
 import {
   Dialog,

@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEditMode } from './EditModeContext';
+import { useEditMode } from '../../contexts/EditModeContext';
 import { EllipsisVertical } from 'lucide-react';
 import { useUser } from '@/app/contexts/UserProvider';
 import { deleteDashboard } from '@/app/lib/db/dashboards/dashboard';

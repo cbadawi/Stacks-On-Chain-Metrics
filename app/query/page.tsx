@@ -1,5 +1,6 @@
 import React from 'react';
 import QueryWrapper from './QueryWrapper';
+import { QueryProvider } from '../contexts/QueryContext';
 
 const Query = async () => {
   return (
@@ -7,8 +8,9 @@ const Query = async () => {
       <h1 className='mx-10 mt-5 text-xl font-semibold'>
         Stacks On Chain AI Metrics
       </h1>
-
-      <QueryWrapper />
+      <QueryProvider>
+        <QueryWrapper />
+      </QueryProvider>
     </div>
   );
 };

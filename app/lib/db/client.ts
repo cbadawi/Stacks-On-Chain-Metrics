@@ -18,10 +18,6 @@ export default prisma;
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export const stacksPool = new Pool({
-  user: process.env.STACKS_DB_USER,
-  host: process.env.STACKS_DB_HOST,
-  database: process.env.STACKS_DB_DATABASE,
-  password: process.env.STACKS_DB_PASSWORD,
-  port: Number(process.env.STACKS_DB_PORT),
+  connectionString: process.env.DATABASE_URL,
   query_timeout: 100000,
 });

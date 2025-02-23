@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
@@ -13,16 +19,28 @@ import { findIsAIPrompt, seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
 import { explainQuery, runQueryCombined } from '../lib/ai/query';
 import { useUser } from '../contexts/UserProvider';
-
-const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai" 
--- followed by your prompt here.
-
--- Postgresql 15
--- You can use variables by wrapping words in double brackets {{}}
-select max(block_height) from blocks;`;
+import { useSearchParams } from 'next/navigation';
+import { useQuery } from '../contexts/QueryContext';
+import { DEFAULT_QUERY } from '@/lib/utils';
+import Link from 'next/link';
+import { LucideArrowLeft } from 'lucide-react';
 
 const QueryWrapper = () => {
-  const [query, setQuery] = useState(DEFAULT_QUERY);
+  const {
+    query,
+    setQuery,
+    setUpdateMode,
+    setDashboardId,
+    setChartId,
+    setChartType,
+    chartTitle,
+    setChartTitle,
+    updateMode,
+    dashboardId,
+  } = useQuery();
+  const { userData } = useUser();
+  const searchParams = useSearchParams();
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[] | undefined>(undefined);
@@ -30,19 +48,50 @@ const QueryWrapper = () => {
   const [queryExplanations, setQueryExplanations] = useState<
     QueryExplanation[] | null
   >(null);
-  const { userSession, userData } = useUser();
-
   const latestRequestRef = useRef(0);
 
-  // todo refactor to not reach into the dom to get variables
+  useEffect(() => {
+    const updateParam = searchParams.get('updateMode');
+    const isUpdate = Boolean(updateParam);
+    setUpdateMode(isUpdate);
+
+    if (isUpdate) {
+      const sqlParam = searchParams.get('query');
+      if (sqlParam && sqlParam !== query) {
+        setQuery(sqlParam);
+      }
+      const chartTitleParam = searchParams.get('chartTitle');
+      if (chartTitleParam) setChartTitle(chartTitleParam);
+
+      const dashboardIdParam = searchParams.get('dashboardId');
+      if (dashboardIdParam) setDashboardId(Number(dashboardIdParam));
+
+      const chartIdParam = searchParams.get('chartId');
+      if (chartIdParam) setChartId(Number(chartIdParam));
+
+      const chartTypeParam = searchParams.get('chartType');
+      if (chartTypeParam) setChartType(chartTypeParam);
+    }
+  }, [
+    searchParams,
+    query,
+    setQuery,
+    setUpdateMode,
+    setChartTitle,
+    setDashboardId,
+    setChartId,
+    setChartType,
+  ]);
+
   const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
     const inputElements = document.getElementsByClassName('variable-input');
     const variables: VariableType = {};
+
     Array.from(inputElements).forEach((element) => {
-      const classnames = element.className.split(' ');
-      const variable = classnames.slice(-1)[0];
+      const classNames = element.className.split(' ');
+      const variable = classNames[classNames.length - 1];
       const value = (element as HTMLInputElement).value;
       if (!value && errorHandler) {
         errorHandler(`Variable "${variable}" not set.`);
@@ -68,15 +117,15 @@ const QueryWrapper = () => {
       setError('');
       const currentRequestId = ++latestRequestRef.current;
 
+      const vars = getVariables(setError);
+
+      if (findIsAIPrompt(query) && !userData) {
+        setError('Connect wallet to run AI prompts.');
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const vars = getVariables(setError);
-        if (findIsAIPrompt(query)) {
-          if (!userData) {
-            setError('Connect wallet to run AI prompts.');
-            setIsLoading(false);
-            return;
-          }
-        }
         const result = await runQueryCombined(
           userData?.profile.stxAddress.mainnet,
           query,
@@ -99,20 +148,23 @@ const QueryWrapper = () => {
         if (isAiPrompt) setQuery(displayQuery);
         setData(responseData || []);
         setQueryExplanations(null);
+        if (!responseData?.length) setError('Empty response.');
       } catch (e: unknown) {
         if (currentRequestId !== latestRequestRef.current) return;
         setError((e as Error).message);
-      }
-      if (currentRequestId === latestRequestRef.current) {
-        setIsLoading(false);
+      } finally {
+        if (currentRequestId === latestRequestRef.current) {
+          setIsLoading(false);
+        }
       }
     },
-    [userData, query]
+    [userData, setQuery]
   );
 
   const handleExplainQuery = async () => {
     setQueryExplanations(null);
     setIsLoading(true);
+
     const { prompt, sql } = seperatePromptFromSql(query);
     const result = await explainQuery(prompt, sql);
 
@@ -125,15 +177,15 @@ const QueryWrapper = () => {
     setIsLoading(false);
   };
 
-  const getVisualization = () => {
-    if (isLoading)
+  const renderVisualization = () => {
+    if (isLoading) {
       return (
         <div className='flex h-[300px] items-center justify-center'>
           <Spinner />
         </div>
       );
-
-    if (!data || data.length === 0)
+    }
+    if (!data) {
       return (
         <StarterPlaceholderMessage
           start={() => {
@@ -142,6 +194,7 @@ const QueryWrapper = () => {
           }}
         />
       );
+    }
     return (
       <QueryVisualization
         data={data}
@@ -158,6 +211,17 @@ const QueryWrapper = () => {
 
   return (
     <div className='query-wrapper'>
+      {updateMode && (
+        <div>
+          <h1 className='mx-10 mt-5 font-semibold'>{chartTitle}</h1>{' '}
+          <Link
+            href={'/dashboards/' + (dashboardId ?? '')}
+            className='mx-10 mt-2 text-blue-500'
+          >
+            <span className='text-sm'>Back to Dashboards</span>
+          </Link>
+        </div>
+      )}
       <div className='editor-wrapper relative mx-10 mb-4 mt-5 flex items-center justify-center'>
         <SqlEditor
           query={query}
@@ -170,8 +234,9 @@ const QueryWrapper = () => {
       <QueryVariablesForm query={query} />
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
-        <Card className='relative my-12 h-auto rounded-t-3xl px-0 py-4 '>
-          {getVisualization()}
+        <Card className='relative my-12 h-auto rounded-t-3xl px-0 py-4'>
+          {JSON.stringify({ data })}
+          {renderVisualization()}
         </Card>
       </div>
     </div>
