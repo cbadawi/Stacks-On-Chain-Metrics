@@ -65,7 +65,7 @@ export async function fetchData(
   if (!rateSuccess) {
     return {
       success: false,
-      message: 'Too many requests. Please try again later.',
+      message: 'Rate Limited.',
       response: { data: null },
     };
   }

@@ -1,15 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { VariableType } from '../helpers';
 import { ChartType } from '@prisma/client';
 import { Save } from 'lucide-react';

@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
