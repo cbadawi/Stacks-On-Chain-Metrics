@@ -4,7 +4,7 @@ import React from 'react';
 import QueryErrorContainer from '../QueryErrorContainer';
 import LoadingSkeleton from '@/app/dashboards/loading';
 import ChartContainer from '../charts/ChartContainer';
-import { ChartType } from '@prisma/client';
+import { ChartType } from '../helpers';
 
 type ChartContentProps = {
   error: string;

@@ -7,10 +7,11 @@ import dynamic from 'next/dynamic';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import { Card } from '@/components/ui/card';
-import { Chart, ChartType } from '@prisma/client';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
 import { Layout } from 'react-grid-layout';
 import { toast } from 'sonner';
+import { ChartType } from '@/app/components/helpers';
+import type { Chart, Dashboard } from '@prisma/client';
 
 const GridLayout = dynamic(() => import('react-grid-layout'), { ssr: false });
 

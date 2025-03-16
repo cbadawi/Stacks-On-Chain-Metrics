@@ -81,7 +81,7 @@ export async function runQueryCombined(
     success: true,
     message: 'Query executed successfully.',
     response: {
-      data: fetchResult.response.data,
+      data: fetchResult.response?.data,
       isAiPrompt,
       displayQuery: `-- AI ${prompt} \n${query}`,
     },

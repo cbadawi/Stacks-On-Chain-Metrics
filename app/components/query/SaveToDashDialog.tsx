@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { VariableType } from '../helpers';
+import type { Chart, Dashboard } from '@prisma/client';
 import {
   Form,
   FormControl,
@@ -21,7 +21,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChartType, Dashboard } from '@prisma/client';
+import { ChartType, VariableType } from '../helpers';
+
 import { SelectDashboardInput } from './SelectDashboardInput';
 import { Button } from '@/components/ui/button';
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';

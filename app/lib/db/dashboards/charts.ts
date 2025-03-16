@@ -1,6 +1,7 @@
 'use server';
 
-import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
+import { CustomizableChartTypes, LeftRight } from '@prisma/client';
+import { ChartType } from '@/app/components/helpers';
 import prisma from '../client';
 import { VariableType } from '@/app/components/helpers';
 import { verifySession } from '../../auth/sessions/verifySession';

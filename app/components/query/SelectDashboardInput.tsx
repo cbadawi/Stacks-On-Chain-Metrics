@@ -11,7 +11,7 @@ import {
 import { Popover, PopoverTrigger } from '@/components/ui/popover';
 import { ControllerRenderProps } from 'react-hook-form';
 import { useState } from 'react';
-import { Dashboard } from '@prisma/client';
+import type { Dashboard } from '@prisma/client';
 
 export function SelectDashboardInput({
   field,

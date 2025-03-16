@@ -1,11 +1,11 @@
 'use client';
 
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';
-import { Dashboard } from '@prisma/client';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserProvider';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Chart, Dashboard } from '@prisma/client';
 
 const UserDashboardsWrapper = () => {
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);

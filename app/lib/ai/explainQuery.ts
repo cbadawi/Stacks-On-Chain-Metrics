@@ -10,10 +10,10 @@ import { verifySession } from '../auth/sessions/verifySession';
 import { model } from './client';
 import { fetchData } from './fetchData';
 
-export const explainQuery = async (
+export async function explainQuery(
   userPrompt: string,
   sqlQuery: string
-): Promise<{ success: boolean; message: string; response: any }> => {
+): Promise<{ success: boolean; message: string; response: any }> {
   'use server';
 
   // Protect server action
@@ -84,4 +84,4 @@ export const explainQuery = async (
       response: {},
     };
   }
-};
+}

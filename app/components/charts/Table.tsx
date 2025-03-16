@@ -46,7 +46,7 @@ const TableComponent = ({ data }: TableProps) => {
                     ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
                     : parsedValue;
                 return (
-                  <TooltipProvider>
+                  <TooltipProvider key={'tooltip-' + colName + j}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <TableCell

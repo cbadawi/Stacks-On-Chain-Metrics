@@ -1,8 +1,4 @@
-import {
-  DashboardWithCharts,
-  getDashboard,
-  getDashboardAndCharts,
-} from '@/app/lib/db/dashboards/dashboard';
+import { getDashboardAndCharts } from '@/app/lib/db/dashboards/dashboard';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import ChartsAndVariablesContainer from './ChartsAndVariablesContainer';

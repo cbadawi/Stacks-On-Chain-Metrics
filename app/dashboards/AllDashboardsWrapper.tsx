@@ -1,9 +1,8 @@
-import { Dashboard } from '@prisma/client';
 import Link from 'next/link';
 import React from 'react';
 import UserDashboardsWrapper from './UserDashboardsWrapper';
-import { Tags } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import type { Dashboard } from '@prisma/client';
 
 async function searchDashboards(formData: FormData) {
   'use server';
@@ -18,8 +17,6 @@ const AllDashboardsWrapper = async ({
 }: {
   dashboards: Dashboard[];
 }) => {
-  const tags = Object?.values(Tags);
-
   return (
     <div className='all-dashboards-wrapper mt-8 flex gap-8'>
       <div className='all-dashboards w-[70%]'>

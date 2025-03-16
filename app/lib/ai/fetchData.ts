@@ -8,13 +8,9 @@ import { verifySession } from '../auth/sessions/verifySession';
 import { rateLimit } from './client';
 import { cleanQuery, wrapQueryLimit } from './cleanQuery';
 import { config } from '../config';
-export type Result = Record<string, string | number>;
+import { ServerResponse } from '@/app/components/helpers';
 
-export interface ServerResponse<T> {
-  success: boolean;
-  message: string;
-  response: T;
-}
+export type Result = Record<string, string | number>;
 
 export async function fetchData(
   query: string,

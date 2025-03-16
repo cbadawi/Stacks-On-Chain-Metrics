@@ -3,7 +3,8 @@
 import React from 'react';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import ChartInfoDialog from './ChartInfoDialog';
-import { Chart, ChartType } from '@prisma/client';
+import { ChartType } from '../helpers';
+import type { Chart } from '@prisma/client';
 
 type ChartHeaderProps = {
   chart: Chart;

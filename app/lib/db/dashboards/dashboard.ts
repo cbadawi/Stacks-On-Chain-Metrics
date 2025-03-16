@@ -5,19 +5,7 @@ import { Chart, Dashboard, Owner } from '@prisma/client';
 import prisma from '../client';
 import { verifySession } from '../../auth/sessions/verifySession';
 import { config } from '../../config';
-
-interface ServerResponse<T> {
-  success: boolean;
-  message: string;
-  response: T | null;
-}
-
-export type ChartWithData = { data: any[] } & Chart;
-
-export type DashboardWithCharts = Dashboard & {
-  charts: Chart[];
-  owner: { address: string };
-};
+import { DashboardWithCharts, ServerResponse } from '@/app/components/helpers';
 
 export async function addDashboard({
   title,
@@ -48,7 +36,7 @@ export async function addDashboard({
   return {
     success: true,
     message: 'Dashboard created successfully.',
-    response: newDashboard,
+    response: newDashboard as Dashboard,
   };
 }
 

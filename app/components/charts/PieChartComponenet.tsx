@@ -23,20 +23,21 @@ function PieChartComponent({
   errorHandler?: (msg: string) => void;
 }) {
   const { theme } = useTheme();
-  if (!data?.length) return null;
   const coloredData = data.map((d, i) => ({ ...d, fill: colors[i] }));
   const keys = Object.keys(data[0]);
   const config = generateChartConfig(data);
   const validation = validatePieChartData(data);
+
+  const totalVisitors = React.useMemo(() => {
+    return data.reduce((acc, curr) => acc + curr[keys[1]], 0);
+  }, []);
 
   if (!validation.isValid && errorHandler) {
     errorHandler(validation.message);
     return;
   }
 
-  const totalVisitors = React.useMemo(() => {
-    return data.reduce((acc, curr) => acc + curr[keys[1]], 0);
-  }, []);
+  if (!data?.length) return null;
 
   return (
     <ResponsiveContainer width='100%' height={height}>

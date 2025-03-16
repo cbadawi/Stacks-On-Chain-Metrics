@@ -1,10 +1,9 @@
 'use server';
 
 import prisma from '@/app/lib/db/client';
-import { ChartType, Dashboard } from '@prisma/client';
 import { addDashboard, getDashboard } from '@/app/lib/db/dashboards/dashboard';
 import { addChart, getCharts } from '../lib/db/dashboards/charts';
-import { VariableType } from '../components/helpers';
+import { ChartType, VariableType } from '../components/helpers';
 
 const DEFAULT_CHART_X = 0;
 const DEFAULT_CHART_Y = 2000;
@@ -56,7 +55,7 @@ export async function addChartToDashboard({
       dashboardId: dashboard.id,
       title: chartTitle,
       query,
-      chartType,
+      chartType: chartType,
       x: DEFAULT_CHART_X,
       y: DEFAULT_CHART_Y,
       width: DEFAULT_CHART_WIDTH,

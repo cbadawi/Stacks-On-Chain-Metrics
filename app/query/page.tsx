@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import QueryWrapper from './QueryWrapper';
 import { QueryProvider } from '../contexts/QueryContext';
+import Spinner from '../components/Spinner';
 
 const Query = async () => {
   return (
@@ -12,11 +13,12 @@ const Query = async () => {
         The leading Stacks blockchain data analytics platform will be back soon
         🚧.
       </p>
-      <QueryProvider>
-        <QueryWrapper />
-      </QueryProvider>
+      <Suspense fallback={<Spinner />}>
+        <QueryProvider>
+          <QueryWrapper />
+        </QueryProvider>
+      </Suspense>
     </div>
   );
 };
-
 export default Query;

@@ -4,9 +4,8 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import Variable from '@/app/components/query/Variable';
 import DashboardChartsCanvas from './DashboardChartsCanvas';
 import RunButton from './RunButton';
-import { DashboardWithCharts } from '@/app/lib/db/dashboards/dashboard';
-import { VariableType } from '@/app/components/helpers';
-import { isJsonObject } from '@/app/lib/db/isJsonOject';
+import { DashboardWithCharts, VariableType } from '@/app/components/helpers';
+import type { Chart, Dashboard } from '@prisma/client';
 
 // Helper to extract default values remains largely the same
 const getDefaultVariableValues = (
@@ -16,11 +15,11 @@ const getDefaultVariableValues = (
   if (!vars || !vars.length) return {};
   const defaultVariables: VariableType = {};
   vars.map((obj) => {
-    if (isJsonObject(obj))
-      Object.keys(obj).map((key) => {
-        const value = obj[key];
-        if (value) defaultVariables[key] = value.toString();
-      });
+    const variableObj = obj as VariableType;
+    Object.keys(variableObj).map((key) => {
+      const value = variableObj[key];
+      if (value) defaultVariables[key] = value.toString();
+    });
   });
 
   return defaultVariables;
@@ -90,7 +89,7 @@ const ChartsAndVariablesContainer = ({
       <DashboardChartsCanvas
         dashboardId={dashboard.id}
         owner={dashboard.owner.address}
-        charts={dashboard.charts}
+        charts={dashboard.charts as Chart[]}
         variableValues={activeValues}
       />
     </div>

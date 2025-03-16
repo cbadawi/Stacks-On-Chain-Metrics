@@ -22,7 +22,7 @@ const NavbarLinks = () => {
   const links = [
     { href: '/query', label: 'Query' },
     { href: '/dashboards', label: 'Dashboards' },
-    { href: '/docs', label: 'Documentation' },
+    { href: '/docs', label: 'Docs ( Soon 🚧)' },
     { href: '/about', label: 'About' },
   ];
 

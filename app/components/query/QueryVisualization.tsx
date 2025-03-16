@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { VariableType } from '../helpers';
 import QueryButtons from './QueryButtons';
-import { ChartType } from '@prisma/client';
+import { ChartType } from '../helpers';
 import ChartContainer from '../charts/ChartContainer';
 import { QueryWithTooltips } from '@/app/query/QueryWithTooltips';
 import { seperatePromptFromSql } from '@/app/lib/ai/cleanQuery';

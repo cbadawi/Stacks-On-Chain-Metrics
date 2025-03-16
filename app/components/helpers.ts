@@ -1,10 +1,5 @@
 import { ChartConfig } from '@/components/ui/chart';
-import {
-  Chart,
-  ChartType,
-  CustomizableChartTypes,
-  LeftRight,
-} from '@prisma/client';
+import type { Chart, Dashboard } from '@prisma/client';
 
 export const CHART_CONTAINER_WIDTH = 1100;
 export const CHART_CONTAINER_HEIGHT = 700;
@@ -20,6 +15,22 @@ export type Position = {
   x: number;
   y: number;
 };
+
+export type ChartWithData = { data: any[] } & Chart;
+
+export type DashboardWithCharts = Dashboard & {
+  charts: Chart[];
+  owner: { address: string };
+};
+
+export enum ChartType {
+  TABLE = 'TABLE',
+  LINE = 'LINE',
+  BAR = 'BAR',
+  PIE = 'PIE',
+  TREEMAP = 'TREEMAP',
+  NUMBER = 'NUMBER',
+}
 
 export type PositionWithID = Position & { id: number };
 
@@ -38,13 +49,6 @@ export type ChartConfigs = {
   leftAxisColumnNames: string[];
   rightAxisColumnNames: string[];
 };
-
-export const CustomizableChartDropdownOptions: CustomizableChartTypes[] = [
-  ChartType.BAR,
-  ChartType.LINE,
-];
-
-export const CustomizableAxesDropdownOptions: LeftRight[] = ['LEFT', 'RIGHT'];
 
 export const transformPositionBetweenPxAndPerc = (
   pos: number,
@@ -121,55 +125,6 @@ export function doesOverlap(card0: Position, card1: Position) {
 export const enumToArray = (e: any) =>
   Object.keys(e).filter((key) => isNaN(Number(key)));
 
-export const getBarAndLineColNames = (
-  customizableColumnTypes: CustomizableChartTypes[],
-  yNames: string[]
-) => {
-  let barYNames: string[] = [];
-  let lineYNames: string[] = [];
-  customizableColumnTypes?.map((type, index) => {
-    if (type == ChartType.BAR) barYNames.push(yNames[index]);
-    if (type == ChartType.LINE) lineYNames.push(yNames[index]);
-  });
-
-  return {
-    barYNames,
-    lineYNames,
-  };
-};
-
-export const createChartConfigs = (
-  yNames: string[],
-  customizableColumnsTypes: ChartType[],
-  customizableAxesTypes: LeftRight[]
-): ChartConfigs => {
-  const leftAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == 'LEFT'
-  );
-  const rightAxisColumnNames = yNames.filter(
-    (_, index) => customizableAxesTypes[index] == 'RIGHT'
-  );
-
-  const lineColumnNames = yNames.filter(
-    (_, index) => customizableColumnsTypes[index] == ChartType.LINE
-  );
-  const barColumnNames = yNames.filter(
-    (_, index) => customizableColumnsTypes[index] == ChartType.BAR
-  );
-  return {
-    lineColumnNames,
-    barColumnNames,
-    leftAxisColumnNames,
-    rightAxisColumnNames,
-  };
-};
-
-export function formatAxisValue(value: any) {
-  const point = JSON.stringify(value);
-  if (point.length >= 20) return value.slice(0, 20) + '...';
-  return value;
-}
-
 // Colors
 export const background = '#3b6978';
 export const background2 = '#204051';
@@ -235,4 +190,10 @@ export function generateChartConfig(
   }, {} as ChartConfig);
 
   return config;
+}
+
+export interface ServerResponse<T> {
+  success: boolean;
+  message: string;
+  response: T | null;
 }

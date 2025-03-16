@@ -2,12 +2,13 @@
 
 import { DEFAULT_QUERY } from '@/lib/utils';
 import React, { createContext, useContext, useState } from 'react';
+import { ChartType } from '../components/helpers';
 
 export type QueryContextParams = {
   query: string;
   dashboardId: number | null;
   chartId: number | null;
-  chartType: string;
+  chartType: ChartType;
   chartTitle: string;
   updateMode: boolean;
 };
@@ -16,7 +17,7 @@ type QueryContextType = QueryContextParams & {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   setDashboardId: React.Dispatch<React.SetStateAction<number | null>>;
   setChartId: React.Dispatch<React.SetStateAction<number | null>>;
-  setChartType: React.Dispatch<React.SetStateAction<string>>;
+  setChartType: React.Dispatch<React.SetStateAction<ChartType>>;
   setChartTitle: React.Dispatch<React.SetStateAction<string>>;
   setUpdateMode: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -27,7 +28,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [dashboardId, setDashboardId] = useState<number | null>(null);
   const [chartId, setChartId] = useState<number | null>(null);
-  const [chartType, setChartType] = useState('');
+  const [chartType, setChartType] = useState<ChartType>(ChartType.TABLE);
   const [chartTitle, setChartTitle] = useState('');
   const [updateMode, setUpdateMode] = useState(false);
 

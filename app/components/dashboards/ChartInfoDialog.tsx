@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import OwnerQueryDialogFooter from './OwnerQueryDialogFooter';
-import { Chart } from '@prisma/client';
+import type { Chart } from '@prisma/client';
 
 type ChartInfoDialogProps = {
   chart: Chart;

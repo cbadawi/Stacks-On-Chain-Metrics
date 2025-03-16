@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { VariableType } from '../helpers';
-import { ChartType } from '@prisma/client';
+import { ChartType } from '../helpers';
 import { Save } from 'lucide-react';
 import { SaveToDashDialog } from './SaveToDashDialog';
 import { useQuery } from '@/app/contexts/QueryContext';

@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Chart } from '@prisma/client';
 import { useUser } from '@/app/contexts/UserProvider';
 import { replaceVariables } from '@/app/lib/variables';
 import { fetchData } from '@/app/lib/ai/fetchData';
 import ChartHeader from './ChartHeader';
 import ChartContent from './ChartContent';
+import { ChartType } from '../helpers';
+import type { Chart, Dashboard } from '@prisma/client';
 
 type ResizableChartProps = {
   dashboardId: number;
@@ -49,7 +50,7 @@ const ResizableChart = ({
       if (data.message && !data.success) {
         setError(data.message);
       } else {
-        setChartData(data.response.data ?? []);
+        setChartData(data.response?.data ?? []);
       }
     } catch (err) {
       if (err instanceof Error) setError(err.message);
@@ -70,7 +71,7 @@ const ResizableChart = ({
         setError={setError}
         isLoading={isLoading}
         chartData={chartData}
-        chartType={chart.type}
+        chartType={chart.type as ChartType}
         chartId={chart.id}
         width={width}
         height={height}

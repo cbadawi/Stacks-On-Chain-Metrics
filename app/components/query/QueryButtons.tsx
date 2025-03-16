@@ -10,7 +10,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import SaveToDashBtn from './SaveToDashBtn';
-import { ChartType, CustomizableChartTypes, LeftRight } from '@prisma/client';
+import { ChartType } from '../helpers';
 import { VariableType } from '../helpers';
 import { Button } from '@/components/ui/button';
 import {

@@ -10,7 +10,7 @@ import React, {
 import SqlEditor from '../components/SqlEditor';
 import QueryErrorContainer from '../components/QueryErrorContainer';
 import StarterPlaceholderMessage from '../components/query/StarterPlaceholderMessage';
-import { VariableType } from '../components/helpers';
+import { ChartType, VariableType } from '../components/helpers';
 import QueryVisualization from '../components/query/QueryVisualization';
 import { Card } from '@/components/ui/card';
 import Spinner from '../components/Spinner';
@@ -70,7 +70,10 @@ const QueryWrapper = () => {
       if (chartIdParam) setChartId(Number(chartIdParam));
 
       const chartTypeParam = searchParams.get('chartType');
-      if (chartTypeParam) setChartType(chartTypeParam);
+      if (chartTypeParam && !(chartTypeParam in ChartType)) {
+        throw new Error(`Invalid chart type: ${chartTypeParam}`);
+      }
+      if (chartTypeParam) setChartType(chartTypeParam as ChartType);
     }
   }, [
     searchParams,

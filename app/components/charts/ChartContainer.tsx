@@ -2,12 +2,12 @@
 
 import React, { JSXElementConstructor, ReactElement, ReactNode } from 'react';
 import Table from './Table';
-import { ChartType } from '@prisma/client';
 import Stats from './Stats';
 
 import LineChart from './LineChartComponent';
 import BarChart from './BarChartComponent';
 import PieChart from './PieChartComponenet';
+import { ChartType } from '../helpers';
 
 interface ChartContainerProps {
   chartType: ChartType;
