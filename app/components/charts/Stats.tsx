@@ -1,4 +1,5 @@
 import React from 'react';
+import { parseValue } from './parseValue';
 
 const Stats = ({ data }: { data: any[] }) => {
   if (!data?.length) return null;
@@ -22,7 +23,7 @@ const Stats = ({ data }: { data: any[] }) => {
               key={'p-' + index}
               className='flex justify-center text-xl text-gray-400'
             >
-              {firstRow[k]}
+              {parseValue(firstRow[k])}
             </p>
           </div>
         );

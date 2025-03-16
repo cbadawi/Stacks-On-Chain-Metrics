@@ -171,24 +171,6 @@ export const createChartConfigs = (
   };
 };
 
-//  Type Checking
-/**
- * Checks if the value should be plotted as an int
- */
-export const isNum = (value: any) => !isNaN(value) && !(value instanceof Date);
-/**
- * Checks if the value should be plotted as date
- */
-// @ts-ignore
-export const isDate = (value: any) => new Date(value) != 'Invalid Date';
-
-// Parsing
-export const parseValue = (value: any) => {
-  if (isNum(value)) return value;
-  else if (isDate(value)) return new Date(value);
-  else return value;
-};
-
 export function formatAxisValue(value: any) {
   const point = JSON.stringify(value);
   if (point.length >= 20) return value.slice(0, 20) + '...';
