@@ -3,4 +3,5 @@ export const config = {
   NODE_ENV: process.env.NODE_ENV,
   TTL_CACHE: parseInt(process.env.TTL_CACHE ?? '60'),
   LOG_LEVEL: process.env.LOG_LEVEL ?? 'info',
+  PROTECT_DATA_ROUTES: process.env.PROTECT_DATA_ROUTES === 'true',
 };

@@ -28,7 +28,10 @@ const Dashboards = async ({ params }: DashboardProps) => {
   const dashboard = await getDashboardAndCharts({
     id,
   });
-  if (!dashboard || !dashboard.response) redirect('/dashboards');
+  if (!dashboard || !dashboard.response) {
+    console.warn('dashboard not found');
+    redirect('/dashboards');
+  }
 
   return (
     <div className='mx-4 flex h-full flex-col'>

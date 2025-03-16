@@ -7,6 +7,7 @@ import { generateQuery } from './queryGeneration';
 import { findIsAIPrompt, seperatePromptFromSql } from './cleanQuery';
 import { VariableType } from '@/app/components/helpers';
 import { fetchData } from './fetchData';
+import { config } from '../config';
 
 export async function runQueryCombined(
   address: string,
@@ -20,17 +21,19 @@ export async function runQueryCombined(
   'use server';
 
   const isAiPrompt = findIsAIPrompt(query);
-  const session = await verifySession();
-  if (!session) {
-    return {
-      success: false,
-      message: 'Invalid session. Sign in to continue.',
-      response: {
-        data: null,
-        isAiPrompt,
-        displayQuery: query,
-      },
-    };
+  if (config.PROTECT_DATA_ROUTES) {
+    const session = await verifySession();
+    if (!session) {
+      return {
+        success: false,
+        message: 'Invalid session. Sign in to continue.',
+        response: {
+          data: null,
+          isAiPrompt,
+          displayQuery: query,
+        },
+      };
+    }
   }
 
   const { prompt, sql } = seperatePromptFromSql(query);
@@ -52,6 +55,7 @@ export async function runQueryCombined(
     }
     query = aiQueryResult.response.query;
   }
+
   const finalQuery = replaceVariables(query, variables);
   log.info('runQueryCombined', {
     finalQuery,

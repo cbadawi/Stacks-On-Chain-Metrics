@@ -1,6 +1,12 @@
 import { getDashboards } from '../lib/db/dashboards/dashboard';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import UserDashboardsWrapper from './UserDashboardsWrapper';
 
 interface DashPageProps {
@@ -14,6 +20,7 @@ const Dashboards = async ({ searchParams }: DashPageProps) => {
       <Card className='my-6 h-auto w-auto border px-6'>
         <CardHeader>
           <CardTitle className='text-2xl font-normal'>Dashboards</CardTitle>
+          <CardDescription>🏗️ Under Construction 🚧</CardDescription>
         </CardHeader>
         <CardContent>
           {dashboards.response && (

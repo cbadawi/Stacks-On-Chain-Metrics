@@ -4,6 +4,7 @@ import { addOwner, getOwner } from '../owner';
 import { Chart, Dashboard, Owner } from '@prisma/client';
 import prisma from '../client';
 import { verifySession } from '../../auth/sessions/verifySession';
+import { config } from '../../config';
 
 interface ServerResponse<T> {
   success: boolean;
@@ -62,13 +63,16 @@ export async function getDashboardAndCharts({
   searchParams?: any;
   includeCharts?: boolean;
 }): Promise<ServerResponse<DashboardWithCharts | null>> {
-  const session = await verifySession();
-  if (!session) {
-    return {
-      success: false,
-      message: 'Invalid session. Sign in to continue.',
-      response: null,
-    };
+  // todo: add session verification but return a message saying to login
+  if (config.PROTECT_DATA_ROUTES) {
+    const session = await verifySession();
+    if (!session) {
+      return {
+        success: false,
+        message: 'Invalid session. Sign in to continue.',
+        response: null,
+      };
+    }
   }
   const include = includeCharts
     ? { charts: { where: { deleted: false } } }

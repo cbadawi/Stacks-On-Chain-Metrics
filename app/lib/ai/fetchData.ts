@@ -7,7 +7,7 @@ import { stacksPool } from '../db/client';
 import { verifySession } from '../auth/sessions/verifySession';
 import { rateLimit } from './client';
 import { cleanQuery, wrapQueryLimit } from './cleanQuery';
-
+import { config } from '../config';
 export type Result = Record<string, string | number>;
 
 export interface ServerResponse<T> {
@@ -32,13 +32,15 @@ export async function fetchData(
     };
   }
 
-  const session = await verifySession();
-  if (!session) {
-    return {
-      success: false,
-      message: 'Invalid session. Sign in to continue.',
-      response: { data: null },
-    };
+  if (config.PROTECT_DATA_ROUTES) {
+    const session = await verifySession();
+    if (!session) {
+      return {
+        success: false,
+        message: 'Invalid session. Sign in to continue.',
+        response: { data: null },
+      };
+    }
   }
 
   let cleanedQuery = cleanQuery(query.trim());

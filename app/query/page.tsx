@@ -9,7 +9,7 @@ const Query = async () => {
         Stacks On Chain AI Metrics
       </h1>
       <p className='text-md mx-10 mt-1 text-gray-600'>
-        The leading stacks blockchain data analytics platform is back.
+        The leading Stacks blockchain data analytics platform is back.
       </p>
       <QueryProvider>
         <QueryWrapper />

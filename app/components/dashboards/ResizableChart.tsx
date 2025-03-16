@@ -22,10 +22,10 @@ import {
 } from '@/components/ui/dialog';
 import { deleteChart } from '@/app/lib/db/dashboards/charts';
 import { replaceVariables } from '@/app/lib/variables';
-import { fetchData } from '@/app/lib/ai/query';
 import { useUser } from '@/app/contexts/UserProvider';
 import Link from 'next/link';
 import { QueryContextParams } from '@/app/contexts/QueryContext';
+import { fetchData } from '@/app/lib/ai/fetchData';
 
 type ResizableChartProps = {
   dashboardId: number;
