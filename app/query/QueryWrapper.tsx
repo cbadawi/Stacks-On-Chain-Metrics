@@ -17,13 +17,14 @@ import Spinner from '../components/Spinner';
 import { QueryExplanation } from '../lib/types';
 import { findIsAIPrompt, seperatePromptFromSql } from '../lib/ai/cleanQuery';
 import QueryVariablesForm from '../components/query/QueryVariablesForm';
-import { explainQuery, runQueryCombined } from '../lib/ai/query';
 import { useUser } from '../contexts/UserProvider';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '../contexts/QueryContext';
 import { DEFAULT_QUERY } from '@/lib/utils';
 import Link from 'next/link';
 import { LucideArrowLeft } from 'lucide-react';
+import { runQueryCombined } from '../lib/ai/runQueryCombined';
+import { explainQuery } from '../lib/ai/explainQuery';
 
 const QueryWrapper = () => {
   const {

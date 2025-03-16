@@ -2,13 +2,10 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
-  Table,
 } from '@/components/ui/table';
-import React from 'react';
 
 interface TableProps {
   data: any;
