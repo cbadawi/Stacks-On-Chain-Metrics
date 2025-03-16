@@ -18,6 +18,7 @@ const SaveToDashBtn = ({
   query: string;
 }) => {
   const { updateMode, chartId, chartTitle, dashboardId } = useQuery();
+  console.log({ updateMode, chartId, chartTitle, dashboardId });
   if (updateMode && chartId) {
     return (
       <Button
@@ -25,15 +26,23 @@ const SaveToDashBtn = ({
         className='border border-orange-500'
         size={'lg'}
         onClick={async () => {
-          await updateChart({ id: chartId, query, type: chartType });
-          toast('Chart has been updated', {
-            description: chartTitle,
-            action: {
-              label: 'Go to chart',
-              onClick: () =>
-                window.open(`/dashboards/${dashboardId}`, '_blank'),
-            },
+          const response = await updateChart({
+            id: chartId,
+            query,
+            type: chartType,
           });
+          if (!response.success) {
+            toast.error(<p>Failed to submit the form : {response.message}</p>);
+          } else {
+            toast('Chart has been updated', {
+              description: chartTitle,
+              action: {
+                label: 'Go to chart',
+                onClick: () =>
+                  window.open(`/dashboards/${dashboardId}`, '_blank'),
+              },
+            });
+          }
         }}
       >
         <Save color='#6543FC' size={20} />

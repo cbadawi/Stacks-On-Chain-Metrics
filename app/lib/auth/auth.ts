@@ -14,5 +14,5 @@ export async function signup(params: {
 
 export async function signout() {
   await deleteSession();
-  redirect('/');
+  return true;
 }

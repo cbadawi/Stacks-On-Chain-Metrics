@@ -64,16 +64,17 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
 
   async function authenticate() {
     if (!stacksConnect) return;
+
     if (userData) {
+      // Logout functionality
+      stacksConnect.disconnect();
       userSession.signUserOut();
       setUserData(undefined);
-      if (typeof window !== 'undefined') {
-        signout();
-        window.location.reload();
-      }
+      signout();
       return;
     }
 
+    // Login functionality
     stacksConnect.showConnect({
       appDetails: getAppDetails(),
       redirectTo: '/',
@@ -92,6 +93,8 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
       },
       userSession,
     });
+
+    console.log({ userData });
   }
 
   return (

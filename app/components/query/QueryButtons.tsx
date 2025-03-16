@@ -82,6 +82,7 @@ const QueryButtons = ({
       <TooltipProvider>
         <div className='flex items-center gap-3'>
           {/* Save to Dashboard */}
+          {query}
           <Tooltip>
             <TooltipTrigger asChild>
               <SaveToDashBtn

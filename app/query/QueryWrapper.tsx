@@ -241,7 +241,7 @@ const QueryWrapper = () => {
       <div>
         {error && <QueryErrorContainer error={error} setError={setError} />}
         <Card className='relative my-12 h-auto rounded-t-3xl px-0 py-4'>
-          {JSON.stringify({ data })}
+          {/* {JSON.stringify({ data })} */}
           {renderVisualization()}
         </Card>
       </div>

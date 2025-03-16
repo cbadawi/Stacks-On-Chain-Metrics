@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Chart, ChartType } from '@prisma/client';
 import { updateChart } from '@/app/lib/db/dashboards/charts';
 import { Layout } from 'react-grid-layout';
+import { toast } from 'sonner';
 
 const GridLayout = dynamic(() => import('react-grid-layout'), { ssr: false });
 
@@ -65,16 +66,17 @@ const DashboardChartsCanvas = ({
   const onLayoutChange = (newLayout: Layout[]) => {
     setLayout(newLayout);
     console.log('onLayoutChange', { newLayout });
-    // Layout is changed on cscreen resize etc. so we only want to persist changes in edit mode
+    // Layout is changed on screen resize etc. so we only want to persist changes in edit mode
     if (!editMode) return;
-    newLayout.forEach((item) => {
-      updateChart({
+    newLayout.forEach(async (item) => {
+      const resp = await updateChart({
         id: parseInt(item.i),
         x: item.x * GRID_UNIT_PX,
         y: item.y * GRID_UNIT_PX,
         width: item.w * GRID_UNIT_PX,
         height: item.h * GRID_UNIT_PX,
       });
+      if (!resp.success) toast.error(resp.message);
     });
   };
 
