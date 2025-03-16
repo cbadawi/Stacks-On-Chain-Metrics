@@ -103,6 +103,25 @@ export async function fetchData(
     const rows = data.rows as Result[];
     const msg =
       rows.length === 0 ? 'Empty response.' : 'Query executed successfully.';
+
+    const bufferColumns: string[] = [];
+    if (rows.length > 0) {
+      const firstRow = rows[0];
+      for (const key in firstRow) {
+        if (Buffer.isBuffer(firstRow[key])) {
+          bufferColumns.push(key);
+        }
+      }
+    }
+
+    rows.forEach((row) => {
+      bufferColumns.forEach((column) => {
+        if (Buffer.isBuffer(row[column])) {
+          row[column] = '0x' + row[column].toString('hex');
+        }
+      });
+    });
+
     return {
       success: true,
       message: msg,
@@ -332,11 +351,12 @@ export async function runQueryCombined(
 
   const { prompt, sql } = seperatePromptFromSql(query);
   if (isAiPrompt) {
-    // TODO token check
-    const [tokensUsed, tokensPurchased] = await Promise.all([
-      getTokensUsed({ address }),
-      getTokensPurchased({ address }),
-    ]);
+    // TODO token check & update
+    // const [tokensUsed, tokensPurchased] = await Promise.all([
+    //   getTokensUsed({ address }),
+    //   getTokensPurchased({ address }),
+    // ]);
+
     const aiQueryResult = await generateQuery(address, prompt, sql);
     if (!aiQueryResult.response.query) {
       return {

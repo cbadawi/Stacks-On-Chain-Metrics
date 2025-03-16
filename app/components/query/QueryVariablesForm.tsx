@@ -21,8 +21,8 @@ const QueryVariablesForm = ({ query }: QueryVariablesFormProps) => {
       <CardHeader>
         <CardTitle>Query Variables</CardTitle>
         <CardDescription>
-          Parameterize your SQL queries. You can define variables by wrapping
-          filters in double brackets {'{{}}'}.
+          Parameterize your SQL queries. Wrap your filters in double brackets to
+          define them later {'{{}}'}.
         </CardDescription>
       </CardHeader>
       <div className='w-full p-2 lg:mx-auto'>
