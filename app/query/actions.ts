@@ -65,11 +65,12 @@ export async function addChartToDashboard({
     });
 
     return {
-      message: 'Added Chart',
+      message: newChart.message ?? 'Added Chart',
+      success: newChart.success,
       dashboard,
       chart: newChart,
     };
   });
 
-  return { ...response, success: true };
+  return response;
 }

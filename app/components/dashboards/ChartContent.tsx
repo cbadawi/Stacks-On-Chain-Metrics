@@ -29,7 +29,7 @@ const ChartContent = ({
 }: ChartContentProps) => {
   return (
     <>
-      <div className='absolute z-20 w-full'>
+      <div className='absolute z-20 w-full overflow-hidden'>
         {error && <QueryErrorContainer error={error} setError={setError} />}
       </div>
       {isLoading ? (

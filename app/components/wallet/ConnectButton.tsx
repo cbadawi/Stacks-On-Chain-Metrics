@@ -52,7 +52,6 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
       appDetails: getAppDetails(),
       async onFinish(data) {
         const { signature, publicKey } = data;
-        console.log({ data });
         await signup({
           publicKey,
           signature,
@@ -93,8 +92,6 @@ const ConnectWallet: React.FC<ConnectWalletProps> = () => {
       },
       userSession,
     });
-
-    console.log({ userData });
   }
 
   return (

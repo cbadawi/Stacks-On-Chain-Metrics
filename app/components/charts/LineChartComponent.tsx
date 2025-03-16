@@ -10,7 +10,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { generateChartConfig } from '../helpers';
-import { labelFormatter } from '@/app/lib/pretty';
+import { labelFormatter, prettyValue } from '@/app/lib/pretty';
 
 function LineChartComponent({
   data,
@@ -56,8 +56,8 @@ function LineChartComponent({
             content={
               <ChartTooltipContent
                 indicator='line'
-                labelFormatter={
-                  (value, payload) => String(value) //+ JSON.stringify(payload)
+                labelFormatter={(value, payload) =>
+                  prettyValue(payload[0].payload[xLabel])
                 }
               />
             }

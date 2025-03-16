@@ -171,7 +171,6 @@ export async function updateChart({
       dashboard: { select: { owner: { select: { address: true } } } },
     },
   });
-  console.log(chart?.dashboard.owner.address, session.userId);
   if (!chart || chart.dashboard.owner.address !== session.userId) {
     return {
       success: false,

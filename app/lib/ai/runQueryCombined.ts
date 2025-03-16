@@ -76,6 +76,7 @@ export async function runQueryCombined(
       },
     };
   }
+
   return {
     success: true,
     message: 'Query executed successfully.',

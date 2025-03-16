@@ -12,7 +12,7 @@ const About = () => {
           rel='noopener noreferrer'
           className='text-blue-500'
         >
-          you can find me here
+          you can find me on twitter
         </a>
       </p>
       <AsciiArt />

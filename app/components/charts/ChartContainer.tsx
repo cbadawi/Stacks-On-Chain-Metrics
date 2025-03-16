@@ -4,7 +4,6 @@ import React, { JSXElementConstructor, ReactElement, ReactNode } from 'react';
 import Table from './Table';
 import { ChartType } from '@prisma/client';
 import Stats from './Stats';
-import { Card, CardContent } from '@/components/ui/card';
 
 import LineChart from './LineChartComponent';
 import BarChart from './BarChartComponent';

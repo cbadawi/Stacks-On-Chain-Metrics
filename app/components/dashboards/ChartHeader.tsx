@@ -3,7 +3,7 @@
 import React from 'react';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import ChartInfoDialog from './ChartInfoDialog';
-import { Chart } from '@prisma/client';
+import { Chart, ChartType } from '@prisma/client';
 
 type ChartHeaderProps = {
   chart: Chart;
@@ -18,6 +18,18 @@ const ChartHeader = ({
   owner,
   isOwner,
 }: ChartHeaderProps) => {
+  if (chart.type === ChartType.NUMBER) {
+    return (
+      <CardHeader className='card-header absolute right-0 top-0 flex flex-row items-center justify-between px-8 py-2 pt-4'>
+        <ChartInfoDialog
+          chart={chart}
+          dashboardId={dashboardId}
+          owner={owner}
+          isOwner={isOwner}
+        />
+      </CardHeader>
+    );
+  }
   return (
     <CardHeader className='card-header flex flex-row items-center justify-between px-8 py-2 pt-4'>
       <CardTitle className='card-title text-lg font-normal'>

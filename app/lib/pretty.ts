@@ -10,7 +10,7 @@ export function prettyAddress(address: string): string {
 }
 
 export function labelFormatter(label: any): string {
-  const stringLabel = `${label}`;
+  const stringLabel = prettyValue(label);
   if (stringLabel.length <= 10) {
     return stringLabel;
   }
@@ -20,3 +20,11 @@ export function labelFormatter(label: any): string {
 
   return `${prefix}..${suffix}`;
 }
+
+export const prettyValue = (value: any) => {
+  if (`${value}`.startsWith('0x') || `${value}`.startsWith('\\x')) return value;
+  if (typeof value === 'boolean') return JSON.stringify(value);
+  if (value instanceof Date) return value.toLocaleDateString();
+  if (!isNaN(value)) return Number(value).toLocaleString();
+  return (value || '').toString();
+};

@@ -26,6 +26,7 @@ import { SelectDashboardInput } from './SelectDashboardInput';
 import { Button } from '@/components/ui/button';
 import { getDashboards } from '@/app/lib/db/dashboards/dashboard';
 import { addChartToDashboard } from '@/app/query/actions';
+import { useUser } from '@/app/contexts/UserProvider';
 
 export const SaveToDashDialog = ({
   query,
@@ -40,6 +41,7 @@ export const SaveToDashDialog = ({
     'Add chart' | 'Create a new dashboard'
   >('Create a new dashboard');
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
+  const { userData } = useUser();
 
   useEffect(() => {
     const fetchDashboards = async () => {
@@ -54,7 +56,7 @@ export const SaveToDashDialog = ({
       const addChartResponse = await addChartToDashboard({
         dashboardTitle: values.dashboardTitle,
         chartTitle: values.chartTitle,
-        userAddress: '',
+        userAddress: userData?.profile.stxAddress.mainnet,
         chartType,
         privateDashboard: values.privateDashboard,
         dashboardPassword: values.password,
@@ -63,10 +65,9 @@ export const SaveToDashDialog = ({
       });
       if (!addChartResponse.success) {
         toast.error('Failed to add chart', {
-          description: addChartResponse.message,
+          description: 'yadda' + addChartResponse.message,
         });
-      }
-      if ('dashboard' in addChartResponse) {
+      } else if ('dashboard' in addChartResponse) {
         toast('Chart has been added', {
           description: values.chartTitle,
           action: {

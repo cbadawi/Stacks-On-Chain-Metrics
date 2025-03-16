@@ -1,3 +1,4 @@
+import { prettyValue } from '@/app/lib/pretty';
 import {
   TableBody,
   TableCaption,
@@ -6,13 +7,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { parseValue } from './parseValue';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Link as LinkIcon } from 'lucide-react';
+import Link from 'next/link';
 
 interface TableProps {
   data: any;
@@ -37,20 +39,32 @@ const TableComponent = ({ data }: TableProps) => {
           {data.map((d: any, i: number) => (
             <TableRow key={'tr-' + i}>
               {colNames.map((colName, j) => {
-                const parsedValue = parseValue(d[colName]).toString();
+                const parsedValue = prettyValue(d[colName]);
                 const isTooLong = parsedValue.length > 30;
-                const shownValue = isTooLong
-                  ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
-                  : parsedValue;
+                const shownValue =
+                  isTooLong && colNames.length !== 1
+                    ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
+                    : parsedValue;
                 return (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <TableCell
                           key={'td-' + colName + j}
-                          className='max-w-40 overflow-scroll'
+                          className='max-w-40 overflow-hidden'
                         >
-                          {shownValue}
+                          {colName.toLowerCase() === 'link' ? (
+                            <Link
+                              href={parsedValue}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='text-blue-500 hover:underline'
+                            >
+                              {<LinkIcon className='h-4 w-4' />}
+                            </Link>
+                          ) : (
+                            shownValue
+                          )}
                         </TableCell>
                       </TooltipTrigger>
                       <TooltipContent>{parsedValue}</TooltipContent>

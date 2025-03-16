@@ -43,7 +43,6 @@ const ResizableChart = ({
   ) => {
     setError('');
     setIsLoading(true);
-    console.log('fetchChartData', { chart, variables });
     try {
       const queryWithVariables = replaceVariables(chart.query, variables);
       const data = await fetchData(queryWithVariables);

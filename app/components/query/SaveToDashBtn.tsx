@@ -18,7 +18,7 @@ const SaveToDashBtn = ({
   query: string;
 }) => {
   const { updateMode, chartId, chartTitle, dashboardId } = useQuery();
-  console.log({ updateMode, chartId, chartTitle, dashboardId });
+
   if (updateMode && chartId) {
     return (
       <Button

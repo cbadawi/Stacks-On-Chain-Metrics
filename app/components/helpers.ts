@@ -6,13 +6,6 @@ import {
   LeftRight,
 } from '@prisma/client';
 
-export const baseUrl =
-  process.env.NODE_ENV === 'production'
-    ? 'https://api.example.com'
-    : 'http://localhost:8000';
-
-console.log('NODE_ENV', process.env.NODE_ENV);
-
 export const CHART_CONTAINER_WIDTH = 1100;
 export const CHART_CONTAINER_HEIGHT = 700;
 

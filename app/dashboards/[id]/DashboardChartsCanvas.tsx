@@ -53,7 +53,7 @@ const DashboardChartsCanvas = ({
   useEffect(() => {
     const newLayout = charts.map((chart) => ({
       minW: chart.type === ChartType.NUMBER ? 5 : 8,
-      minH: chart.type === ChartType.NUMBER ? 5 : 5,
+      minH: chart.type === ChartType.NUMBER ? 2 : 5,
       i: chart.id.toString(),
       x: Math.floor(chart.x / GRID_UNIT_PX),
       y: Math.floor(chart.y / GRID_UNIT_PX),
@@ -65,7 +65,6 @@ const DashboardChartsCanvas = ({
 
   const onLayoutChange = (newLayout: Layout[]) => {
     setLayout(newLayout);
-    console.log('onLayoutChange', { newLayout });
     // Layout is changed on screen resize etc. so we only want to persist changes in edit mode
     if (!editMode) return;
     newLayout.forEach(async (item) => {

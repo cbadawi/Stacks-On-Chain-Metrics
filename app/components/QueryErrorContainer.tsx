@@ -1,5 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 interface QueryErrorContainerProps {
   error: string;
@@ -8,10 +9,13 @@ interface QueryErrorContainerProps {
 
 const QueryErrorContainer = ({ error, setError }: QueryErrorContainerProps) => {
   return (
-    <div className='z-9999 flex w-full animate-moveright items-center justify-between bg-rose-900 px-16 py-4 text-lg tracking-wide transition-all duration-500 ease-in'>
+    <Card
+      className='z-9999 flex w-full animate-moveright items-center justify-between overflow-hidden
+                  bg-rose-900 px-16 py-4 text-lg tracking-wide transition-all duration-500 ease-in'
+    >
       {error}
       <X onClick={() => setError('')} />
-    </div>
+    </Card>
   );
 };
 

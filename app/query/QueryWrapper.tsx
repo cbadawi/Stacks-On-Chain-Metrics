@@ -22,7 +22,6 @@ import { useSearchParams } from 'next/navigation';
 import { useQuery } from '../contexts/QueryContext';
 import { DEFAULT_QUERY } from '@/lib/utils';
 import Link from 'next/link';
-import { LucideArrowLeft } from 'lucide-react';
 import { runQueryCombined } from '../lib/ai/runQueryCombined';
 import { explainQuery } from '../lib/ai/explainQuery';
 
@@ -86,6 +85,7 @@ const QueryWrapper = () => {
   const getVariables = (
     errorHandler?: React.Dispatch<React.SetStateAction<string>>
   ) => {
+    // todo : refactor. this is a mess.
     const inputElements = document.getElementsByClassName('variable-input');
     const variables: VariableType = {};
 
