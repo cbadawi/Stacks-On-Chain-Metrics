@@ -8,6 +8,9 @@ const Query = async () => {
       <h1 className='mx-10 mt-5 text-xl font-semibold'>
         Stacks On Chain AI Metrics
       </h1>
+      <p className='text-md mx-10 mt-1 text-gray-600'>
+        The leading stacks blockchain data analytics platform is back.
+      </p>
       <QueryProvider>
         <QueryWrapper />
       </QueryProvider>

@@ -23,6 +23,7 @@ const NavbarLinks = () => {
     { href: '/query', label: 'Query' },
     { href: '/dashboards', label: 'Dashboards' },
     { href: '/docs', label: 'Documentation' },
+    { href: '/about', label: 'About' },
   ];
 
   return (

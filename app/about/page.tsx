@@ -5,8 +5,15 @@ const About = () => {
   return (
     <div>
       <p>
-        I havent written an about me yet but you can find me here
-        https://twitter.com/stacksmetrics
+        I havent written an about me yet 😅 but{' '}
+        <a
+          href='https://twitter.com/anononchain'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-blue-500'
+        >
+          you can find me here
+        </a>
       </p>
       <AsciiArt />
     </div>

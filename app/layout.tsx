@@ -21,7 +21,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // TODO add headers, footers, navbars and sidebars here
   return (
     <html lang='en'>
       <head>
