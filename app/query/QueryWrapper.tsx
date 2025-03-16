@@ -75,7 +75,6 @@ const QueryWrapper = () => {
     }
   }, [
     searchParams,
-    query,
     setQuery,
     setUpdateMode,
     setChartTitle,
@@ -96,6 +95,10 @@ const QueryWrapper = () => {
       const value = (element as HTMLInputElement).value;
       if (!value && errorHandler) {
         errorHandler(`Variable "${variable}" not set.`);
+        latestRequestRef.current++;
+        setIsLoading(false);
+        setData([]);
+        return;
       }
       variables[variable] = value;
     });
