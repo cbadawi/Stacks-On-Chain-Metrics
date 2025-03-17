@@ -44,6 +44,7 @@ const SqlEditor = ({
     };
   }, [isLoading, query, runQuery]);
 
+  const isDarkEditor = theme === 'dark' || theme === 'system';
   return (
     <Card className='mb-8 flex w-full flex-row items-center justify-between bg-[#272729] lg:mx-auto lg:flex-row'>
       <AceEditor
@@ -51,7 +52,7 @@ const SqlEditor = ({
         width='100%'
         height='30rem'
         mode='mysql'
-        theme={theme === 'dark' ? 'terminal' : 'github'}
+        theme={isDarkEditor ? 'terminal' : 'github'}
         name='sqlEditor'
         onLoad={
           (editor) => {}
