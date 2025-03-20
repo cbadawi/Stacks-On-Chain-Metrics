@@ -47,10 +47,12 @@ const ResizableChart = ({
     try {
       const queryWithVariables = replaceVariables(chart.query, variables);
       const data = await fetchData(queryWithVariables);
-      if (data.message && !data.success) {
+      if (!data) {
+        setError('No response from server');
+      } else if (data.message && !data.success) {
         setError(data.message);
       } else {
-        setChartData(data.response?.data ?? []);
+        setChartData(data?.response?.data ?? []);
       }
     } catch (err) {
       if (err instanceof Error) setError(err.message);

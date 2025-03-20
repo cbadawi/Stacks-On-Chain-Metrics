@@ -141,8 +141,8 @@ const QueryWrapper = () => {
 
         if (currentRequestId !== latestRequestRef.current) return;
 
-        if (!result.success) {
-          setError(result.message);
+        if (!result?.success) {
+          setError(result?.message || 'Unknown error occurred ');
           setIsLoading(false);
           return;
         }

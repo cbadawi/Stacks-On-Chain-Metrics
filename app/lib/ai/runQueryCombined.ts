@@ -57,6 +57,7 @@ export async function runQueryCombined(
   }
 
   const finalQuery = replaceVariables(query, variables);
+  // todo add query serial id
   log.info('runQueryCombined', {
     finalQuery,
     variables,
@@ -65,6 +66,11 @@ export async function runQueryCombined(
     sql,
   });
   const fetchResult = await fetchData(finalQuery);
+  log.info('runQueryCombined result', {
+    finalQuery,
+    fetchResult,
+  });
+
   if (!fetchResult.success) {
     return {
       success: false,

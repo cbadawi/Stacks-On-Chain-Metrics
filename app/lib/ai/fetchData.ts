@@ -88,8 +88,8 @@ export async function fetchData(
       response: { data: rows },
     };
   } catch (error: any) {
+    log.error('fetchData error', { error });
     if (error instanceof Error) {
-      log.error('fetchData error', { error });
       return {
         success: false,
         message: error.message ?? JSON.stringify(error),
