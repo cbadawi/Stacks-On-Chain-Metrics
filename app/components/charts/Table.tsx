@@ -25,7 +25,7 @@ const TableComponent = ({ data }: TableProps) => {
   const colNames = Object.keys(data[0]);
 
   return (
-    <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px]  sm:max-h-[50vh] lg:max-h-[60vh]'>
+    <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px] sm:max-h-[50vh] lg:max-h-[60vh]'>
       <table className='h-auto w-full'>
         <TableCaption>Stacks Metrics</TableCaption>
         <TableHeader className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-primary-foreground'>
@@ -45,42 +45,58 @@ const TableComponent = ({ data }: TableProps) => {
                   isTooLong && colNames.length !== 1
                     ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
                     : parsedValue;
+
+                if (colName.toLowerCase() === 'link') {
+                  return (
+                    <TableCell
+                      key={'td-' + colName + j}
+                      className='max-w-40 overflow-hidden'
+                    >
+                      <Link
+                        href={parsedValue}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-blue-500 hover:underline'
+                      >
+                        {<LinkIcon className='h-4 w-4' />}
+                      </Link>
+                    </TableCell>
+                  );
+                }
+
+                if (isTooLong) {
+                  return (
+                    <TooltipProvider key={'tooltip-' + colName + j}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <TableCell
+                            key={'td-' + colName + j}
+                            className='max-w-40 overflow-hidden'
+                          >
+                            <span className='select-none'>{shownValue}</span>
+                          </TableCell>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <span className='select-all'>{parsedValue}</span>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                }
+
+                // Regular cell for normal content
                 return (
-                  <TooltipProvider key={'tooltip-' + colName + j}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TableCell
-                          key={'td-' + colName + j}
-                          className='max-w-40 overflow-hidden'
-                        >
-                          {colName.toLowerCase() === 'link' ? (
-                            <Link
-                              href={parsedValue}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='text-blue-500 hover:underline'
-                            >
-                              {<LinkIcon className='h-4 w-4' />}
-                            </Link>
-                          ) : (
-                            shownValue
-                          )}
-                        </TableCell>
-                      </TooltipTrigger>
-                      <TooltipContent>{parsedValue}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TableCell
+                    key={'td-' + colName + j}
+                    className='max-w-40 overflow-hidden'
+                  >
+                    {shownValue}
+                  </TableCell>
                 );
               })}
             </TableRow>
           ))}
         </TableBody>
-        {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className='text-right'>$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter> */}
       </table>
     </div>
   );
