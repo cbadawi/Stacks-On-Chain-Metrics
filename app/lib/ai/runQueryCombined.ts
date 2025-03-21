@@ -16,80 +16,88 @@ export async function runQueryCombined(
 ): Promise<{
   success: boolean;
   message: string;
-  response: { data: any; isAiPrompt: boolean; displayQuery: string };
+  response: { data: any; isAiPrompt: boolean; displayQuery: string } | null;
 }> {
   'use server';
+  try {
+    const isAiPrompt = findIsAIPrompt(query);
+    if (config.PROTECT_DATA_ROUTES) {
+      const session = await verifySession();
+      if (!session) {
+        return {
+          success: false,
+          message: 'Invalid session. Sign in to continue.',
+          response: {
+            data: null,
+            isAiPrompt,
+            displayQuery: query,
+          },
+        };
+      }
+    }
 
-  const isAiPrompt = findIsAIPrompt(query);
-  if (config.PROTECT_DATA_ROUTES) {
-    const session = await verifySession();
-    if (!session) {
+    const { prompt, sql } = seperatePromptFromSql(query);
+    if (isAiPrompt) {
+      // TODO: Optionally add token check & update here.
+      const aiQueryResult = await generateQuery(address, prompt, sql);
+      if (!aiQueryResult.response.query) {
+        return {
+          success: false,
+          message:
+            aiQueryResult.message ||
+            'Failed to generate SQL query from AI prompt.',
+          response: {
+            data: null,
+            isAiPrompt,
+            displayQuery: query,
+          },
+        };
+      }
+      query = aiQueryResult.response.query;
+    }
+
+    const finalQuery = replaceVariables(query, variables);
+    // todo add query serial id
+    log.info('runQueryCombined', {
+      finalQuery,
+      variables,
+      isAiPrompt,
+      prompt,
+      sql,
+    });
+    const fetchResult = await fetchData(finalQuery);
+    log.info('runQueryCombined result', {
+      finalQuery,
+      fetchResult,
+    });
+
+    if (!fetchResult.success) {
       return {
         success: false,
-        message: 'Invalid session. Sign in to continue.',
+        message: fetchResult.message,
         response: {
           data: null,
           isAiPrompt,
-          displayQuery: query,
+          displayQuery: `-- AI ${prompt} \n${query}`,
         },
       };
     }
-  }
 
-  const { prompt, sql } = seperatePromptFromSql(query);
-  if (isAiPrompt) {
-    // TODO: Optionally add token check & update here.
-    const aiQueryResult = await generateQuery(address, prompt, sql);
-    if (!aiQueryResult.response.query) {
-      return {
-        success: false,
-        message:
-          aiQueryResult.message ||
-          'Failed to generate SQL query from AI prompt.',
-        response: {
-          data: null,
-          isAiPrompt,
-          displayQuery: query,
-        },
-      };
-    }
-    query = aiQueryResult.response.query;
-  }
-
-  const finalQuery = replaceVariables(query, variables);
-  // todo add query serial id
-  log.info('runQueryCombined', {
-    finalQuery,
-    variables,
-    isAiPrompt,
-    prompt,
-    sql,
-  });
-  const fetchResult = await fetchData(finalQuery);
-  log.info('runQueryCombined result', {
-    finalQuery,
-    fetchResult,
-  });
-
-  if (!fetchResult.success) {
     return {
-      success: false,
-      message: fetchResult.message,
+      success: true,
+      message: 'Query executed successfully.',
       response: {
-        data: null,
+        data: fetchResult.response?.data,
         isAiPrompt,
         displayQuery: `-- AI ${prompt} \n${query}`,
       },
     };
+  } catch (error: any) {
+    log.error('fetchData error', { error });
+    return {
+      success: false,
+      message: error.message ?? JSON.stringify(error),
+      response: null,
+    };
   }
-
-  return {
-    success: true,
-    message: 'Query executed successfully.',
-    response: {
-      data: fetchResult.response?.data,
-      isAiPrompt,
-      displayQuery: `-- AI ${prompt} \n${query}`,
-    },
-  };
 }
