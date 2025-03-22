@@ -61,7 +61,7 @@ const ChartsAndVariablesContainer = ({
   };
 
   return (
-    <div className='draggables-variable-wrapper absolute flex-grow overflow-visible'>
+    <div className='draggables-variable-wrapper relative flex-grow'>
       {variableKeys.length > 0 && (
         <form
           id={variablesFormId}
@@ -69,7 +69,7 @@ const ChartsAndVariablesContainer = ({
           className='variable-wrapper flex justify-between gap-4 pb-8'
         >
           <div
-            className='grid max-w-[90%] gap-4'
+            className='grid gap-4'
             style={{
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
             }}
@@ -83,19 +83,20 @@ const ChartsAndVariablesContainer = ({
               />
             ))}
           </div>
-          <div className='py-2 pr-8'>
+          <div className='py-2'>
             <RunButton formId={variablesFormId} disabled={!isFormValid} />
           </div>
         </form>
       )}
 
-      {/* DashboardChartsCanvas will only re-render when submittedValues changes */}
-      <DashboardChartsCanvas
-        dashboardId={dashboard.id}
-        owner={dashboard.owner.address}
-        charts={dashboard.charts as Chart[]}
-        variableValues={submittedValues}
-      />
+      <div className='w-full'>
+        <DashboardChartsCanvas
+          dashboardId={dashboard.id}
+          owner={dashboard.owner.address}
+          charts={dashboard.charts as Chart[]}
+          variableValues={submittedValues}
+        />
+      </div>
     </div>
   );
 };

@@ -53,7 +53,7 @@ const RunQueryButton = ({
         {getIcon()}
 
         {!isLoading && (
-          <div className='mt-2 flex items-center'>
+          <div className='run-icon-wrapper mt-2 flex items-center'>
             <Command />+
             <CornerDownLeft />
           </div>

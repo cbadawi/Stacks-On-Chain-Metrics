@@ -21,7 +21,7 @@ export function seperatePromptFromSql(input: string) {
 export const wrapQueryLimit = (query: string) =>
   `WITH user_query AS (
     ${query}
-    ) SELECT * FROM user_query LIMIT 1000;`;
+    ) SELECT * FROM user_query LIMIT 100;`;
 export const cleanQuery = (query: string) => query.replaceAll(';', ' ');
 
 export const findIsAIPrompt = (query: string) =>

@@ -71,6 +71,8 @@ export async function runQueryCombined(
       fetchResult,
     });
 
+    const returnedDisplayQuery = prompt ? `-- AI ${prompt} \n${query}` : query;
+
     if (!fetchResult.success) {
       return {
         success: false,
@@ -78,7 +80,7 @@ export async function runQueryCombined(
         response: {
           data: null,
           isAiPrompt,
-          displayQuery: `-- AI ${prompt} \n${query}`,
+          displayQuery: returnedDisplayQuery,
         },
       };
     }
@@ -89,7 +91,7 @@ export async function runQueryCombined(
       response: {
         data: fetchResult.response?.data,
         isAiPrompt,
-        displayQuery: `-- AI ${prompt} \n${query}`,
+        displayQuery: returnedDisplayQuery,
       },
     };
   } catch (error: any) {

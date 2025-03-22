@@ -83,7 +83,7 @@ const DashboardChartsCanvas = ({
   return (
     <div
       ref={containerRef}
-      className={`draggables-wrapper min-h-[100vh] w-[100vw] border-2 border-solid ${
+      className={`draggables-wrapper min-h-[100vh] w-full border-2 border-solid ${
         editMode ? 'border-orange-500' : 'border-transparent'
       }`}
     >

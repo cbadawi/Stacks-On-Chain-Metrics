@@ -30,9 +30,9 @@ const Dashboards = async ({ params }: DashboardProps) => {
   }
 
   return (
-    <div>
+    <div className='max-w-full overflow-x-hidden'>
       <EditModeProvider>
-        <div className='mx-4 flex h-full flex-col'>
+        <div className='m-4'>
           <Card className='my-6 h-auto w-auto border px-6'>
             <CardHeader>
               <div className='flex items-center justify-between'>
