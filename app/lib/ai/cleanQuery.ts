@@ -8,7 +8,7 @@ export function seperatePromptFromSql(input: string) {
       if (query) continue; // stop building the prompt on the first line without a comment block
       prompt += line
         .trim()
-        .toLowerCase()
+        // .toLowerCase()
         .replace(/--\s?ai?/gi, '');
     } else {
       query += line.replace(/\t/g, ' ') + ' \n';
