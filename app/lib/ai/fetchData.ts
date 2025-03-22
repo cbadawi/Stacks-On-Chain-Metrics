@@ -10,7 +10,7 @@ import { cleanQuery, wrapQueryLimit } from './cleanQuery';
 import { config } from '../config';
 import { ServerResponse } from '@/app/components/helpers';
 
-export type Result = Record<string, string | number>;
+export type Result = Record<string, string | number | Buffer>;
 
 export async function fetchData(
   query: string,
@@ -55,32 +55,27 @@ export async function fetchData(
   }
 
   try {
-    console.time('sql');
     const data = await stacksPool.query(cleanedQuery);
-    console.timeEnd('sql');
     log.info('fetchData result', { data });
 
     const rows = data.rows as Result[];
     const msg =
       rows.length === 0 ? 'Empty response.' : 'Query executed successfully.';
 
-    const bufferColumns: string[] = [];
-    if (rows.length > 0) {
-      const firstRow = rows[0];
-      for (const key in firstRow) {
-        if (Buffer.isBuffer(firstRow[key])) {
-          bufferColumns.push(key);
+    const bufferColumns = data.fields.filter(
+      (field) => field.dataTypeID === 17
+    );
+    const bufferColumnNames = bufferColumns.map((col) => col.name);
+
+    if (bufferColumnNames.length)
+      for (const row of rows) {
+        for (const colName of bufferColumnNames) {
+          const value = row[colName];
+          if (Buffer.isBuffer(value)) {
+            row[colName] = `0x${value.toString('hex')}`;
+          }
         }
       }
-    }
-
-    rows.forEach((row) => {
-      bufferColumns.forEach((column) => {
-        if (Buffer.isBuffer(row[column])) {
-          row[column] = '0x' + row[column].toString('hex');
-        }
-      });
-    });
 
     return {
       success: true,
