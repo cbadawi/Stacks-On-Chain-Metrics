@@ -30,27 +30,31 @@ const Dashboards = async ({ params }: DashboardProps) => {
   }
 
   return (
-    <div className='mx-4 flex h-full flex-col'>
+    <div>
       <EditModeProvider>
-        <Card className='my-6 h-auto w-auto border px-6'>
-          <CardHeader>
-            <div className='flex items-center justify-between'>
-              <CardTitle className='text-3xl font-normal'>
-                {dashboard.response.title}
-              </CardTitle>
-              <DashboardOptions
-                id={dashboard.response.id}
-                owner={dashboard.response.owner.address}
-              />
-            </div>
-            <CardDescription>{dashboard.response.description}</CardDescription>
-          </CardHeader>
-        </Card>
-        <div>
-          <ChartsAndVariablesContainer
-            dashboard={dashboard.response}
-            variablesFormId={variablesFormId}
-          />
+        <div className='mx-4 flex h-full flex-col'>
+          <Card className='my-6 h-auto w-auto border px-6'>
+            <CardHeader>
+              <div className='flex items-center justify-between'>
+                <CardTitle className='text-3xl font-normal'>
+                  {dashboard.response.title}
+                </CardTitle>
+                <DashboardOptions
+                  id={dashboard.response.id}
+                  owner={dashboard.response.owner.address}
+                />
+              </div>
+              <CardDescription>
+                {dashboard.response.description}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          <div>
+            <ChartsAndVariablesContainer
+              dashboard={dashboard.response}
+              variablesFormId={variablesFormId}
+            />
+          </div>
         </div>
       </EditModeProvider>
     </div>

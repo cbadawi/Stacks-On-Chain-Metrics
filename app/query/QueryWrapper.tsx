@@ -141,8 +141,9 @@ const QueryWrapper = () => {
 
         if (currentRequestId !== latestRequestRef.current) return;
 
-        if (!result?.success) {
+        if (!result?.success || !result.response) {
           setError(result?.message || 'Unknown error occurred ');
+          setQuery(result.response?.displayQuery || query);
           setIsLoading(false);
           return;
         }
@@ -238,11 +239,12 @@ const QueryWrapper = () => {
           runQuery={runQuery}
         />
       </div>
+      {error && <QueryErrorContainer error={error} setError={setError} />}
+
       <div className='variables-wrapper relative mx-10 mb-4 mt-5 w-auto'>
         <QueryVariablesForm query={query} />
       </div>
       <div>
-        {error && <QueryErrorContainer error={error} setError={setError} />}
         <Card className='relative my-12 h-auto rounded-t-3xl px-0 py-4'>
           {/* {JSON.stringify({ data })} */}
           {renderVisualization()}

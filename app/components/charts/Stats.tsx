@@ -18,7 +18,7 @@ const Stats = ({ data }: { data: any[] }) => {
               key={'h2-' + index}
               className='card-title flex h-12 items-center text-3xl font-semibold text-orange-400'
             >
-              {k}
+              {k === '?column?' ? '' : k}
             </h2>
             <p
               key={'p-' + index}

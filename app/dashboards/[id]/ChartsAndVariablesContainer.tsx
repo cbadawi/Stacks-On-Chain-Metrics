@@ -7,12 +7,12 @@ import RunButton from './RunButton';
 import { DashboardWithCharts, VariableType } from '@/app/components/helpers';
 import type { Chart, Dashboard } from '@prisma/client';
 
-// Helper to extract default values remains largely the same
 const getDefaultVariableValues = (
   dashboard: DashboardWithCharts
 ): VariableType => {
   const vars = dashboard.charts?.map((chart) => chart.variables);
   if (!vars || !vars.length) return {};
+
   const defaultVariables: VariableType = {};
   vars.map((obj) => {
     const variableObj = obj as VariableType;
@@ -35,25 +35,29 @@ const ChartsAndVariablesContainer = ({
   const defaultVariableValues = getDefaultVariableValues(dashboard);
   const variableKeys = Object.keys(defaultVariableValues || {});
 
-  const [activeValues, setActiveValues] = useState<VariableType>(
+  // State for form inputs
+  const [formValues, setFormValues] = useState<VariableType>(
+    defaultVariableValues
+  );
+  // Separate state for submitted values that will be passed to charts
+  const [submittedValues, setSubmittedValues] = useState<VariableType>(
     defaultVariableValues
   );
 
-  const isFormValid = defaultVariableValues
-    ? Object.values(defaultVariableValues).every(
-        (val) => val && val.trim() !== ''
-      )
+  const isFormValid = formValues
+    ? Object.values(formValues).every((val) => val && val.trim() !== '')
     : false;
 
   const handleInputChange =
     (variable: string) => (e: ChangeEvent<HTMLInputElement>) => {
-      setActiveValues((prev) => ({ ...prev, [variable]: e.target.value }));
+      setFormValues((prev) => ({ ...prev, [variable]: e.target.value }));
     };
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isFormValid) return;
-    setActiveValues(activeValues);
+    // Only update submitted values when form is submitted
+    setSubmittedValues(formValues);
   };
 
   return (
@@ -70,27 +74,27 @@ const ChartsAndVariablesContainer = ({
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
             }}
           >
-            {variableKeys.map((key, index) => {
-              return (
-                <Variable
-                  key={`variable-wrapper-${key}-${index}`}
-                  variable={key}
-                  value={activeValues[key]}
-                  onChange={handleInputChange(key)}
-                />
-              );
-            })}
+            {variableKeys.map((key, index) => (
+              <Variable
+                key={`variable-wrapper-${key}-${index}`}
+                variable={key}
+                value={formValues[key]}
+                onChange={handleInputChange(key)}
+              />
+            ))}
           </div>
-          {/* <div className='py-2 pr-8'>
+          <div className='py-2 pr-8'>
             <RunButton formId={variablesFormId} disabled={!isFormValid} />
-          </div> */}
+          </div>
         </form>
       )}
+
+      {/* DashboardChartsCanvas will only re-render when submittedValues changes */}
       <DashboardChartsCanvas
         dashboardId={dashboard.id}
         owner={dashboard.owner.address}
         charts={dashboard.charts as Chart[]}
-        variableValues={activeValues}
+        variableValues={submittedValues}
       />
     </div>
   );

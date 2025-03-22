@@ -22,6 +22,7 @@ export function labelFormatter(label: any): string {
 }
 
 export const prettyValue = (value: any) => {
+  if (value === null || value === undefined) return 'NULL';
   if (`${value}`.startsWith('0x') || `${value}`.startsWith('\\x')) return value;
   if (typeof value === 'boolean') return JSON.stringify(value);
   if (value instanceof Date) return value.toLocaleDateString();

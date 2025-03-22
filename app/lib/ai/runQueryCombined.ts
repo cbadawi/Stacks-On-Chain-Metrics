@@ -19,8 +19,8 @@ export async function runQueryCombined(
   response: { data: any; isAiPrompt: boolean; displayQuery: string } | null;
 }> {
   'use server';
+  const isAiPrompt = findIsAIPrompt(query);
   try {
-    const isAiPrompt = findIsAIPrompt(query);
     if (config.PROTECT_DATA_ROUTES) {
       const session = await verifySession();
       if (!session) {
@@ -97,7 +97,11 @@ export async function runQueryCombined(
     return {
       success: false,
       message: error.message ?? JSON.stringify(error),
-      response: null,
+      response: {
+        isAiPrompt,
+        displayQuery: query,
+        data: null,
+      },
     };
   }
 }

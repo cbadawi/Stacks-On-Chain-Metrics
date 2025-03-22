@@ -27,7 +27,7 @@ const TableComponent = ({ data }: TableProps) => {
   return (
     <div className='max-h-[40vh] overflow-x-auto overflow-y-auto border-[1px] sm:max-h-[50vh] lg:max-h-[60vh]'>
       <table className='h-auto w-full'>
-        <TableCaption>Stacks Metrics</TableCaption>
+        <TableCaption>Stacks On Chain</TableCaption>
         <TableHeader className='sticky top-0 z-10 border-b-4 border-solid border-gray-400 border-opacity-40 bg-primary-foreground'>
           <TableRow>
             {colNames.map((colName, i) => (
@@ -40,17 +40,19 @@ const TableComponent = ({ data }: TableProps) => {
             <TableRow key={'tr-' + i}>
               {colNames.map((colName, j) => {
                 const parsedValue = prettyValue(d[colName]);
+                console.log('parsedValue', parsedValue, d[colName]);
                 const isTooLong = parsedValue.length > 30;
-                const shownValue =
-                  isTooLong && colNames.length !== 1
-                    ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
-                    : parsedValue;
+                const isTooLongAndHasManyColumns =
+                  isTooLong && colNames.length !== 1;
+                const shownValue = isTooLongAndHasManyColumns
+                  ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
+                  : parsedValue;
 
                 if (colName.toLowerCase() === 'link') {
                   return (
                     <TableCell
                       key={'td-' + colName + j}
-                      className='max-w-40 overflow-hidden'
+                      className='max-w-40 overflow-scroll whitespace-nowrap'
                     >
                       <Link
                         href={parsedValue}
@@ -64,14 +66,14 @@ const TableComponent = ({ data }: TableProps) => {
                   );
                 }
 
-                if (isTooLong) {
+                if (isTooLongAndHasManyColumns) {
                   return (
                     <TooltipProvider key={'tooltip-' + colName + j}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <TableCell
                             key={'td-' + colName + j}
-                            className='max-w-40 overflow-hidden'
+                            className='max-w-40 overflow-x-scroll whitespace-nowrap'
                           >
                             <span className='select-none'>{shownValue}</span>
                           </TableCell>
