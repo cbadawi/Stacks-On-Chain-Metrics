@@ -47,11 +47,15 @@ const TableComponent = ({ data }: TableProps) => {
                   ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
                   : parsedValue;
 
+                // Conditionally add a light vertical border on non-last cells.
+                const borderClass =
+                  j < colNames.length - 1 ? 'border-r border-gray-300 ' : '';
+
                 if (colName.toLowerCase().endsWith('link')) {
                   return (
                     <TableCell
                       key={'td-' + colName + j}
-                      className='max-w-40 overflow-scroll whitespace-nowrap'
+                      className={`${borderClass}max-w-40 overflow-scroll whitespace-nowrap`}
                     >
                       <Link
                         href={parsedValue}
@@ -59,7 +63,7 @@ const TableComponent = ({ data }: TableProps) => {
                         rel='noopener noreferrer'
                         className='text-blue-500 hover:underline'
                       >
-                        {<LinkIcon className='h-4 w-4' />}
+                        <LinkIcon className='h-4 w-4' />
                       </Link>
                     </TableCell>
                   );
@@ -72,7 +76,7 @@ const TableComponent = ({ data }: TableProps) => {
                         <TooltipTrigger asChild>
                           <TableCell
                             key={'td-' + colName + j}
-                            className='max-w-40 overflow-x-scroll whitespace-nowrap'
+                            className={`${borderClass}max-w-40 overflow-x-scroll whitespace-nowrap`}
                           >
                             <span className='select-none'>{shownValue}</span>
                           </TableCell>
@@ -88,7 +92,7 @@ const TableComponent = ({ data }: TableProps) => {
                 return (
                   <TableCell
                     key={'td-' + colName + j}
-                    className='max-w-40 overflow-scroll'
+                    className={`${borderClass}max-w-40 overflow-scroll`}
                   >
                     {shownValue}
                   </TableCell>
