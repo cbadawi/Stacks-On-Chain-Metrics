@@ -127,14 +127,24 @@ export async function deleteChart({
       response: null,
     };
   }
-  const deletedChart = await prisma.chart.delete({
-    where: { id, dashboardId },
-  });
-  return {
-    success: true,
-    message: 'Chart deleted successfully.',
-    response: deletedChart,
-  };
+  try {
+    const deletedChart = await prisma.chart.delete({
+      where: { id, dashboardId },
+    });
+    return {
+      success: true,
+      message: 'Chart deleted successfully.',
+      response: deletedChart,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        'Error deleting chart : ' +
+        (error instanceof Error ? error.message : 'Unknown error.'),
+      response: null,
+    };
+  }
 }
 
 export async function updateChart({

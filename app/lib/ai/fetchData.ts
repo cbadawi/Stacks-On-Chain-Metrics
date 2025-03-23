@@ -72,7 +72,7 @@ export async function fetchData(
         for (const colName of bufferColumnNames) {
           const value = row[colName];
           if (Buffer.isBuffer(value)) {
-            row[colName] = `0x${value.toString('hex')}`;
+            row[colName] = `\\x${value.toString('hex')}`;
           }
         }
       }

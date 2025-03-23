@@ -47,13 +47,14 @@ const OwnerQueryDialogFooter = ({
       <DialogClose asChild>
         <Button
           variant='destructive'
-          onClick={async () =>
-            await deleteChart({
+          onClick={async () => {
+            const res = await deleteChart({
               id: chart.id,
               dashboardId,
               owner,
-            })
-          }
+            });
+            console.log({ deletechartres: res });
+          }}
         >
           Delete Chart
         </Button>

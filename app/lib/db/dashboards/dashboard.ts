@@ -188,12 +188,20 @@ export async function deleteDashboard({
       response: null,
     };
   }
-  const deletedDashboard = await prisma.dashboard.delete({
-    where: { id },
+  const deletedDashboard = await prisma.$transaction(async (tx) => {
+    await prisma.chart.updateMany({
+      where: { dashboardId: id },
+      data: { deleted: true },
+    });
+    await prisma.dashboard.update({
+      where: { id },
+      data: { deleted: true },
+    });
+    return true;
   });
   return {
     success: true,
     message: 'Dashboard deleted successfully.',
-    response: deletedDashboard,
+    response: null,
   };
 }

@@ -40,7 +40,6 @@ const TableComponent = ({ data }: TableProps) => {
             <TableRow key={'tr-' + i}>
               {colNames.map((colName, j) => {
                 const parsedValue = prettyValue(d[colName]);
-                console.log('parsedValue', parsedValue, d[colName]);
                 const isTooLong = parsedValue.length > 30;
                 const isTooLongAndHasManyColumns =
                   isTooLong && colNames.length !== 1;
@@ -48,7 +47,7 @@ const TableComponent = ({ data }: TableProps) => {
                   ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
                   : parsedValue;
 
-                if (colName.toLowerCase() === 'link') {
+                if (colName.toLowerCase().endsWith('link')) {
                   return (
                     <TableCell
                       key={'td-' + colName + j}
@@ -86,11 +85,10 @@ const TableComponent = ({ data }: TableProps) => {
                   );
                 }
 
-                // Regular cell for normal content
                 return (
                   <TableCell
                     key={'td-' + colName + j}
-                    className='max-w-40 overflow-hidden'
+                    className='max-w-40 overflow-scroll'
                   >
                     {shownValue}
                   </TableCell>

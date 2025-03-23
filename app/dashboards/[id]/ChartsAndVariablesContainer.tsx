@@ -68,12 +68,7 @@ const ChartsAndVariablesContainer = ({
           onSubmit={handleFormSubmit}
           className='variable-wrapper flex justify-between gap-4 pb-8'
         >
-          <div
-            className='grid gap-4'
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))',
-            }}
-          >
+          <div className='flex flex-row flex-wrap gap-4'>
             {variableKeys.map((key, index) => (
               <Variable
                 key={`variable-wrapper-${key}-${index}`}

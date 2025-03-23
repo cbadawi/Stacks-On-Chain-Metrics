@@ -103,8 +103,8 @@ model Chart {
   height      Int
   deleted     Boolean                  @default(false)
   variables   Json
-  dashboard   Dashboard                @relation(fields: [dashboardId], references: [id])
-  dashboardId Int                      @map("dashboard_id")
+  dashboard   Dashboard?               @relation(fields: [dashboardId], references: [id], onDelete: SetNull)
+  dashboardId Int?                      @map("dashboard_id")
   axesTypes   LeftRight[]              @map("axes_types")
   columnTypes CustomizableChartTypes[] @map("column_types")
   createdAt   DateTime                 @default(now()) @map("created_at")

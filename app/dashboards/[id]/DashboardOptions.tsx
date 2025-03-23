@@ -16,6 +16,7 @@ import { useEditMode } from '../../contexts/EditModeContext';
 import { EllipsisVertical } from 'lucide-react';
 import { useUser } from '@/app/contexts/UserProvider';
 import { deleteDashboard } from '@/app/lib/db/dashboards/dashboard';
+import { redirect } from 'next/navigation';
 
 const DashboardOptions = ({ owner, id }: { id: number; owner: string }) => {
   const { editMode, setEditMode } = useEditMode();
@@ -61,7 +62,10 @@ const DashboardOptions = ({ owner, id }: { id: number; owner: string }) => {
             <Button
               variant='destructive'
               className='h-full w-full'
-              onClick={() => deleteDashboard({ id })}
+              onClick={async () => {
+                await deleteDashboard({ id });
+                redirect('/dashboards');
+              }}
             >
               Delete
             </Button>
