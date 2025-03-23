@@ -53,7 +53,6 @@ const OwnerQueryDialogFooter = ({
               dashboardId,
               owner,
             });
-            console.log({ deletechartres: res });
           }}
         >
           Delete Chart

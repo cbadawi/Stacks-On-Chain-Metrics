@@ -16,11 +16,12 @@ import { useEditMode } from '../../contexts/EditModeContext';
 import { EllipsisVertical } from 'lucide-react';
 import { useUser } from '@/app/contexts/UserProvider';
 import { deleteDashboard } from '@/app/lib/db/dashboards/dashboard';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 const DashboardOptions = ({ owner, id }: { id: number; owner: string }) => {
   const { editMode, setEditMode } = useEditMode();
   const { userData } = useUser();
+  const router = useRouter();
 
   const handleToggleEditMode = () => {
     setEditMode(!editMode);
@@ -64,7 +65,7 @@ const DashboardOptions = ({ owner, id }: { id: number; owner: string }) => {
               className='h-full w-full'
               onClick={async () => {
                 await deleteDashboard({ id });
-                redirect('/dashboards');
+                router.push('/dashboards');
               }}
             >
               Delete
