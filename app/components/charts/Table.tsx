@@ -17,8 +17,75 @@ import { Link as LinkIcon } from 'lucide-react';
 import Link from 'next/link';
 
 interface TableProps {
-  data: any;
+  data: any[];
 }
+
+interface CustomTableCellProps {
+  value: any;
+  colName: string;
+  isLast: boolean;
+  colCount: number;
+}
+
+const CustomTableCell = ({
+  value,
+  colName,
+  isLast,
+  colCount,
+}: CustomTableCellProps) => {
+  const parsedValue = prettyValue(value);
+  const isTooLong = parsedValue.length > 30;
+  const isTooLongAndHasManyColumns = isTooLong && colCount !== 1;
+  const shownValue = isTooLongAndHasManyColumns
+    ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
+    : parsedValue;
+
+  const borderClass = !isLast ? 'border-r border-gray-300 ' : '';
+
+  if (colName.toLowerCase().endsWith('link')) {
+    return (
+      <TableCell
+        className={`${borderClass} scrollbar-hide max-w-40 overflow-scroll whitespace-nowrap`}
+      >
+        <Link
+          href={parsedValue}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-blue-500 hover:underline'
+        >
+          <LinkIcon className='h-4 w-4' />
+        </Link>
+      </TableCell>
+    );
+  }
+
+  if (isTooLongAndHasManyColumns) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <TableCell
+              className={`${borderClass} scrollbar-hide max-w-40 overflow-x-scroll whitespace-nowrap`}
+            >
+              <span className='select-none'>{shownValue}</span>
+            </TableCell>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span className='select-all'>{parsedValue}</span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return (
+    <TableCell
+      className={`${borderClass} scrollbar-hide max-w-40 overflow-scroll`}
+    >
+      {shownValue}
+    </TableCell>
+  );
+};
 
 const TableComponent = ({ data }: TableProps) => {
   if (!data?.length) return null;
@@ -38,66 +105,15 @@ const TableComponent = ({ data }: TableProps) => {
         <TableBody>
           {data.map((d: any, i: number) => (
             <TableRow key={'tr-' + i}>
-              {colNames.map((colName, j) => {
-                const parsedValue = prettyValue(d[colName]);
-                const isTooLong = parsedValue.length > 30;
-                const isTooLongAndHasManyColumns =
-                  isTooLong && colNames.length !== 1;
-                const shownValue = isTooLongAndHasManyColumns
-                  ? parsedValue.slice(0, 10) + '...' + parsedValue.slice(-10)
-                  : parsedValue;
-
-                // Conditionally add a light vertical border on non-last cells.
-                const borderClass =
-                  j < colNames.length - 1 ? 'border-r border-gray-300 ' : '';
-
-                if (colName.toLowerCase().endsWith('link')) {
-                  return (
-                    <TableCell
-                      key={'td-' + colName + j}
-                      className={`${borderClass}max-w-40 overflow-scroll whitespace-nowrap`}
-                    >
-                      <Link
-                        href={parsedValue}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-blue-500 hover:underline'
-                      >
-                        <LinkIcon className='h-4 w-4' />
-                      </Link>
-                    </TableCell>
-                  );
-                }
-
-                if (isTooLongAndHasManyColumns) {
-                  return (
-                    <TooltipProvider key={'tooltip-' + colName + j}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <TableCell
-                            key={'td-' + colName + j}
-                            className={`${borderClass}max-w-40 overflow-x-scroll whitespace-nowrap`}
-                          >
-                            <span className='select-none'>{shownValue}</span>
-                          </TableCell>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <span className='select-all'>{parsedValue}</span>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  );
-                }
-
-                return (
-                  <TableCell
-                    key={'td-' + colName + j}
-                    className={`${borderClass}max-w-40 overflow-scroll`}
-                  >
-                    {shownValue}
-                  </TableCell>
-                );
-              })}
+              {colNames.map((colName, j) => (
+                <CustomTableCell
+                  key={'td-' + colName + j}
+                  value={d[colName]}
+                  colName={colName}
+                  isLast={j === colNames.length - 1}
+                  colCount={colNames.length}
+                />
+              ))}
             </TableRow>
           ))}
         </TableBody>
