@@ -182,7 +182,7 @@ export async function updateChart({
       dashboard: { select: { owner: { select: { address: true } } } },
     },
   });
-  if (!chart || chart?.dashboard.owner.address !== session.userId) {
+  if (!chart || chart?.dashboard?.owner.address !== session.userId) {
     return {
       success: false,
       message: 'Dashboard not found or unauthorized.',
