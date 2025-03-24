@@ -10,4 +10,4 @@ export const DEFAULT_QUERY = `-- To write an AI prompt, start with "-- ai"
 
 -- Postgresql 15
 -- You can use variables by wrapping words in double brackets {{}}
-select max(block_height) from blocks;`;
+select block_height, tx_count from blocks limit 50;`;

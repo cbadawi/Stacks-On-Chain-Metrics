@@ -4,6 +4,6 @@ export const explanationSchema = z.object({
   section: z.string(),
   explanation: z.string(),
 });
-export const explanationsSchema = z.array(explanationSchema);
+export const explanationsSchema = explanationSchema;
 
 export type QueryExplanation = z.infer<typeof explanationSchema>;
